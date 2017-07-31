@@ -74,7 +74,9 @@ import okhttp3.Response;
 /**
  * EJ的考勤签到
  */
-public class BusinessEJLocation extends ActivitySupport implements View.OnClickListener, MyOrientationListener.OnOrientationListener {
+public class BusinessEJLocation extends ActivitySupport implements
+        View.OnClickListener,
+        MyOrientationListener.OnOrientationListener {
     private Context mContext;
 
     //布局
