@@ -10,7 +10,7 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.ImageView;
 
-public class CircleImageView extends ImageView {
+public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
 
 	private int x = 0;
 	private int color;

@@ -101,9 +101,7 @@ public class BusinessSearch extends ActivitySupport implements View.OnClickListe
             param.addKeyValue(Constant.BM_ACTION_TYPE, "MobileSyncDataDownload")
                     .addKeyValue("id_table", StringUtils.join("ctlm7502_corr"))
                     .addKeyValue("condition", "1=1");
-
             HttpClientManager.addTask(responseHandler, param.getHttpPost());
-
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -112,7 +110,6 @@ public class BusinessSearch extends ActivitySupport implements View.OnClickListe
 
 
     TextWatcher textWatcher = new TextWatcher() {
-
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             temp = s;

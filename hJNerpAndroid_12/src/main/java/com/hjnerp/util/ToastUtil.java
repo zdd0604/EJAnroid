@@ -9,7 +9,6 @@ public class ToastUtil {
 	}
 
 	public static void ShowShort(Context mContext, String msg) {
-
 		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
 }

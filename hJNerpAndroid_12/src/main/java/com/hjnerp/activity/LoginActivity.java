@@ -97,8 +97,8 @@ public class LoginActivity extends ActivitySupport {
                 .request();
         isReceiver = false;
         mIconEdittextClear = getResources().getDrawable(R.drawable.reader_news_fontcancel_pressed);
-        mIconUser = getResources().getDrawable(R.drawable.creat_username_slt);
-        mIconPWd = getResources().getDrawable(R.drawable.icon_register_password);
+        mIconUser = getResources().getDrawable(R.drawable.icon_login_account);
+        mIconPWd = getResources().getDrawable(R.drawable.icon_login_password);
         loginConfig = new LoginConfig();
         mHandler = new Handler();
         // 应用程序崩溃报告 开发测时可以关掉
