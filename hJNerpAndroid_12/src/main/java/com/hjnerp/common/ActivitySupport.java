@@ -34,6 +34,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.search.core.PoiInfo;
 import com.hjnerp.activity.LoginActivity;
@@ -51,10 +52,11 @@ import com.hjnerp.widget.WaitDialog;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.sdyy.utils.XPermissionListener;
+import com.sdyy.utils.XPermissions;
 
 import java.util.List;
 import java.util.Map;
-
 
 
 /**
@@ -87,6 +89,8 @@ public class ActivitySupport extends ActionBarActivity implements
     private int saveMsgIndbFlag = 0; // 异步储存msg的返回值,0代表不能插入
 
     private static boolean isFromBackToFront = false;
+    //是否授权
+    public boolean isPsions = false;
 
     /**
      * @author haijian 增加变量判断键盘是否收回
@@ -108,7 +112,6 @@ public class ActivitySupport extends ActionBarActivity implements
         waitDialogRectangle = new WaitDialogRectangle(context);
 
     }
-
 
 
     @Override
@@ -414,7 +417,7 @@ public class ActivitySupport extends ActionBarActivity implements
     public void setNotiType(int iconId, String contentTitle,
                             String contentText, Class activity, String from) {
         /*
-		 * 创建新的Intent，作为点击Notification留言条时， 会运行的Activity
+         * 创建新的Intent，作为点击Notification留言条时， 会运行的Activity
 		 */
         Intent notifyIntent = new Intent(this, activity);
         notifyIntent.putExtra("to", from);
@@ -434,7 +437,7 @@ public class ActivitySupport extends ActionBarActivity implements
 //		myNoti.tickerText = contentTitle;
 //		/* 设置notification发生时同时发出默认声音 */
 //		myNoti.defaults = Notification.DEFAULT_SOUND;
-		/* 设置Notification留言条的参数 */
+        /* 设置Notification留言条的参数 */
         Notification myNoti = new Notification.Builder(this)
                 .setAutoCancel(true)
                 .setContentTitle(contentTitle)
@@ -447,7 +450,7 @@ public class ActivitySupport extends ActionBarActivity implements
 
 
 //		myNoti.setLatestEventInfo(this, contentTitle, contentText, appIntent);
-		/* 送出Notification */
+        /* 送出Notification */
         notificationManager.notify(0, myNoti);
     }
 
@@ -743,6 +746,35 @@ public class ActivitySupport extends ActionBarActivity implements
             return true;
         }
         return onTouchEvent(ev);
+    }
+
+
+    /**
+     * 判断是否授权
+     *
+     * @param psions
+     * @return
+     */
+    public boolean isPermissions(String[] psions) {
+        XPermissions.getPermissions(psions, (Activity) context, new XPermissionListener() {
+            @Override
+            public void onAcceptAccredit() {
+                isPsions = true;
+            }
+
+            @Override
+            public void onRefuseAccredit(String[] results) {
+                isPsions = false;
+            }
+        });
+        return isPsions;
+    }
+
+    public void toastSHORT(String content){
+        Toast.makeText(context,content,Toast.LENGTH_SHORT).show();
+    }
+    public void toastLONG(String content){
+        Toast.makeText(context,content,Toast.LENGTH_LONG).show();
     }
 
     public boolean isShouldHideInput(View v, MotionEvent event) {

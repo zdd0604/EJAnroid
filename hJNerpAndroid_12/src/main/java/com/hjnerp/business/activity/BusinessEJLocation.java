@@ -57,7 +57,6 @@ import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
-import com.sdyy.utils.XPermissionListener;
 import com.sdyy.utils.XPermissions;
 
 import java.io.File;
@@ -195,6 +194,7 @@ public class BusinessEJLocation extends ActivitySupport implements
         BusinessQueryDao.getSgin_Section("ctlm7161");
 
         initMapLocation();
+
         setHListImage();
     }
 
@@ -233,28 +233,34 @@ public class BusinessEJLocation extends ActivitySupport implements
             startActivity(intent);
         }
 
+//        //判断定位的权限
+//        if (!isPermissions(new String[]{XPermissions.ACCESS_COARSE_LOCATION,
+//                XPermissions.ACCESS_FINE_LOCATION})) {
+//            toastSHORT("定位失败，请开启定位权限");
+//            return;
+//        }
 
         if (!Constant.ctlm7161Is) {
             //7161表不存在的时候
-            ToastUtil.ShowLong(this, "获取排班数据失败请联系管理员");
+            toastSHORT("获取排班数据失败请联系管理员");
             remove();
             return;
         }
 
         if (!StringUtil.isStrTrue(Constant.ej1345.getVar_on())) {
-            ToastUtil.ShowLong(this, "计划上班时间获取失败");
+            toastSHORT("计划上班时间获取失败");
             remove();
             return;
         }
 
         if (!StringUtil.isStrTrue(Constant.ej1345.getVar_off())) {
-            ToastUtil.ShowLong(this, "计划下班时间获取失败");
+            toastSHORT("计划下班时间获取失败");
             remove();
             return;
         }
 
         if (!iSTrue) {
-            ToastUtil.ShowLong(this, "定位点不在工作区,请到工作区内重新打卡");
+            toastSHORT("定位点不在工作区,请到工作区内重新打卡");
             remove();
             return;
         }
@@ -309,25 +315,17 @@ public class BusinessEJLocation extends ActivitySupport implements
      * 照片的集合的点击事件
      */
     AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
-
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
             if (position == photoBitmapList.size() - 1) {
-                XPermissions.getPermissions(new String[]{
-                                XPermissions.CAMERA,
-                                XPermissions.READ_CONTACTS},
-                        BusinessEJLocation.this, new XPermissionListener() {
-                            @Override
-                            public void onAcceptAccredit() {
-                                ej1345Exist();
-                            }
-
-                            @Override
-                            public void onRefuseAccredit(String[] results) {
-                                ToastUtil.ShowLong(BusinessEJLocation.this, "相机未授权");
-                            }
-                        });
+                if (!isPermissions(new String[]{
+                        XPermissions.CAMERA,
+                        XPermissions.READ_CONTACTS})) {
+                    ToastUtil.ShowLong(BusinessEJLocation.this, "相机未授权");
+                    return;
+                }
+                ej1345Exist();
             } else {
                 ShowSginPhotoFeleteDialog(position);
             }

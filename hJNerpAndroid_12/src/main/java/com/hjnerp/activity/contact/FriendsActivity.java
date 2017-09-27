@@ -49,6 +49,7 @@ import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
+import com.sdyy.utils.XPermissions;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -58,17 +59,18 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
-public class FriendsActivity extends ActivitySupport {
+public class FriendsActivity extends ActivitySupport implements OnClickListener {
 
     String sFriendId;
     private FriendInfo friend;
-    private Button sendBtn, callBtn;
+    private Button sendBtn;
+    private ImageView callImg;
     private TextView firstnameEdit, nicknameEdit, orgunitEdit, mobileEdit,
             emailhomeEdit, discEdit;
     private ImageView email_edit, phone_edit;
     private RelativeLayout dialog_confirm_rl, dialog_cancel_rl, rl_gally,
             rl_camera;
-    private RelativeLayout rl_phone, rl_email,user_head_layout;
+    private RelativeLayout rl_phone, rl_email, user_head_layout;
     private ImageView photo, qrcode;
     private FriendPopupWindow menuSet = null;
     private Dialog noticeDialog = null;
@@ -123,7 +125,7 @@ public class FriendsActivity extends ActivitySupport {
         super.removeMeAsFriend(friendId);
         if (friendId.equals(friend.getFriendid())) {
             sendBtn.setEnabled(false);
-            callBtn.setEnabled(false);
+            callImg.setEnabled(false);
             showNoticeDialog("对方解除了好友关系");
         }
     }
@@ -144,22 +146,18 @@ public class FriendsActivity extends ActivitySupport {
         emailhomeEdit = (TextView) findViewById(R.id.emailhome);
         qrcode = (ImageView) findViewById(R.id.iv_qrcode);
         sendBtn = (Button) findViewById(R.id.ui_send_btn);
-        callBtn = (Button) findViewById(R.id.ui_call_btn);
+        callImg = (ImageView) findViewById(R.id.ui_call_btn);
         rl_email = (RelativeLayout) findViewById(R.id.rl_email);
         rl_phone = (RelativeLayout) findViewById(R.id.rl_phone);
         user_head_layout = (RelativeLayout) findViewById(R.id.user_head_layout);
-//        rl_remark = (RelativeLayout) findViewById(R.id.rl_remark);
         email_edit = (ImageView) findViewById(R.id.ui_edit_iv_email);
         phone_edit = (ImageView) findViewById(R.id.ui_edit_iv_phone);
 
-        rl_email.setOnClickListener(listener);
-        rl_phone.setOnClickListener(listener);
-//        rl_remark.setOnClickListener(listener);
-        callBtn.setOnClickListener(listener);
-        sendBtn.setOnClickListener(listener);
-
+        rl_email.setOnClickListener(this);
+        rl_phone.setOnClickListener(this);
+        callImg.setOnClickListener(this);
+        sendBtn.setOnClickListener(this);
         setFriendView();
-
         closeInput();
 
         // 二维码名片
@@ -206,75 +204,72 @@ public class FriendsActivity extends ActivitySupport {
         mThread.start();
     }
 
-    OnClickListener listener = new OnClickListener() {// 创建监听对象
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ui_send_btn:
+                if (ifIsMyFriends) {// 进入聊天
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putSerializable(Constant.IM_NEWS,
+                            (Serializable) friend);
+                    intent.putExtras(mBundle);
+                    startActivity(intent);
+                    ((Activity) context).finish();
+                } else {// 加为好友
+                    flag_setwhat = ADD_FRIEND;
+                    showsetNoteDialog();
+                }
+                break;
+            //拨打电话
+            case R.id.ui_call_btn:
+                if (!isPermissions(new String[]{XPermissions.CALL_PHONE}))
+                {
+                    toastLONG("拨打电话未授权！");
+                    return;
+                }
+                String inputStr = friend.getFriendmtel();
+                Intent phoneIntent = new Intent("android.intent.action.CALL",
+                        Uri.parse("tel:" + inputStr));
+                startActivity(phoneIntent);
+                break;
+            case R.id.dialog_group_confirm_tv:
+                extra_note = et_note.getText().toString();
+                if (StringUtil.isNullOrEmpty(extra_note))
+                    return;
+                setNoteDialog.dismiss();
+                switch (flag_setwhat) {
+                    case ADD_FRIEND:// 添加好友
+                        addFriend();
+                        break;
+                    case SET_EMAIL:
+                        setEmai();
+                        break;
+                    case SET_PHONE:
+                        setPhone();
+                        break;
+                    case SET_REMARK:
+                        break;
+                    default:
+                        break;
+                }
 
-        @Override
-        public void onClick(View v) {
-
-            switch (v.getId()) {
-                case R.id.ui_send_btn:
-
-                    if (ifIsMyFriends) {// 进入聊天
-                        Intent intent = new Intent(context, ChatActivity.class);
-                        Bundle mBundle = new Bundle();
-                        mBundle.putSerializable(Constant.IM_NEWS,
-                                (Serializable) friend);
-                        intent.putExtras(mBundle);
-                        startActivity(intent);
-                        ((Activity) context).finish();
-                    } else {// 加为好友
-                        flag_setwhat = ADD_FRIEND;
-                        showsetNoteDialog();
-                    }
-
-                    break;
-                case R.id.ui_call_btn:
-                    String inputStr = friend.getFriendmtel();
-                    Intent phoneIntent = new Intent("android.intent.action.CALL",
-                            Uri.parse("tel:" + inputStr));
-                    startActivity(phoneIntent);
-                    break;
-
-                case R.id.dialog_group_confirm_tv:
-                    extra_note = et_note.getText().toString();
-                    if (StringUtil.isNullOrEmpty(extra_note))
-                        return;
-
-                    setNoteDialog.dismiss();
-                    switch (flag_setwhat) {
-                        case ADD_FRIEND:// 添加好友
-                            addFriend();
-
-                            break;
-                        case SET_EMAIL:
-                            setEmai();
-                            break;
-                        case SET_PHONE:
-                            setPhone();
-                            break;
-                        case SET_REMARK:
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    break;
-                case R.id.dialog_group_cancel_tv:
-                    setNoteDialog.dismiss();
-                    break;
-                case R.id.rl_phone:
-                    if (friend.getFriendid().equals(sputil.getMyId())) {
-                        flag_setwhat = SET_PHONE;
-                        showsetNoteDialog();
-                    }
-                    break;
-                case R.id.rl_email:
-                    if (friend.getFriendid().equals(sputil.getMyId())) {
-                        flag_setwhat = SET_EMAIL;
-                        showsetNoteDialog();
-                    }
-                    break;
+                break;
+            case R.id.dialog_group_cancel_tv:
+                setNoteDialog.dismiss();
+                break;
+            case R.id.rl_phone:
+                if (friend.getFriendid().equals(sputil.getMyId())) {
+                    flag_setwhat = SET_PHONE;
+                    showsetNoteDialog();
+                }
+                break;
+            case R.id.rl_email:
+                if (friend.getFriendid().equals(sputil.getMyId())) {
+                    flag_setwhat = SET_EMAIL;
+                    showsetNoteDialog();
+                }
+                break;
 //                case R.id.rl_remark:
 //                    // if(friend.getFriendid().equals(sputil.getMyId())){
 //                    // flag_setwhat = SET_REMARK;
@@ -282,13 +277,11 @@ public class FriendsActivity extends ActivitySupport {
 //                    // }
 //                    break;
 
-                default:
-                    break;
-            }
-
+            default:
+                break;
         }
 
-    };
+    }
 
     private OnClickListener setOnClick = new OnClickListener() {
         public void onClick(View v) {
@@ -680,7 +673,7 @@ public class FriendsActivity extends ActivitySupport {
         // 是否显示相机团和发送消息按钮
         if (friend.getFriendid().equals(sputil.getMyId())) {// 我自己的详情
             sendBtn.setVisibility(View.INVISIBLE);
-            callBtn.setVisibility(View.INVISIBLE);
+            callImg.setVisibility(View.INVISIBLE);
             user_head_layout.setOnClickListener(cameraClickListener);
             phone_edit.setVisibility(View.VISIBLE);
             email_edit.setVisibility(View.VISIBLE);
@@ -689,10 +682,10 @@ public class FriendsActivity extends ActivitySupport {
         } else {// 好友的详情
             sendBtn.setVisibility(View.VISIBLE);
             if (StringUtil.isNullOrEmpty(friend.getFriendmtel().trim())) {
-                callBtn.setVisibility(View.INVISIBLE);
+                callImg.setVisibility(View.INVISIBLE);
                 mobileEdit.setText(friend.getFriendmtel());
             } else {
-                callBtn.setVisibility(View.VISIBLE);
+                callImg.setVisibility(View.VISIBLE);
                 mobileEdit.setText(friend.getFriendmtel());
             }
 
@@ -1105,8 +1098,8 @@ public class FriendsActivity extends ActivitySupport {
             default:
                 break;
         }
-        tv_setnote_confirm.setOnClickListener(listener);
-        tv_setnote_cancel.setOnClickListener(listener);
+        tv_setnote_confirm.setOnClickListener(this);
+        tv_setnote_cancel.setOnClickListener(this);
 
         setNoteDialog.show();
     }

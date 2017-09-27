@@ -28,7 +28,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- 百度定位需要的权限 -->
-
     <uses-permission android:name="android.permission.ACCESS_GPS" />
     <!-- 这个权限用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

@@ -43,6 +43,9 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Response;
 
+/**
+ * 工作日志
+ */
 public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClickListener {
     //界面ID
     private ClearEditText log_date_task;

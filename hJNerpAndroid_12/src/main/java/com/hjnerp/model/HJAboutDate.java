@@ -38,7 +38,7 @@ public class HJAboutDate {
         list.clear();
         HJAboutBean hjAboutBean1 = new HJAboutBean();
         hjAboutBean1.setTitle_one("和佳1.0  做中国最好的ERP");
-        hjAboutBean1.setTitle_two("中国早最、最专业的ERP，拥有自主品牌和知识产权");
+        hjAboutBean1.setTitle_two("中国最早、最专业的ERP，拥有自主品牌和知识产权");
         hjAboutBean1.setContent_hj("      1998年3月24日和佳软件成立，并于同年推出和佳ERPV1.0以来，和佳软件多次参加国家经贸委、信息产业部和科技部863/CIMS项目组和软件行业协会组织的软件评比、评测、并获得荣誉。\n" +
                 "      1999年3月，世界银行选中和佳财务软件，用于世界银行在华1200多个贷款项目单位的财务管理。\n" +
                 "      2000年6月国家683/CIMS重大目标产品项目公开评测，和佳ERP被评为全国ERP产品第二名，获得“优秀软件”奖\n" +
@@ -47,7 +47,11 @@ public class HJAboutDate {
 
         HJAboutBean hjAboutBean2 = new HJAboutBean();
         hjAboutBean2.setTitle_one("和佳2.0  企业信息化综合服务商 突破了传ERP的范畴");
-        hjAboutBean2.setTitle_two("产品：ERP、CRM、DRP、集团管控、成本推演、全面费用管理、供应商门户 \n服务：管理咨询、IT规划、应用集成、系统集成、产品外包、项目实施与维护");
+        hjAboutBean2.setTitle_two(
+                "产品：" +
+                "\nERP、CRM、DRP、集团管控、成本推演、全面费用管理、供应商门户 " +
+                "\n服务：" +
+                "\n管理咨询、IT规划、应用集成、系统集成、产品外包、项目实施与维护");
         hjAboutBean2.setContent_hj("   2004年1月，和佳实施的东阿阿胶ERP项目被国家经贸委评为中国企业管理信息化十大经典案例。\n" +
                 "      2004年6月，由和佳负责实施的常林股份ERP项目被科技部评为国家制造业信息化重大工程全国十三家示范工程之一。\n" +
                 "      2005年3月，由和佳成功实施的紫竹药业EPR、CRM、DRP、OA等经综合信息化项目，被科技部评为国家制造业信息化重大工程全国示范工程及“2004年中国制造信息化典型成功案例”。\n" +
@@ -56,7 +60,7 @@ public class HJAboutDate {
 
         HJAboutBean hjAboutBean3 = new HJAboutBean();
         hjAboutBean3.setTitle_one("和佳3.0  互联网应用综合服务商");
-        hjAboutBean3.setTitle_two("和佳开发了独立电商平台、O2O业务应用、移动APP应用、微信应用等互联网产品");
+        hjAboutBean3.setTitle_two("和佳开发了\n独立电商平台、O2O业务应用、移动APP应用、微信应用等互联网产品");
         hjAboutBean3.setContent_hj("      2012年和佳依托云计算技术，推出了CERP、企业微博、执行力软件等新产品。\n" +
                 "      2013年和佳成功多洗、多彩饰家等互联网企业的O2O业务系统。\n" +
                 "      2015年和佳成功为山推，中丽制机等老客户成功实施独立电商平台，实现了原有的ERP系统的升级。\n" +
@@ -67,7 +71,7 @@ public class HJAboutDate {
 
         HJAboutBean hjAboutBean4 = new HJAboutBean();
         hjAboutBean4.setTitle_one("和佳4.0  云服务及大数据解决方案提供商");
-        hjAboutBean4.setTitle_two("和佳产品线扩展到：云基础设施、云平台、大数据、云应用");
+        hjAboutBean4.setTitle_two("和佳产品线扩展到：\n云基础设施、云平台、大数据、云应用");
         hjAboutBean4.setContent_hj("      2015年4月，和佳牵手阿里开发云端企业信息化系统，从迁云到云ERP运维提供全面服务。\n" +
                 "      2015年5月，和佳牵手钉钉打造云端办公自动化业务。\n" +
                 "      2015年9月，和佳牵手赛伯乐成功转型为大数据解决方案提供商\n");

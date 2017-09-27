@@ -62,8 +62,7 @@ public class ContactExpandableListAdapter extends BaseExpandableListAdapter {
         DeptInfo deptBean = dept.get(groupPosition);
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.fragment_contacter_group,
-                    null);
+            convertView = inflater.inflate(R.layout.fragment_contacter_group,null);
         }
 
         LinearLayout ll_group = (LinearLayout) convertView

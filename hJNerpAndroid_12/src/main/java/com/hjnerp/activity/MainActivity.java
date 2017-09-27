@@ -576,16 +576,17 @@ public class MainActivity extends ActivitySupport implements
         main_phone_icon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                if (isAvilible("com.google.android.contacts")) {
-                    intent.setClassName("com.google.android.contacts",
-                            "com.android.contacts.activities.PeopleActivity");
-                } else {
-                    intent.setClassName("com.android.contacts",
-                            "com.android.contacts.activities.PeopleActivity");
-                }
-
-                startActivity(intent);
+//                Intent intent = new Intent();
+//                if (isAvilible("com.google.android.contacts")) {
+//                    intent.setClassName("com.google.android.contacts",
+//                            "com.android.contacts.activities.PeopleActivity");
+//                } else {
+//                    intent.setClassName("com.android.contacts",
+//                            "com.android.contacts.activities.PeopleActivity");
+//                }
+//                startActivity(intent);‘
+                Intent dialIntent =  new Intent(Intent.ACTION_CALL_BUTTON);//跳转到拨号界面
+                startActivity(dialIntent);
             }
         });
         main_group_icon.setOnClickListener(new OnClickListener() {
