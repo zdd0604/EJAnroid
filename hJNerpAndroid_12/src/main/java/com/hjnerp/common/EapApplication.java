@@ -11,6 +11,7 @@ import android.os.Process;
 import android.support.v4.app.FragmentActivity;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.facebook.stetho.Stetho;
 import com.hjnerp.activity.LoginActivity;
 import com.hjnerp.db.DataBaseHelper;
 import com.hjnerp.model.NearBuild;
@@ -76,7 +77,17 @@ public class EapApplication extends Application {
         super.onCreate();
         setApplication(this);
 //	    CrashHandler crashHandler = CrashHandler.getInstance();
-//		crashHandler.init(getApplicationContext());  
+//		crashHandler.init(getApplicationContext());
+
+        //初始化调试
+        Stetho.initializeWithDefaults(this);
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
 
         //初始化地址
         HttpClientManager.open();
@@ -227,17 +238,6 @@ public class EapApplication extends Application {
         }
     }
 
-    /**
-     * 结束所有Activity
-     */
-    public void finishAllActivity() {
-        for (int i = 0, size = activityStack.size(); i < size; i++) {
-            if (null != activityStack.get(i)) {
-                activityStack.get(i).finish();
-            }
-        }
-        activityStack.clear();
-    }
 
     public boolean hasNoAnyActivityStack() {
         return activityStack == null || activityStack.isEmpty();
@@ -254,4 +254,17 @@ public class EapApplication extends Application {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 结束所有Activity
+     */
+    public void finishAllActivity() {
+        for (int i = 0, size = activityStack.size(); i < size; i++) {
+            if (null != activityStack.get(i)) {
+                activityStack.get(i).finish();
+            }
+        }
+        activityStack.clear();
+    }
+
 }

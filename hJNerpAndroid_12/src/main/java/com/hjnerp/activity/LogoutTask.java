@@ -14,6 +14,7 @@ import com.hjnerp.manager.HJWebSocketManager;
 import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.net.IQ;
 import com.hjnerp.util.ToastUtil;
+import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 
 public class LogoutTask extends AsyncTask<String, Integer, Integer> {
@@ -62,13 +63,13 @@ public class LogoutTask extends AsyncTask<String, Integer, Integer> {
 
                 break;
             case Constant.LOGIN_ERROR_ACCOUNT_PASS:// 账户或者密码错误
-                ToastUtil.ShowShort(context, errorText);
+                new MyToast(context, errorText);
                 break;
             case Constant.SERVER_UNAVAILABLE:// 服务器连接失败
-                ToastUtil.ShowShort(context, errorText);
+                new MyToast(context, errorText);
                 break;
             case Constant.LOGIN_ERROR:// 未知异常
-                ToastUtil.ShowShort(context, errorText);
+                new MyToast(context, errorText);
                 break;
             case Constant.LOGIN_ANONYMOUS:
                 // activitySupport.startService();

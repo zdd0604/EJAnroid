@@ -11,14 +11,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,15 +34,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.hjnerp.activity.contact.SearchQiXinFriendsActivity;
-import com.hjnerp.activity.im.SelectGroupChatMemberDeptActivity;
 import com.hjnerp.adapter.TabPagerAdapter;
 import com.hjnerp.business.Ctlm1345Update;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
+import com.hjnerp.common.Constant;
 import com.hjnerp.dao.QiXinBaseDao;
 import com.hjnerp.fragment.BusinessFragment;
 import com.hjnerp.fragment.ContactFragment;
@@ -63,9 +66,11 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressLint("RtlHardcoded")
-public class MainActivity extends ActivitySupport implements
-        OnPageChangeListener, OnImListener, OnClickListener {
-    private static Toast mToast = null;
+public class MainActivity extends ActionBarWidgetActivity implements
+        OnPageChangeListener,
+        OnImListener,
+        OnClickListener,
+        SensorEventListener {
     protected UserInfo myInfo;// 我的用户表信息
 //    public static DrawerLayout mDrawerLayout;
     /**
@@ -78,45 +83,48 @@ public class MainActivity extends ActivitySupport implements
     private List<Fragment> mFragmentList;
     // private AddPopupWindow menuAdd; // 弹出框
     // private QueryPopupWindow menuQuery;
-    private TextView tv_tab_qixin, tv_tab_work, tv_tab_business,
-            tv_tab_contact, main_tab_my_unread;
-
     private ImFragment imFragment;
     private ContactFragment contactFragment;
     private BusinessFragment businessFragment;
     private MyInforMation myInforMation;
-
     private List<ChangeColorIconWithTextView> mTabIndicator = new ArrayList<ChangeColorIconWithTextView>();
     private ContacterReceiver receiver = null;
-
     public static boolean need_fresh_businessmenu = false;
-
-    private FrameLayout frameLayout_work;
     public static int WORK_COUNT;
 
+    private TextView tv_tab_qixin, tv_tab_work, tv_tab_business,
+            tv_tab_contact, main_tab_my_unread;
+    private FrameLayout frameLayout_work;
     private TextView main_title_text;
-    private ImageView main_emp_icon;
+//    private ImageView main_emp_icon;
+//    private ImageView main_phone_icon;
+//    private ImageView main_group_icon;
     private ImageView main_search_icon;
-    private ImageView main_phone_icon;
-    private ImageView main_group_icon;
     private ImageView main_find_icon;
     private ImageView main_refresh_icon;
-    private List<Integer> title_list = new ArrayList<>();
+    private List<Integer> title_list;
     public static MainActivity newMain = null;
     private WorkReceiver workReceiver;
     private SharedPreferences sharedPref2;
     private SharedPreferences.Editor editor2;
     private NotificationManager nm;
     private Thread mThread;
+
+    private Vibrator mVibrator;//手机震动
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometerSensor;
+    private int mVibratorLevel = 35;//震动等级
+    //记录摇动状态
+    private boolean isShake = false;
+
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
-                case 0:
+                case Constant.HANDLERTYPE_0:
                     reflashWorkMenu();
                     break;
-                case 1:
+                case Constant.HANDLERTYPE_1:
                     int number = (int) msg.obj;
-
                     if (Build.MANUFACTURER.equalsIgnoreCase("Xiaomi")) {
                         sendToXiaoMi(number);
                     } else if (Build.MANUFACTURER.equalsIgnoreCase("samsung")) {
@@ -126,7 +134,15 @@ public class MainActivity extends ActivitySupport implements
                     } else {
                         sendToOther(number);
                     }
-
+                    break;
+                case Constant.HANDLERTYPE_2:
+                    //开始震动
+                    mVibrator.vibrate(300);
+                    upDataSginInfo();
+                    break;
+                case Constant.HANDLERTYPE_3:
+                    //结束震动
+                    isShake = false;
                     break;
                 default:
                     break;
@@ -135,6 +151,14 @@ public class MainActivity extends ActivitySupport implements
 
         ;
     };
+
+    /**
+     * 提交签到信息
+     */
+    private void upDataSginInfo() {
+        if (mLongitude <= 0.00 || mLatitude <= 0.00)
+            return;
+    }
 
     private void sendToOther(int number) {
         nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -159,86 +183,97 @@ public class MainActivity extends ActivitySupport implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //设置只竖屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.main);
         newMain = this;
         initView();
     }
 
     private void initView() {
-        Log.v("show", "initView。。。。。。。。。。。。。。");
 //        mDrawerLayout = (DrawerLayout) findViewById(R.id.id_drawerLayout);
 //        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
         myInfo = QiXinBaseDao.queryCurrentUserInfo();
-        // 从资源文件在获取Tab的title
-        mFragmentList = new ArrayList<Fragment>();
-        mFragmentList.clear();
-        // //将Fragment加入到List中，并将Tab的title传递给Fragment
-
-        // 企信
-        imFragment = new ImFragment();
-        mFragmentList.add(imFragment);
-
-        // 工作流
-        if (sputil.isWorkFlow()) {
-            mFragmentList.add(new WorkFragment());
-        }
-        // 功能
-        businessFragment = new BusinessFragment();
-        mFragmentList.add(businessFragment);
-
-        // 通讯录
-        contactFragment = new ContactFragment();
-        mFragmentList.add(contactFragment);
-
-        // 我的
-        myInforMation = new MyInforMation();
-        mFragmentList.add(myInforMation);
 
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
-        // 设置Adapter
-        mViewPager.setAdapter(new TabPagerAdapter(getSupportFragmentManager(), mFragmentList));
-        // 设置监听
-        mViewPager.setOnPageChangeListener(this);
-        // 设置预加载数为3
-        mViewPager.setOffscreenPageLimit(3);
         frameLayout_work = (FrameLayout) findViewById(R.id.id_frame_workflow);
         tv_tab_qixin = (TextView) findViewById(R.id.main_tab_im_unread);
         tv_tab_work = (TextView) findViewById(R.id.main_tab_work_unread);
         tv_tab_business = (TextView) findViewById(R.id.main_tab_business_unread);
         tv_tab_contact = (TextView) findViewById(R.id.main_tab_contact_unread);
         main_tab_my_unread = (TextView) findViewById(R.id.main_tab_my_unread);
-
-
-        main_emp_icon = (ImageView) findViewById(R.id.main_emp_icon);
-        main_group_icon = (ImageView) findViewById(R.id.main_group_icon);
-        main_phone_icon = (ImageView) findViewById(R.id.main_phone_icon);
         main_search_icon = (ImageView) findViewById(R.id.main_search_icon);
         main_find_icon = (ImageView) findViewById(R.id.main_find_icon);
         main_title_text = (TextView) findViewById(R.id.main_title_text);
         main_refresh_icon = (ImageView) findViewById(R.id.main_refresh_icon);
 
+        sharedPref2 = this.getSharedPreferences("main", Context.MODE_PRIVATE);
+        editor2 = sharedPref2.edit();
+//        main_emp_icon = (ImageView) findViewById(R.id.main_emp_icon);
+//        main_group_icon = (ImageView) findViewById(R.id.main_group_icon);
+//        main_phone_icon = (ImageView) findViewById(R.id.main_phone_icon);
+
+        // 将Fragment加入到List中，并将Tab的title传递给Fragment
+        addFragment();
+
         upload1345();
 
-        title_list.add(R.string.main_tab_im);
-        if (sputil.isWorkFlow()) {
-            title_list.add(R.string.main_tab_workflow);
-        }
-        title_list.add(R.string.main_tab_business);
-        title_list.add(R.string.main_tab_contact);
-        title_list.add(R.string.main_tab_my);
-
-        sharedPref2 = this.getSharedPreferences(
-                "main", Context.MODE_PRIVATE);
-        editor2 = sharedPref2.edit();
         // 获取Action实例我们使用getSupportActionBar()方法
         initTabIndicator();
 //        initEvents();
-
         // 启动服务
         registerMReceiver();
+        //启动聊天服务
         startService();
+
         registerWork();
 
+        // 获取Vibrator震动服务
+        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+    }
+
+    /**
+     * 添加fragment
+     */
+    private void addFragment() {
+        //界面
+        mFragmentList = new ArrayList<Fragment>();
+        mFragmentList.clear();
+        //标题
+        title_list = new ArrayList<>();
+        title_list.clear();
+
+        // 企信
+        imFragment = new ImFragment();
+        mFragmentList.add(imFragment);
+        title_list.add(R.string.main_tab_im);
+
+        // 工作流
+        if (sputil.isWorkFlow()) {
+            mFragmentList.add(new WorkFragment());
+            title_list.add(R.string.main_tab_workflow);
+        }
+        // 功能
+        businessFragment = new BusinessFragment();
+        mFragmentList.add(businessFragment);
+        title_list.add(R.string.main_tab_business);
+
+        // 通讯录
+        contactFragment = new ContactFragment();
+        mFragmentList.add(contactFragment);
+        title_list.add(R.string.main_tab_contact);
+
+        // 我的
+        myInforMation = new MyInforMation();
+        mFragmentList.add(myInforMation);
+        title_list.add(R.string.main_tab_my);
+
+        // 设置Adapter
+        mViewPager.setAdapter(new TabPagerAdapter(getSupportFragmentManager(), mFragmentList));
+        // 设置监听
+        mViewPager.setOnPageChangeListener(this);
+        // 设置预加载数为3
+        mViewPager.setOffscreenPageLimit(3);
     }
 
     private void registerWork() {
@@ -259,9 +294,9 @@ public class MainActivity extends ActivitySupport implements
                     @Override
                     public void onResult(boolean success) {
                         if (success) {
-//                            ToastUtil.ShowShort(context, "用户信息加载完成");
+                            LogShow("用户信息加载完成");
                         } else {
-//                            ToastUtil.ShowShort(context, "用户信息加载失败");
+                            LogShow("用户信息加载失败");
                         }
                     }
                 }).action();
@@ -289,6 +324,7 @@ public class MainActivity extends ActivitySupport implements
         mTabIndicator.add(buss);
         mTabIndicator.add(contact);
         mTabIndicator.add(my);
+
         im.setOnClickListener(this);
         buss.setOnClickListener(this);
         contact.setOnClickListener(this);
@@ -316,7 +352,6 @@ public class MainActivity extends ActivitySupport implements
         if (imFragment != null) {
             imFragment.refreshMessage();
         }
-
     }
 
     // 刷新通讯录新联系人提醒气泡
@@ -364,16 +399,13 @@ public class MainActivity extends ActivitySupport implements
                     try {
                         IQ iq = HJWebSocketManager.getInstance().requestIQ(
                                 ChatConstants.iq.FEATURE_WORK_NUMBER);
-                        Log.i("info", "IQ==" + iq);
+                        LogShow("IQ==" + iq);
                         Map<String, Object> data = (Map<String, Object>) iq.data;
                         WORK_COUNT = (int) Float.parseFloat(data.get("content")
                                 .toString());
-
                         handler.sendEmptyMessage(0);
                     } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        //
-                        Log.i("info", "获取workcount异常：" + e.toString());
+                        LogShow("获取workcount异常：" + e.toString());
                     }
                 }
 
@@ -413,7 +445,6 @@ public class MainActivity extends ActivitySupport implements
                 editor2.commit();
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             LOG.i("info", e.toString());
         }
     }
@@ -434,14 +465,6 @@ public class MainActivity extends ActivitySupport implements
     public void onPageScrollStateChanged(int arg0) {
     }
 
-//    public void unabledrefresh() {
-//        main_search_icon.setVisibility(View.GONE);
-//    }
-//
-//    public void enabledrefresh() {
-//        main_search_icon.setVisibility(View.VISIBLE);
-//    }
-
     @Override
     public void onPageScrolled(int position, float positionOffset,
                                int positionOffsetPixels) {
@@ -451,152 +474,92 @@ public class MainActivity extends ActivitySupport implements
             left.setIconAlpha(1 - positionOffset);
             right.setIconAlpha(positionOffset);
         }
-        if (position != 0) {
-            main_title_text.setText(title_list.get(position));
-            main_title_text.setTextColor(0xff303030);
-        }
 
+        main_title_text.setText(title_list.get(position));
+        //消息
         if (position == 0) {
-            main_emp_icon.setVisibility(View.VISIBLE);
-            main_title_text.setVisibility(View.VISIBLE);
-            main_search_icon.setVisibility(View.GONE);
-            main_phone_icon.setVisibility(View.VISIBLE);
-            main_find_icon.setVisibility(View.VISIBLE);
-            main_group_icon.setVisibility(View.VISIBLE);
-            main_refresh_icon.setVisibility(View.GONE);
-            main_title_text.setText("和佳");
-            main_title_text.setTextColor(0xff27a4e3);
-            if (mToast!=null){
-                mToast.cancel();
-
-            }
-
+            setMainIconVISIBLE(View.GONE, View.GONE, View.GONE);
         }
+
+        //审批
         if (sputil.isWorkFlow() && position == 1) {
-            main_emp_icon.setVisibility(View.GONE);
-            main_title_text.setVisibility(View.VISIBLE);
-            main_search_icon.setVisibility(View.VISIBLE);
-            main_phone_icon.setVisibility(View.GONE);
-            main_find_icon.setVisibility(View.GONE);
-            main_group_icon.setVisibility(View.GONE);
-            main_refresh_icon.setVisibility(View.VISIBLE);
-            main_title_text.setTextColor(0xff27a4e3);
-            main_search_icon.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    WorkFragment.workFragment.search(main_search_icon);
-                }
-            });
-            main_refresh_icon.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    WorkFragment.workFragment.listview.setRefreshing();
-                }
-            });
+            setMainIconVISIBLE(View.GONE, View.VISIBLE, View.GONE);
             nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nm.cancelAll();
-            if (mToast!=null){
-                mToast.cancel();
-
-            }
         }
+
+        //业务
         if ((sputil.isWorkFlow() && position == 2) || (!sputil.isWorkFlow() && position == 1)) {
-            main_emp_icon.setVisibility(View.GONE);
-            main_title_text.setVisibility(View.VISIBLE);
-            main_search_icon.setVisibility(View.GONE);
-            main_phone_icon.setVisibility(View.GONE);
-            main_find_icon.setVisibility(View.GONE);
-            main_title_text.setTextColor(0xff27a4e3);
-            main_group_icon.setVisibility(View.GONE);
-            main_refresh_icon.setVisibility(View.VISIBLE);
-            main_refresh_icon.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    BusinessFragment.businessFragment.refreshList();
-                }
-            });
-            if (ContextCompat.checkSelfPermission(getContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (mToast!=null){
-                    mToast.setText("未取得手机存储权限");
-                    mToast.setDuration(Toast.LENGTH_SHORT);
-                }else {
-                    mToast=Toast.makeText(this,"未取得手机存储权限",Toast.LENGTH_SHORT);
-
-                }
-                mToast.show();
-
-            }
+            setMainIconVISIBLE(View.VISIBLE, View.GONE, View.GONE);
         }
+
+        //联系人
         if ((sputil.isWorkFlow() && position == 3) || (!sputil.isWorkFlow() && position == 2)) {
-            main_emp_icon.setVisibility(View.GONE);
-            main_title_text.setVisibility(View.VISIBLE);
-            main_search_icon.setVisibility(View.GONE);
-            main_phone_icon.setVisibility(View.GONE);
-            main_find_icon.setVisibility(View.VISIBLE);
-            main_group_icon.setVisibility(View.GONE);
-            main_title_text.setTextColor(0xff27a4e3);
-            main_refresh_icon.setVisibility(View.VISIBLE);
-            main_refresh_icon.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ContactFragment.contactFragment.getHttpData();
-                }
-            });
-            if (mToast!=null){
-                mToast.cancel();
-
-            }
-
+            setMainIconVISIBLE(View.GONE, View.GONE, View.GONE);
         }
+
+        //我的
         if ((sputil.isWorkFlow() && position == 4) || (!sputil.isWorkFlow() && position == 3)) {
-            main_emp_icon.setVisibility(View.GONE);
-            main_title_text.setVisibility(View.VISIBLE);
-            main_search_icon.setVisibility(View.GONE);
-            main_phone_icon.setVisibility(View.VISIBLE);
-            main_find_icon.setVisibility(View.VISIBLE);
-            main_title_text.setTextColor(0xff27a4e3);
-            main_group_icon.setVisibility(View.VISIBLE);
-            main_refresh_icon.setVisibility(View.GONE);
-            if (mToast!=null){
-                mToast.cancel();
-
-            }
-
+            setMainIconVISIBLE(View.GONE, View.GONE, View.GONE);
         }
-        main_find_icon.setOnClickListener(new OnClickListener() {
+    }
+
+
+    /**
+     * 设置main界面action的显示
+     *
+     * @param refreshIcon   刷新
+     * @param searchIcon    搜索
+     * @param addFriendIcon 添加朋友
+     */
+    private void setMainIconVISIBLE(int refreshIcon, int searchIcon, int addFriendIcon) {
+        main_refresh_icon.setVisibility(refreshIcon);
+        main_search_icon.setVisibility(searchIcon);
+        main_find_icon.setVisibility(addFriendIcon);
+
+        //审批刷新以及搜索
+        main_search_icon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(),
-                        SearchQiXinFriendsActivity.class);
-                startActivity(intent);
+                WorkFragment.workFragment.search(main_search_icon);
             }
         });
-        main_phone_icon.setOnClickListener(new OnClickListener() {
+//        main_refresh_icon.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                WorkFragment.workFragment.listview.setRefreshing();
+//            }
+//        });
+
+        //业务刷新
+        main_refresh_icon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent();
-//                if (isAvilible("com.google.android.contacts")) {
-//                    intent.setClassName("com.google.android.contacts",
-//                            "com.android.contacts.activities.PeopleActivity");
-//                } else {
-//                    intent.setClassName("com.android.contacts",
-//                            "com.android.contacts.activities.PeopleActivity");
-//                }
-//                startActivity(intent);‘
-                Intent dialIntent =  new Intent(Intent.ACTION_CALL_BUTTON);//跳转到拨号界面
-                startActivity(dialIntent);
+                BusinessFragment.businessFragment.refreshList();
             }
         });
-        main_group_icon.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(),
-                        SelectGroupChatMemberDeptActivity.class);
-                startActivity(intent);
-            }
-        });
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            showFailToast("未取得手机存储权限");
+        }
+
+        //联系人刷新
+//        main_refresh_icon.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ContactFragment.contactFragment.getHttpData();
+//            }
+//        });
+        //我的添加朋友
+//        main_find_icon.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(),
+//                        SearchQiXinFriendsActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 
     private boolean isAvilible(String packageName) {
@@ -622,13 +585,34 @@ public class MainActivity extends ActivitySupport implements
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        //获取 SensorManager 负责管理传感器
+        mSensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
+        if (mSensorManager != null) {
+            //获取加速度传感器
+            mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            if (mAccelerometerSensor != null) {
+                mSensorManager.registerListener(this, mAccelerometerSensor, SensorManager.SENSOR_DELAY_UI);
+            }
+        }
+    }
+
+    @Override
     protected void onPause() {
+        // 务必要在pause中注销 mSensorManager
+        // 否则会造成界面退出后摇一摇依旧生效的bug
+        if (mSensorManager != null) {
+            mSensorManager.unregisterListener(this);
+        }
+
         unregisterReceiver(receiver);
         unregisterReceiver(workReceiver);
         receiver = null;
-        workReceiver=null;
+        workReceiver = null;
         super.onPause();
     }
+
 
     @Override
     protected void onRestart() {
@@ -646,6 +630,7 @@ public class MainActivity extends ActivitySupport implements
         refreshIm();
         // refreshImActionbarTab();
         refreshContact();
+
         readWorkMenu();
 //		 reflashBusinessMenu();
 
@@ -659,18 +644,23 @@ public class MainActivity extends ActivitySupport implements
     }
 
 
+    /**
+     * 退出登录
+     *
+     * @param context
+     */
     public void LogOut(Context context) {
 //        mDrawerLayout.closeDrawer(Gravity.LEFT);
         final Dialog noticeDialog = new Dialog(context, R.style.noticeDialogStyle);
         noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
 
-        RelativeLayout dialog_cancel_rl, dialog_confirm_rl;
+        TextView dialog_cancel_rl, dialog_confirm_rl;
         TextView notice = (TextView) noticeDialog.findViewById(R.id.dialog_notice_tv);
         notice.setText("确认要退出和佳ERP吗?");
-        dialog_cancel_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_cancel_rl);
-        dialog_confirm_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_confirm_rl);
+        dialog_cancel_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_cancel_tv);
+        dialog_confirm_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_confirm_tv);
         dialog_cancel_rl.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -694,6 +684,50 @@ public class MainActivity extends ActivitySupport implements
     public void isExit() {
         LogoutTask logoutTask = new LogoutTask(this);
         logoutTask.execute();
+    }
+
+    /**
+     * 摇一摇传感器
+     *
+     * @param event
+     */
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        int type = event.sensor.getType();
+
+        if (type == Sensor.TYPE_ACCELEROMETER) {
+            //获取三个方向值
+            float[] values = event.values;
+            float x = values[0];
+            float y = values[1];
+            float z = values[2];
+            if ((Math.abs(x) > mVibratorLevel || Math.abs(y) > mVibratorLevel
+                    || Math.abs(z) > mVibratorLevel && !isShake)) {
+                isShake = true;
+                //在这里编写功能代码。。。
+                // TODO: 2016/10/19 实现摇动逻辑, 摇动后进行震动
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        try {
+                            //开始震动 发出提示音 展示动画效果
+                            handler.sendEmptyMessage(Constant.HANDLERTYPE_2);
+                            Thread.sleep(500);
+                            handler.sendEmptyMessage(Constant.HANDLERTYPE_3);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                thread.start();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
     private class ContacterReceiver extends BroadcastReceiver {
@@ -917,5 +951,6 @@ public class MainActivity extends ActivitySupport implements
 //                Gravity.LEFT);
 //
 //    }
+
 
 }

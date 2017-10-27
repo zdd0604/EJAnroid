@@ -3,16 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_business_ejlocation"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.hjnerp.business.activity.BusinessEJLocation">
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/action_location_bar"
+        layout="@layout/actionbar_layout" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="#EFEFF4"
+        android:layout_below="@id/action_location_bar"
+        android:background="@color/actionbar_title_bg"
         android:scrollbars="none">
 
         <LinearLayout
@@ -23,7 +24,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="@dimen/size_8"
                 android:background="@color/white"
                 android:orientation="vertical">
 
@@ -58,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:text="打卡时间："
+                    android:text="实际(上下)班时间:"
                     android:textSize="16sp" />
 
                 <TextView
@@ -131,13 +132,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="2dp"
-            android:layout_marginTop="@dimen/size_5"
             android:layout_weight="1"
             android:button="@null"
             android:checked="true"
+            android:drawablePadding="3dp"
             android:drawableTop="@drawable/ddisplocation_login_in_bg"
             android:gravity="center"
-            android:text="签到"
+            android:text="上班"
             android:textColor="@drawable/ddisplocation_login_textcolor" />
 
         <RadioButton
@@ -146,12 +147,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="2dp"
-            android:layout_marginTop="@dimen/size_5"
             android:layout_weight="1"
             android:button="@null"
+            android:drawablePadding="3dp"
             android:drawableTop="@drawable/ddisplocation_login_out_bg"
             android:gravity="center"
-            android:text="签退"
+            android:text="下班"
             android:textColor="@drawable/ddisplocation_login_textcolor" />
     </RadioGroup>
 </RelativeLayout>

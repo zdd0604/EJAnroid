@@ -21,6 +21,7 @@ import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.net.IQ;
 import com.hjnerp.util.SharePreferenceUtil;
 import com.hjnerp.util.ToastUtil;
+import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class LoginTask extends AsyncTask<String, Integer, Integer> {
         switch (result) {
             case -1: // 登录成功
                 waitDialogRectangle.dismiss();
-                ToastUtil.ShowShort(context, "服务器没有反馈，请查看手机网络设置。");
+                new MyToast(context, "服务器没有反馈，请查看手机网络设置。");
                 break;
             case Constant.LOGIN_SECCESS: // 登录成功
 
@@ -82,15 +83,15 @@ public class LoginTask extends AsyncTask<String, Integer, Integer> {
                 break;
             case Constant.LOGIN_ERROR_ACCOUNT_PASS:// 账户或者密码错误
                 waitDialogRectangle.dismiss();
-                ToastUtil.ShowShort(context, errorText);
+                new MyToast(context, errorText);
                 Log.v("s", errorText);
                 break;
             case Constant.SERVER_UNAVAILABLE:// 服务器连接失败
                 waitDialogRectangle.dismiss();
-                ToastUtil.ShowShort(context, errorText);
+                new MyToast(context, errorText);
             case Constant.LOGIN_ERROR:// 未知异常
                 waitDialogRectangle.dismiss();
-                ToastUtil.ShowShort(context, errorText);
+                new MyToast(context, errorText);
                 break;
         }
         super.onPostExecute(result);

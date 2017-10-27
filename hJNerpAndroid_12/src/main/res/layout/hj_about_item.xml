@@ -6,8 +6,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/title_blue_bg">
+        android:layout_margin="@dimen/size_8">
 
         <TextView
             android:id="@+id/title_one"
@@ -15,18 +14,15 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_margin="10dp"
-            android:text="标题"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_size_20" />
+            android:text="发空间上的快捷方式的杰弗里斯地方就是地方就是大家法律手段解放路圣诞节"
+            android:textColor="#2b83ff"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <View
             android:id="@+id/view_br"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/title_one"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:background="#cfcdcd" />
+            style="@style/Item_TextView_ActionBarViewDividerStyle"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/title_two"
@@ -34,9 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/view_br"
             android:layout_margin="10dp"
-            android:text="副标题"
-            android:textColor="@color/grey"
-            android:textSize="@dimen/font_size_14" />
+            android:textColor="#2b83ff"
+            android:visibility="gone"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/content_hj"
@@ -46,9 +42,8 @@
             android:layout_alignStart="@+id/title_two"
             android:layout_below="@id/title_two"
             android:layout_centerVertical="true"
-            android:layout_marginBottom="@dimen/size_10"
-            android:text="内容"
-            android:textColor="@color/grey" />
+            android:lineSpacingExtra="@dimen/size_5"
+            android:textColor="@color/black" />
 
     </RelativeLayout>
 </RelativeLayout>

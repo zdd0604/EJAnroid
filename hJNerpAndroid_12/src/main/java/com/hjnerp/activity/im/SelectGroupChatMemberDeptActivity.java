@@ -48,16 +48,16 @@ import java.util.Map;
 
 public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 	String TAG = "SelectGroupChatMemberActivity";
-	private Dialog setGroupNameDialog; 
+	private Dialog setGroupNameDialog;
 	public ArrayList<FriendInfo> selectedFriendInfoList = new ArrayList<FriendInfo>() ; //选中的好友
 	private RelativeLayout rl_back;
 	private Button confirm_btn;
-	private RelativeLayout rl_setgroupname_cancel, rl_setgroupname_confirm;
+	private TextView rl_setgroupname_cancel, rl_setgroupname_confirm;
 	private EditText et_groupname;
 
 	private ExpandableListView exListView = null;
 	private FriendsListAdapterDept friendListAdapterDept;
-	
+
 	public HorizontalListViewAdapter horizontalAdapter;
 	private HorizontalListView horizontalListView;
 	private CharacterParser characterParser;
@@ -80,16 +80,16 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 	/* 新建群聊跳转至此时groupId为null,增加群成员跳转至此时groupId不为空 */
 	private String groupId = null;
 	private GroupInfo groupInfo;
-//	private String[] responds = new String[3];
+	//	private String[] responds = new String[3];
 	private String groupName;
-//	private boolean isSelected = false;
+	//	private boolean isSelected = false;
 	private final int max_groupmembers_counts = 40;
 	private ArrayList<DeptInfo> deptInfoList;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState); 
-		groupId = getIntent().getStringExtra(EXTRA_GROUPID); 
+		super.onCreate(savedInstanceState);
+		groupId = getIntent().getStringExtra(EXTRA_GROUPID);
 		setContentView(R.layout.groupchatselectmember_dpet);
 		initMyActionBar();
 		initWidget();
@@ -102,30 +102,30 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 	@Override
 	public void dropGroupChat(String groupId) {
 		if(groupId.equals(this.groupId)){
-		 
-		if(waitDialog != null){
-			waitDialog.dismiss();
-		}
-		if(setGroupNameDialog != null){
-			setGroupNameDialog.dismiss();
-		}
-		showNoticeDialog("群已经被解散");
+
+			if(waitDialog != null){
+				waitDialog.dismiss();
+			}
+			if(setGroupNameDialog != null){
+				setGroupNameDialog.dismiss();
+			}
+			showNoticeDialog("群已经被解散");
 		}
 	}
 	@Override
 	public void refalshContent(String groupId) {
 		if(groupId.equals(this.groupId)){
-		 
-		if(waitDialog != null){
-			waitDialog.dismiss();
-		}
-		if(setGroupNameDialog != null){
-			setGroupNameDialog.dismiss();
-		}
-		showNoticeDialog("你被群主移除出群");
+
+			if(waitDialog != null){
+				waitDialog.dismiss();
+			}
+			if(setGroupNameDialog != null){
+				setGroupNameDialog.dismiss();
+			}
+			showNoticeDialog("你被群主移除出群");
 		}
 	}
-	
+
 	private void initMyActionBar() {
 		rl_back = (RelativeLayout) findViewById(R.id.actionbar_back_rl_dept);
 		rl_back.setOnClickListener(onClickListener);
@@ -151,8 +151,8 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 
 		friendListAdapterDept = new FriendsListAdapterDept(this, deptInfoList);
 		exListView.setAdapter(friendListAdapterDept);
-		
-		
+
+
 		exListView.setGroupIndicator(null);
 		keepExpand(exListView);
 
@@ -160,14 +160,14 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 
 			@Override
 			public boolean onGroupClick(ExpandableListView parent, View v,
-					int groupPosition, long id) {
-				 
+										int groupPosition, long id) {
+
 				if(groupPosition == 0){
 					Intent intent1 = new Intent(SelectGroupChatMemberDeptActivity.this,
 							ShowGroupActivity.class);
 					startActivity(intent1);
 				}
-				
+
 				// return true to keep expand
 				return true;
 			}
@@ -181,7 +181,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+									int position, long id) {
 //				Log.i(TAG, "position is " + position+" friends id is "+selectedFriendInfoList.get(position).getFriendid());
 
 //				friendsListAdapter.selectedFriends.put(
@@ -191,7 +191,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 
 //				selectedFriendInfoList.remove(position);
 //				horizontalAdapter.updateListView(selectedFriendInfoList);
-				
+
 
 			}
 		});
@@ -206,7 +206,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 		addfriend.setDeptName("选择群组");
 		addfriend.setDeptChild(null);
 		deptInfoList.add(addfriend);
-		
+
 		//查找好友并加入deptInfoList
 		ArrayList<DeptInfo> temp = new ArrayList<DeptInfo>();
 		if(groupId != null){
@@ -215,7 +215,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 			temp = ContactBusiness.getDepInfos(sputil.getMyId(),null);
 		}
 		deptInfoList.addAll(temp);
-		
+
 	}
 
 
@@ -229,29 +229,29 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 		@Override
 		public void onClick(View v) {
 			switch (v.getId()) {
-			case R.id.actionbar_back_rl_dept:
-				finish();
-				break;
-			case R.id.actionbar_countmember_iv_dept:
-				
-				handleClick();
+				case R.id.actionbar_back_rl_dept:
+					finish();
+					break;
+				case R.id.actionbar_countmember_iv_dept:
 
-				break;
-			case R.id.dialog_group_confirm_rl:
-				
-				groupName = et_groupname.getText().toString();
-				if (!StringUtil.isNullOrEmpty(groupName)) {
+					handleClick();
+
+					break;
+				case R.id.dialog_group_confirm_tv:
+
+					groupName = et_groupname.getText().toString();
+					if (!StringUtil.isNullOrEmpty(groupName)) {
+						setGroupNameDialog.dismiss();
+						waitDialog.show();
+						createGroup();
+					}
+
+					break;
+				case R.id.dialog_group_cancel_tv:
 					setGroupNameDialog.dismiss();
-					waitDialog.show();
-					createGroup();
-				}
-
-				break;
-			case R.id.dialog_group_cancel_rl:
-				setGroupNameDialog.dismiss();
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
 			}
 
 		}
@@ -272,7 +272,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 			confirm_btn.setEnabled(true);
 		}
 	}
-	
+
 
 	public void addSelectedFriends(FriendInfo friendInfo){
 		selectedFriendInfoList.add(friendInfo);
@@ -283,9 +283,9 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 			if (friendInfo.getFriendid().equals(selectedFriendInfoList.get(i).getFriendid())) {
 				selectedFriendInfoList.remove(i);
 			}
-		}	
+		}
 	}
-	
+
 	public boolean ifIsSelected(FriendInfo friendInfo){
 		boolean isSelected = false;
 		for (int i = 0; i < selectedFriendInfoList.size(); i++) {
@@ -294,7 +294,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 				return true;
 			}
 		}
-		
+
 		return isSelected;
 	}
 
@@ -305,7 +305,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 
 				sendToHandler(ACTION_SINGLE_CHAT);
 				return;
-			} 
+			}
 			else if(selectedFriendInfoList.size() >= max_groupmembers_counts){
 				ToastUtil.ShowLong(this, "群成员数量超过客户端建群的最大成员数量：40人！");
 
@@ -343,19 +343,19 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 		};
 		addGroupMemberThread.start();
 	}
-	
-	
+
+
 	private void handleCreateGroup() {
 
 		String[] ids = new String[selectedFriendInfoList.size()];
 		List<String> templist = new ArrayList<String>();
 		for(int i = 0;i<selectedFriendInfoList.size();i++){
-		//	Log.e(TAG,"create group selectedFriendInfoList " + i + " " + selectedFriendInfoList.get(i).getFriendname() +  " " + selectedFriendInfoList.get(i).getFriendid());
+			//	Log.e(TAG,"create group selectedFriendInfoList " + i + " " + selectedFriendInfoList.get(i).getFriendname() +  " " + selectedFriendInfoList.get(i).getFriendid());
 			String id = new String();
 			id = selectedFriendInfoList.get(i).getFriendid();
 			templist.add(id);
 		}
-		
+
 		try {
 
 
@@ -414,12 +414,12 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 				});
 			}else{//不成功
 				ToastUtil.ShowShort(SelectGroupChatMemberDeptActivity.this, errorCode);
-				
+
 			}
-					
+
 
 		} catch (Exception e) {
-			sendToHandler(ACTION_CREATE_ERROR); 
+			sendToHandler(ACTION_CREATE_ERROR);
 		}
 
 	}
@@ -427,29 +427,30 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 	private void handleAddGroupMember(){
 		List<String> templist = new ArrayList<String>();
 		for(int i = 0;i<selectedFriendInfoList.size();i++){
-			Log.e(TAG,"add groupMember " + i + " " + selectedFriendInfoList.get(i).getFriendname() + selectedFriendInfoList.get(i).getFriendid());
+			Log.e(TAG,"add groupMember " + i + " " + selectedFriendInfoList.get(i).getFriendname()
+					+ selectedFriendInfoList.get(i).getFriendid());
 			String id = new String();
 			id = selectedFriendInfoList.get(i).getFriendid();
 			templist.add(id);
 		}
-		
+
 		for(int i =0;i<templist.size();i++){
 			Log.e(TAG," templist " + i + " " + templist.get(i));
 		}
 		IQ iq = HJWebSocketManager.getInstance().doGroupOpt(groupId, templist, ChatConstants.iq.DATA_VALUE_ADD);
 		String errorMsg = ChatPacketHelper.parseErrorCode(iq);
-		
+
 		if(errorMsg != null)
 		{
 			sendToHandler(ACTION_ADD_GROUPMEMBER_ERROR);
-			
+
 		}else{
 			sendToHandler(ACTION_ADD_GROUPMEMBER_SUCCESS);
-			
+
 		}
-		
+
 //			mService.doGroupOpt(groupId, templist, ChatConstants.iq.DATA_VALUE_ADD, new ResponseCallback() {
-//				
+//
 //				@Override
 //				public void onReceive(DataPacket packet) {
 //					IQ iq = (IQ)packet;
@@ -458,20 +459,20 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 //					if(errorMsg != null)
 //					{
 //						sendToHandler(ACTION_ADD_GROUPMEMBER_ERROR);
-//						
+//
 //					}else{
-//						
+//
 //						Log.i(TAG,"add groupmember ok");
-//						
+//
 //						sendToHandler(ACTION_ADD_GROUPMEMBER_SUCCESS);
-//						
+//
 //					}
-//					
+//
 //				}
 //			});
-	
+
 	}
-	
+
 	private void sendToHandler(String msg) {
 
 		Message Msg = new Message();
@@ -543,7 +544,7 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 						return null;
 					}
 				});
-				
+
 			}else if(mmsg.equals(ACTION_ADD_GROUPMEMBER_ERROR)){
 				ToastUtil.ShowLong(SelectGroupChatMemberDeptActivity.this, "系统繁忙，请重试");
 			}
@@ -557,10 +558,10 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 		setGroupNameDialog.setContentView(R.layout.dialog_renamegroup);
 		et_groupname = (EditText) setGroupNameDialog
 				.findViewById(R.id.dialog_goup_rename_et);
-		rl_setgroupname_confirm = (RelativeLayout) setGroupNameDialog
-				.findViewById(R.id.dialog_group_confirm_rl);
-		rl_setgroupname_cancel = (RelativeLayout) setGroupNameDialog
-				.findViewById(R.id.dialog_group_cancel_rl);
+			rl_setgroupname_confirm = (TextView) setGroupNameDialog
+				.findViewById(R.id.dialog_group_confirm_tv);
+		rl_setgroupname_cancel = (TextView) setGroupNameDialog
+				.findViewById(R.id.dialog_group_cancel_tv);
 		rl_setgroupname_confirm.setOnClickListener(onClickListener);
 		rl_setgroupname_cancel.setOnClickListener(onClickListener);
 
@@ -576,22 +577,22 @@ public class SelectGroupChatMemberDeptActivity extends ActivitySupport {
 		TextView notice = (TextView) noticeDialog.findViewById(R.id.nc_notice);
 		notice.setText(msg);
 		dialog_confirm_rl = (RelativeLayout) noticeDialog.findViewById(R.id.dialog_nc_confirm_rl);
-		dialog_confirm_rl.setOnClickListener(dialogOnClickListener);		
-		
+		dialog_confirm_rl.setOnClickListener(dialogOnClickListener);
+
 		noticeDialog.show();
 	}
-	
+
 	private OnClickListener dialogOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
 			switch (v.getId()) {
-			case R.id.dialog_nc_confirm_rl:
-				noticeDialog.dismiss();
-				jumpToMain(SelectGroupChatMemberDeptActivity.this);
-				break;
-			default:
-				break;
+				case R.id.dialog_nc_confirm_rl:
+					noticeDialog.dismiss();
+					jumpToMain(SelectGroupChatMemberDeptActivity.this);
+					break;
+				default:
+					break;
 			}
 
 		}

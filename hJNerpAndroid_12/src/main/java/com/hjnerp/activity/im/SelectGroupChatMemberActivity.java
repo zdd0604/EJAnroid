@@ -43,6 +43,9 @@ import com.hjnerp.widget.SideBar.OnTouchingLetterChangedListener;
 import com.hjnerp.widget.WaitDialog;
 import com.hjnerpandroid.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class SelectGroupChatMemberActivity extends ActivitySupport {
 	String TAG = "SelectGroupChatMemberActivity";
 	private Dialog setGroupNameDialog;
@@ -52,7 +55,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 	private SideBar sideBar;
 	private Button confirm_btn;
 	private TextView message_tv;
-	private RelativeLayout rl_setgroupname_cancel, rl_setgroupname_confirm;
+	//	private RelativeLayout rl_setgroupname_cancel, rl_setgroupname_confirm;
 	private ListView friendList_lv;
 	private EditText et_groupname;
 
@@ -61,7 +64,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 	private HorizontalListView horizontalListView;
 	private CharacterParser characterParser;
 	public FriendSortLetterComparator pinyinComparator;
-//	private List<String> addFriendsIdList;
+	//	private List<String> addFriendsIdList;
 	private Thread creatGroupThread;
 	private Thread addGroupMemberThread;
 	private WaitDialog waitDialog;
@@ -80,20 +83,22 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 	/* 新建群聊跳转至此时groupId为null,增加群成员跳转至此时groupId不为空 */
 	private String groupId = null;
 	private GroupInfo groupInfo;
-//	private String[] responds = new String[3];
+	//	private String[] responds = new String[3];
 	private String groupName;
 	private boolean isSelected = false;
 	private final int max_groupmembers_counts = 40;
-	
+	@BindView(R.id.dialog_group_cancel_tv)
+	TextView dialog_group_cancel_tv;
+	@BindView(R.id.dialog_group_confirm_tv)
+	TextView dialog_group_confirm_tv;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.e(TAG, "onCreate()");
+//		Log.e(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().hide();
-
 		groupId = getIntent().getStringExtra(EXTRA_GROUPID);
-
 		setContentView(R.layout.groupchatselectmember);
+		ButterKnife.bind(this);
 		initMyActionBar();
 		initWidget();
 	}
@@ -101,36 +106,36 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 	protected void onPause() {
 		super.onPause();
 	}
-	
+
 	@Override
 	public void dropGroupChat(String groupId) {
 		if(groupId.equals(this.groupId)){
-		Log.i(TAG,"群已解散");
-		
-		if(waitDialog != null){
-			waitDialog.dismiss();
-		}
-		if(setGroupNameDialog != null){
-			setGroupNameDialog.dismiss();
-		}
-		showNoticeDialog("群已经被解散");
+//		Log.i(TAG,"群已解散");
+
+			if(waitDialog != null){
+				waitDialog.dismiss();
+			}
+			if(setGroupNameDialog != null){
+				setGroupNameDialog.dismiss();
+			}
+			showNoticeDialog("群已经被解散");
 		}
 	}
 	@Override
 	public void refalshContent(String groupId) {
 		if(groupId.equals(this.groupId)){
-		Log.i(TAG,"群已解散");
-		
-		if(waitDialog != null){
-			waitDialog.dismiss();
-		}
-		if(setGroupNameDialog != null){
-			setGroupNameDialog.dismiss();
-		}
-		showNoticeDialog("你被群主移除出群");
+//		Log.i(TAG,"群已解散");
+
+			if(waitDialog != null){
+				waitDialog.dismiss();
+			}
+			if(setGroupNameDialog != null){
+				setGroupNameDialog.dismiss();
+			}
+			showNoticeDialog("你被群主移除出群");
 		}
 	}
-	
+
 	private void initMyActionBar() {
 		rl_back = (RelativeLayout) findViewById(R.id.actionbar_back_rl);
 		rl_back.setOnClickListener(onClickListener);
@@ -192,7 +197,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+									int position, long id) {
 				// ImageView selected_iv = (ImageView) view
 				// .findViewById(R.id.member_select_iv);
 				// selected_iv.callOnClick();
@@ -210,8 +215,8 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Log.i(TAG, "position is " + position+" friends id is "+selectedFriendInfoList.get(position).getFriendid());
+									int position, long id) {
+//				Log.i(TAG, "position is " + position+" friends id is "+selectedFriendInfoList.get(position).getFriendid());
 
 				friendsListAdapter.selectedFriends.put(
 						selectedFriendInfoList.get(position), false);
@@ -220,7 +225,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 
 				selectedFriendInfoList.remove(position);
 				horizontalAdapter.updateListView(selectedFriendInfoList);
-				
+
 
 			}
 		});
@@ -233,7 +238,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 		friendList = QiXinBaseDao.queryFriendInfos("Y");
 
 		for(int i =0;i<friendList.size();i++){
-			Log.e(TAG,friendList.get(i).getFriendid() + " " + friendList.get(i).getFriendimage());
+//			Log.e(TAG,friendList.get(i).getFriendid() + " " + friendList.get(i).getFriendimage());
 		}
 		/* 去掉自己 */
 		removeOneItem(sputil.getMyId());
@@ -298,29 +303,27 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 		@Override
 		public void onClick(View v) {
 			switch (v.getId()) {
-			case R.id.actionbar_back_rl:
-				finish();
-				break;
-			case R.id.actionbar_countmember_iv:
-				
-				handleClick();
+				case R.id.actionbar_back_rl:
+					finish();
+					break;
+				case R.id.actionbar_countmember_iv:
 
-				break;
-			case R.id.dialog_group_confirm_rl:
-				
-				groupName = et_groupname.getText().toString();
-				if (!StringUtil.isNullOrEmpty(groupName)) {
+					handleClick();
+
+					break;
+				case R.id.dialog_group_confirm_tv:
+					groupName = et_groupname.getText().toString();
+					if (!StringUtil.isNullOrEmpty(groupName)) {
+						setGroupNameDialog.dismiss();
+						waitDialog.show();
+						createGroup();
+					}
+					break;
+				case R.id.dialog_group_cancel_tv:
 					setGroupNameDialog.dismiss();
-					waitDialog.show();
-					createGroup();
-				}
-
-				break;
-			case R.id.dialog_group_cancel_rl:
-				setGroupNameDialog.dismiss();
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
 			}
 
 		}
@@ -348,7 +351,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 
 				sendToHandler(ACTION_SINGLE_CHAT);
 				return;
-			} 
+			}
 //			else if(selectedFriendInfoList.size() >= max_groupmembers_counts){
 //				ToastUtil.ShowLong(this, "群成员人数超过限制");
 //
@@ -361,7 +364,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 //			if(selectedFriendInfoList.size() + fList.length >= max_groupmembers_counts){
 //				ToastUtil.ShowLong(this, "群成员人数超过限制");
 //			}else{
-				addGroupMember();
+			addGroupMember();
 //			}
 		}
 	}
@@ -386,8 +389,8 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 		};
 		addGroupMemberThread.start();
 	}
-	
-	
+
+
 	private void handleCreateGroup() {
 
 		String[] ids = new String[selectedFriendInfoList.size()];
@@ -397,7 +400,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 			id = selectedFriendInfoList.get(i).getFriendid();
 			templist.add(id);
 		}
-		
+
 		try {
 			// run this in thread return 3string
 			// "success"+groupId+"msg"-success;
@@ -406,7 +409,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 
 			// TODO dialog to create group name
 			/*mService.createGroupChat(groupName, templist, new WebSocketClient.ResponseCallback() {
-				
+
 				@Override
 				public void onReceive(DataPacket packet) {
 					IQ iq = (IQ)packet;
@@ -435,7 +438,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 								return null;
 							}
 						});
-						
+
 //						groupInfo = new GroupInfo();
 //						groupInfo.groupID = groupID;
 //						groupInfo.groupName = groupName;
@@ -465,7 +468,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 								return null;
 							}
 						});
-						
+
 					}else{
 						//error
 						sendToHandler(ACTION_CREATE_ERROR);
@@ -473,7 +476,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 				}
 			});
 			*/
-			
+
 //			if (responds != null) {
 //				if (CREATE_GROUP_SUCCESS.equals(responds[0])) {
 //					groupInfo = new GroupInfo();
@@ -503,7 +506,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 //			}
 		} catch (Exception e) {
 			sendToHandler(ACTION_CREATE_ERROR);
-			Log.e(TAG, "---------------", e);
+//			Log.e(TAG, "---------------", e);
 		}
 
 	}
@@ -515,10 +518,10 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 			id = selectedFriendInfoList.get(i).getFriendid();
 			templist.add(id);
 		}
-		
+
 		/*
 			mService.doGroupOpt(groupId, templist, ChatConstants.iq.DATA_VALUE_ADD, new ResponseCallback() {
-				
+
 				@Override
 				public void onReceive(DataPacket packet) {
 					IQ iq = (IQ)packet;
@@ -527,21 +530,21 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 					if(errorMsg != null)
 					{
 						sendToHandler(ACTION_ADD_GROUPMEMBER_ERROR);
-						
+
 					}else{
 						//TODO 在db中增加群成员
 						Log.i(TAG,"add groupmember ok");
-						
+
 						sendToHandler(ACTION_ADD_GROUPMEMBER_SUCCESS);
-						
+
 					}
-					
+
 				}
 			});
 			*/
-	
+
 	}
-	
+
 	private void sendToHandler(String msg) {
 
 		Message Msg = new Message();
@@ -557,7 +560,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 			waitDialog.dismiss();
 			Bundle b = msg.getData();
 			String mmsg = b.getString("flag");
-			Log.i(TAG, "******* handler receive mmsg is " + mmsg);
+//			Log.i(TAG, "******* handler receive mmsg is " + mmsg);
 			if (mmsg.equals(ACTION_SINGLE_CHAT)) {
 				FriendInfo friendinfo = new FriendInfo();
 
@@ -574,7 +577,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 				finish();
 			} else if (mmsg.equals(ACTION_GROUP_CHAT)) {
 
-				Log.i(TAG, "jump to group chat ");
+//				Log.i(TAG, "jump to group chat ");
 				Intent intent = new Intent();
 				intent.setClass(SelectGroupChatMemberActivity.this,
 						ChatActivity.class);
@@ -613,7 +616,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 						return null;
 					}
 				});
-				
+
 			}else if(mmsg.equals(ACTION_ADD_GROUPMEMBER_ERROR)){
 				ToastUtil.ShowLong(SelectGroupChatMemberActivity.this, "系统繁忙，请重试");
 			}
@@ -621,7 +624,7 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 	};
 
 	public List<String> countMember(HashMap<String, Boolean> selectedValues,
-			boolean isAdd) {
+									boolean isAdd) {
 		List<String> userIdList = new ArrayList<String>();
 		Set<String> setKeys = selectedValues.keySet();
 		Iterator<String> ite = setKeys.iterator();
@@ -640,13 +643,12 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 		setGroupNameDialog.setContentView(R.layout.dialog_renamegroup);
 		et_groupname = (EditText) setGroupNameDialog
 				.findViewById(R.id.dialog_goup_rename_et);
-		rl_setgroupname_confirm = (RelativeLayout) setGroupNameDialog
-				.findViewById(R.id.dialog_group_confirm_rl);
-		rl_setgroupname_cancel = (RelativeLayout) setGroupNameDialog
-				.findViewById(R.id.dialog_group_cancel_rl);
-		rl_setgroupname_confirm.setOnClickListener(onClickListener);
-		rl_setgroupname_cancel.setOnClickListener(onClickListener);
-
+//		rl_setgroupname_confirm = (RelativeLayout) setGroupNameDialog
+//				.findViewById(R.id.dialog_group_confirm_rl);
+//		rl_setgroupname_cancel = (RelativeLayout) setGroupNameDialog
+//				.findViewById(R.id.dialog_group_cancel_rl);
+		dialog_group_confirm_tv.setOnClickListener(onClickListener);
+		dialog_group_cancel_tv.setOnClickListener(onClickListener);
 		setGroupNameDialog.show();
 	}
 	/*提示用户群已解散*/
@@ -659,22 +661,22 @@ public class SelectGroupChatMemberActivity extends ActivitySupport {
 		TextView notice = (TextView) noticeDialog.findViewById(R.id.nc_notice);
 		notice.setText(msg);
 		dialog_confirm_rl = (RelativeLayout) noticeDialog.findViewById(R.id.dialog_nc_confirm_rl);
-		dialog_confirm_rl.setOnClickListener(dialogOnClickListener);		
-		
+		dialog_confirm_rl.setOnClickListener(dialogOnClickListener);
+
 		noticeDialog.show();
 	}
-	
+
 	private OnClickListener dialogOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
 			switch (v.getId()) {
-			case R.id.dialog_nc_confirm_rl:
-				noticeDialog.dismiss();
-				jumpToMain(SelectGroupChatMemberActivity.this);
-				break;
-			default:
-				break;
+				case R.id.dialog_nc_confirm_rl:
+					noticeDialog.dismiss();
+					jumpToMain(SelectGroupChatMemberActivity.this);
+					break;
+				default:
+					break;
 			}
 
 		}

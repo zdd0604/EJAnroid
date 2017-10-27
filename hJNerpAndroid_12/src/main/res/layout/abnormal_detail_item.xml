@@ -3,82 +3,60 @@
     android:id="@+id/abnormal_detail_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:background="@color/white"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="@dimen/size_0"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/size_10">
+
+        <TextView
+            android:id="@+id/date_abnormal_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_5"
+            android:text="日期：2016-12-09"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/type_abnormal_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_5"
+            android:text="日期：2016-12-09"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/startoff_abnormal_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_5"
+            android:text="日期：2016-12-09"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/time_abnormal_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/size_5"
+            android:layout_marginTop="@dimen/size_5"
+            android:text="日期：2016-12-09"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </LinearLayout>
 
     <CheckBox
         android:id="@+id/abnormal_detail_checkbox"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:button="@drawable/checkbox_style"
-        android:paddingRight="10dp" />
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="5dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/date_abnormal_item"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="日期：2016-12-09"
-                android:textColor="#444444"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="30dp"
-                android:background="#99efeff4" />
-
-            <TextView
-                android:id="@+id/type_abnormal_item"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:text="类型：正常班"
-                android:textColor="#444444"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/startoff_abnormal_item"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="上/下班：上班"
-                android:textColor="#444444"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="30dp"
-                android:background="#99efeff4" />
-
-            <TextView
-                android:id="@+id/time_abnormal_item"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:text="时间：09：10"
-                android:textColor="#444444"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/size_10"
+        android:background="@drawable/hjradiobutton2"
+        android:button="@null" />
 </LinearLayout>

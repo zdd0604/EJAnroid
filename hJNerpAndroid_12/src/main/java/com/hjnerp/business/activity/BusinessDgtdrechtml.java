@@ -1,7 +1,5 @@
 package com.hjnerp.business.activity;
 
-import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,9 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -23,45 +18,54 @@ import com.hjnerp.business.BusinessJsonCallBack.BFlagCallBack;
 import com.hjnerp.business.BusinessQueryDao.BusinessQueryDao;
 import com.hjnerp.business.BusinessStringBuffer.BusinessEJBuffer;
 import com.hjnerp.business.businessutils.BusinessTimeUtils;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.model.EjWType1345;
 import com.hjnerp.model.EjWadd1345;
 import com.hjnerp.model.businessFlag;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.ClearEditText;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
 /**
  * 工作日志
  */
-public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClickListener {
+public class BusinessDgtdrechtml extends ActionBarWidgetActivity implements View.OnClickListener {
     //界面ID
-    private ClearEditText log_date_task;
-    private TextView log_id_wproj;
-    private ClearEditText log_dec_wtime;
-    private ClearEditText log_var_wtitle;
-    private ClearEditText log_id_corr;
-    private ClearEditText log_var_remark;
-    private EditText log_flag_wadd;
-    private EditText log_id_wtype;
-    private Button dgtdrechtml_submit;
-    protected WaitDialogRectangle waitDialog;
+    @BindView(R.id.log_date_task)
+    TextView log_date_task;
+    @BindView(R.id.log_id_wproj)
+    TextView log_id_wproj;
+    @BindView(R.id.log_dec_wtime)
+    ClearEditText log_dec_wtime;
+    @BindView(R.id.log_var_wtitle)
+    ClearEditText log_var_wtitle;
+    @BindView(R.id.log_id_corr)
+    TextView log_id_corr;
+    @BindView(R.id.log_var_remark)
+    ClearEditText log_var_remark;
+    @BindView(R.id.log_flag_wadd)
+    TextView log_flag_wadd;
+    @BindView(R.id.log_id_wtype)
+    TextView log_id_wtype;
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
 
     //获取数据
-    private Calendar calendar = Calendar.getInstance();
-    private Context mContext;
     private List<EjWadd1345> ejWaddList;
     private List<EjWType1345> ejtpe1345List;
 
@@ -78,34 +82,37 @@ public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClick
     private List<String> idWTypeList = new ArrayList<>();
     private List<String> nameWTypeList = new ArrayList<>();
 
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 0:
+                    log_id_wproj.setText(Constant.item_peoject);
+                    log_id_corr.setText(Constant.item_client);
+                    break;
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActionBar = getSupportActionBar();
         setContentView(R.layout.activity_business_dgtdrechtml);
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setTitle("工作日志");
-        mContext = this;
+        ButterKnife.bind(this);
         initView();
     }
 
     private void initView() {
-        waitDialog = new WaitDialogRectangle(mContext);
-        log_date_task = (ClearEditText) findViewById(R.id.log_date_task);
-        log_date_task.setOnClickListener(this);
-        log_id_wproj = (TextView) findViewById(R.id.log_id_wproj);
-        log_id_wproj.setOnClickListener(this);
-        log_id_corr = (ClearEditText) findViewById(R.id.log_id_corr);
-        log_dec_wtime = (ClearEditText) findViewById(R.id.log_dec_wtime);
-        log_var_wtitle = (ClearEditText) findViewById(R.id.log_var_wtitle);
-        log_id_corr = (ClearEditText) findViewById(R.id.log_id_corr);
-        log_flag_wadd = (EditText) findViewById(R.id.log_flag_wadd);
-        log_id_wtype = (EditText) findViewById(R.id.log_id_wtype);
-        log_var_remark = (ClearEditText) findViewById(R.id.log_var_remark);
-        dgtdrechtml_submit = (Button) findViewById(R.id.dgtdrechtml_submit);
-        dgtdrechtml_submit.setOnClickListener(this);
+        actionCenterTv.setText(getString(R.string.work_Title_TvActivity));
+        actionRightTv.setText(getString(R.string.action_right_content_commit));
+        actionRightTv.setOnClickListener(this);
+        actionLeftTv.setOnClickListener(this);
         log_flag_wadd.setOnClickListener(this);
         log_id_wtype.setOnClickListener(this);
+        log_date_task.setOnClickListener(this);
+        log_id_wproj.setOnClickListener(this);
+
         querySite();
         queryWType();
     }
@@ -142,7 +149,10 @@ public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClick
             case R.id.log_id_wproj:
                 queryWorkType();
                 break;
-            case R.id.dgtdrechtml_submit:
+            case R.id.action_left_tv:
+                finish();
+                break;
+            case R.id.action_right_tv:
                 submitData();
                 break;
             case R.id.log_flag_wadd:
@@ -163,36 +173,38 @@ public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClick
         var_remark = log_var_remark.getText().toString().trim();
 
         if (!StringUtil.isStrTrue(date_task)) {
-            ToastUtil.ShowLong(mContext, "任务时间不能为空");
-            waitDialog.dismiss();
-            return;
-        }
-        if (!StringUtil.isStrTrue(id_wtype)) {
-            ToastUtil.ShowLong(mContext, "工作类型不能为空");
-            waitDialog.dismiss();
-            return;
-        }
-        if (!StringUtil.isStrTrue(Log_id_wproj)) {
-            ToastUtil.ShowLong(mContext, "工作项目不能为空");
-            waitDialog.dismiss();
-            return;
-        }
-        if (!StringUtil.isStrTrue(dec_wtime)) {
-            ToastUtil.ShowLong(mContext, "工时不能为空");
-            waitDialog.dismiss();
-            return;
-        }
-        if (!StringUtil.isStrTrue(var_wtitle)) {
-            ToastUtil.ShowLong(mContext, "主题不能为空");
+            showFailToast(getString(R.string.toast_Hint_DateTask));
             waitDialog.dismiss();
             return;
         }
 
         if (!StringUtil.isStrTrue(flag_wadd)) {
-            ToastUtil.ShowLong(mContext, "工作地点不能为空");
+            showFailToast(getString(R.string.toast_Hint_flagWadd));
             waitDialog.dismiss();
             return;
         }
+
+        if (!StringUtil.isStrTrue(id_wtype)) {
+            showFailToast(getString(R.string.toast_Hint_idWtype));
+            waitDialog.dismiss();
+            return;
+        }
+        if (!StringUtil.isStrTrue(Log_id_wproj)) {
+            showFailToast(getString(R.string.toast_Hint_LogWproj));
+            waitDialog.dismiss();
+            return;
+        }
+        if (!StringUtil.isStrTrue(dec_wtime)) {
+            showFailToast(getString(R.string.toast_Hint_decWtime));
+            waitDialog.dismiss();
+            return;
+        }
+        if (!StringUtil.isStrTrue(var_wtitle)) {
+            showFailToast(getString(R.string.toast_Hint_varWtitle));
+            waitDialog.dismiss();
+            return;
+        }
+
 
 
         String data = BusinessEJBuffer.getDgtdrecBuffer(Constant.ID_MENU,
@@ -220,14 +232,14 @@ public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClick
                     @Override
                     public void onSuccess(businessFlag businessFlag, Call call, Response response) {
                         String content = businessFlag.getMessage();
-                        ToastUtil.ShowLong(mContext, "上传成功");
+                        showFailToast(getString(R.string.toast_Message_CommitSucceed));
                         removeData();
                     }
 
                     @Override
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
-                        ToastUtil.ShowLong(mContext, "上传失败");
+                        showFailToast(getString(R.string.toast_Message_CommitFail));
                         removeData();
                     }
                 });
@@ -238,61 +250,16 @@ public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClick
             Constant.id_wtype = id_wtype;
             intentActivity(BusinessSearch.class);
         } else {
-            ToastUtil.ShowLong(mContext, "请先选择工作类型");
+            showFailToast("请先选择工作类型");
             removeData();
         }
     }
 
-    private void intentActivity(Class c) {
+    public void intentActivity(Class c) {
         Intent intent = new Intent(this, c);
         Constant.travel = false;
         startActivityForResult(intent, 11);
     }
-
-    /**
-     * 显示日历
-     *
-     * @param travel_time_end
-     */
-    private void showCalendar(final ClearEditText travel_time_end) {
-        new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        int month = monthOfYear + 1;
-                        if (month < 10 && dayOfMonth < 10) {
-                            travel_time_end.setText(year + "-0" + month
-                                    + "-0" + dayOfMonth);
-                        } else if (month < 10 && dayOfMonth >= 10) {
-                            travel_time_end.setText(year + "-0" + month
-                                    + "-" + dayOfMonth);
-                        } else if (month >= 10 && dayOfMonth < 10) {
-                            travel_time_end.setText(year + "-" + month
-                                    + "-0" + dayOfMonth);
-                        } else {
-                            travel_time_end.setText(year + "-" + month
-                                    + "-" + dayOfMonth);
-                        }
-                    }
-                }
-                , calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar
-                .get(Calendar.DAY_OF_MONTH)).show();
-    }
-
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 0:
-                    log_id_wproj.setText(Constant.item_peoject);
-                    log_id_corr.setText(Constant.item_client);
-                    break;
-            }
-        }
-    };
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -307,6 +274,29 @@ public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClick
         }
     }
 
+    private void showPopupWindow(View anchorView, List<String> content, String btnType) {
+        View contentView = getPopupWindowContentView(content, btnType);
+        mPopupWindow = new PopupWindow(contentView,
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        // 如果不设置PopupWindow的背景，有些版本就会出现一个问题：无论是点击外部区域还是Back键都无法dismiss弹框
+        mPopupWindow.setBackgroundDrawable(new ColorDrawable());
+        // 设置好参数之后再show
+//         popupWindow.showAsDropDown(mButton2);  // 默认在mButton2的左下角显示
+        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int xOffset = anchorView.getWidth() / 2 - contentView.getMeasuredWidth() / 2;
+        mPopupWindow.showAsDropDown(anchorView, xOffset, 0);    // 在mButton2的中间显示
+//        View contentView = getPopupWindowContentView(content, btnType);
+//        mPopupWindow = new PopupWindow(contentView,
+//                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+//        // 如果不设置PopupWindow的背景，有些版本就会出现一个问题：无论是点击外部区域还是Back键都无法dismiss弹框
+//        mPopupWindow.setBackgroundDrawable(new ColorDrawable());
+//        // 设置好参数之后再show
+//        int windowPos[] = PopupWindowUtil.calculatePopWindowPos(anchorView, contentView);
+////        int xOff = 20; // 可以自己调整偏移
+//        int xOff = anchorView.getWidth() / 2 - contentView.getMeasuredWidth() / 2;
+//        windowPos[0] -= xOff;
+//        mPopupWindow.showAtLocation(anchorView, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+    }
 
     private View getPopupWindowContentView(final List<String> content, final String btnType) {
         // 一个自定义的布局，作为显示的内容
@@ -331,31 +321,6 @@ public class BusinessDgtdrechtml extends ActivitySupport implements View.OnClick
             }
         });
         return contentView;
-    }
-
-
-    private void showPopupWindow(View anchorView, List<String> content, String btnType) {
-//        View contentView = getPopupWindowContentView(content, btnType);
-//        mPopupWindow = new PopupWindow(contentView,
-//                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-//        // 如果不设置PopupWindow的背景，有些版本就会出现一个问题：无论是点击外部区域还是Back键都无法dismiss弹框
-//        mPopupWindow.setBackgroundDrawable(new ColorDrawable());
-//        // 设置好参数之后再show
-//        int windowPos[] = PopupWindowUtil.calculatePopWindowPos(anchorView, contentView);
-////        int xOff = 20; // 可以自己调整偏移
-//        int xOff = anchorView.getWidth() / 2 - contentView.getMeasuredWidth() / 2;
-//        windowPos[0] -= xOff;
-//        mPopupWindow.showAtLocation(anchorView, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
-        View contentView = getPopupWindowContentView(content, btnType);
-        mPopupWindow = new PopupWindow(contentView,
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        // 如果不设置PopupWindow的背景，有些版本就会出现一个问题：无论是点击外部区域还是Back键都无法dismiss弹框
-        mPopupWindow.setBackgroundDrawable(new ColorDrawable());
-        // 设置好参数之后再show
-        // popupWindow.showAsDropDown(mButton2);  // 默认在mButton2的左下角显示
-        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int xOffset = anchorView.getWidth() / 2 - contentView.getMeasuredWidth() / 2;
-        mPopupWindow.showAsDropDown(anchorView, xOffset, 0);    // 在mButton2的中间显示
     }
 
     private void removeData() {

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.hjnerp.activity.work.adapter.WorkFlowRecorderInfoAdapter;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.ActivitySupport;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
@@ -38,7 +39,6 @@ import com.hjnerp.net.HttpClientManager;
 import com.hjnerp.net.HttpClientManager.HttpResponseHandler;
 import com.hjnerp.util.AttachmentFileReader;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 
@@ -55,7 +55,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ApprovalActivity extends ActivitySupport {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class ApprovalActivity extends   ActionBarWidgetActivity implements OnClickListener {
     private String TAG = "ApprovalActivity";
 
     private ImageView photo;
@@ -93,20 +96,33 @@ public class ApprovalActivity extends ActivitySupport {
     //	private TimerThread timerThread = null;
     private Thread mThread;
 
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.approval);
-        mActionBar = this.getSupportActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true);
+        ButterKnife.bind(this);
+        initView();
+
+    }
+    private void initView(){
+        actionRightTv.setVisibility(View.GONE);
+        actionLeftTv.setOnClickListener(this);
+        actionCenterTv.setText(getString(R.string.oval_Title_TvActivity));
         /** 获得WorkflowInfo对象 */
         Intent intent = getIntent();
         Bundle mBundle = intent.getExtras();
         wfInfo = (WorkflowListInfo) mBundle.getSerializable(Constant.MY_NEWS);
-        mActionBar.setTitle("审批单详情");
-        //	Log.i(TAG,">>>>>>>>>>>>>>>>> workinfo billNo:" + wfInfo.getBillNo() + " billType:" + wfInfo.getBillType() + " optType:" + wfInfo.getOptType() );
         myInfo = QiXinBaseDao.queryCurrentUserInfo();
-
+        LogShow(wfInfo.toString());
         waitDialog = new WaitDialogRectangle(this);
         waitDialogText = new WaitDialogRectangle(this);
         findView();
@@ -126,7 +142,6 @@ public class ApprovalActivity extends ActivitySupport {
         listItemAdapter = new WorkFlowRecorderInfoAdapter(this,
                 workflowApproveList, wfInfo, tables);
         listview.setAdapter(listItemAdapter);
-
     }
 
     private OnClickListener onClickListener = new OnClickListener() {
@@ -143,7 +158,7 @@ public class ApprovalActivity extends ActivitySupport {
                 case R.id.btn_disagree:
                     remark = et_remark.getText().toString();
                     if (StringUtil.isNullOrEmpty(remark)) {
-                        ToastUtil.ShowShort(ApprovalActivity.this, "驳回意见不能为空");
+                        showFailToast(getString(R.string.oval_Title_ToastMsg1));
                     } else {
                         action = Constant.WF_OP_REJEST_ONE;
                         //	Log.e(TAG, "不同意  " + remark);
@@ -384,7 +399,7 @@ public class ApprovalActivity extends ActivitySupport {
                             waitDialog.dismiss();
                         }
 //						isForcedExit();
-                        ToastUtil.ShowShort(ApprovalActivity.this, msg);
+                      showFailToast(msg);
                         finish();
                     }
                 });
@@ -489,7 +504,7 @@ public class ApprovalActivity extends ActivitySupport {
                                         waitDialog.dismiss();
                                     }
                                 });
-                        ToastUtil.ShowShort(ApprovalActivity.this, "网络错误，请重试！");
+                        showFailToast(getString(R.string.oval_Title_ToastMsg2));
                         return;
                     }
                     if ("result".equalsIgnoreCase(workflowResp.type)) {
@@ -624,4 +639,12 @@ public class ApprovalActivity extends ActivitySupport {
         mThread.start();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.action_left_tv:
+                finish();
+                break;
+        }
+    }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.hjnerp.common.Constant;
 import com.hjnerp.dao.BusinessBaseDao;
@@ -14,10 +15,12 @@ import com.hjnerp.model.Ej1345;
 import com.hjnerp.model.EjMyWProj1345;
 import com.hjnerp.model.EjWType1345;
 import com.hjnerp.model.EjWadd1345;
+import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by zdd on 2017/1/16.
@@ -25,6 +28,7 @@ import java.util.List;
  */
 
 public class BusinessQueryDao {
+    public static final Pattern p = Pattern.compile("\\s*|\t|\r|\n");
 
     /**
      * @param context
@@ -57,8 +61,9 @@ public class BusinessQueryDao {
         if (Constant.ctlm1345List.size() > 0) {
             for (int i = 0; i < Constant.ctlm1345List.size(); i++) {
                 String json = Constant.ctlm1345List.get(i).getVar_value();
-                EjWadd1345 ejWadd1345 = new Gson().fromJson(json, new TypeToken<EjWadd1345>() {
-                }.getType());
+                EjWadd1345 ejWadd1345 = new Gson().fromJson(StringUtil.clearSpecial(json),
+                        new TypeToken<EjWadd1345>() {
+                        }.getType());
                 list.add(ejWadd1345);
             }
             return list;
@@ -77,8 +82,9 @@ public class BusinessQueryDao {
         if (Constant.ctlm1345List.size() > 0) {
             for (int i = 0; i < Constant.ctlm1345List.size(); i++) {
                 String json = Constant.ctlm1345List.get(i).getVar_value();
-                EjWType1345 ejWType1345 = new Gson().fromJson(json, new TypeToken<EjWType1345>() {
-                }.getType());
+                EjWType1345 ejWType1345 = new Gson().fromJson(StringUtil.clearSpecial(json),
+                        new TypeToken<EjWType1345>() {
+                        }.getType());
                 list.add(ejWType1345);
             }
             return list;
@@ -90,20 +96,29 @@ public class BusinessQueryDao {
     /**
      * @return 获取工作项目
      */
-    public static List<EjMyWProj1345> getMyProj(String content, String id_column, String id_recorder) {
+    public static List<EjMyWProj1345> getMyProj(String content,
+                                                String id_column, String id_recorder) {
         List<EjMyWProj1345> list = new ArrayList<>();
-        Constant.ctlm1345List = BusinessBaseDao.getCTLM1345NameColumn("mywproj", id_column, content, id_recorder);
-        if (Constant.ctlm1345List.size() > 0) {
-            for (int i = 0; i < Constant.ctlm1345List.size(); i++) {
-                String json = Constant.ctlm1345List.get(i).getVar_value();
-                EjMyWProj1345 ejMyWProj1345 = new Gson().fromJson(json, new TypeToken<EjMyWProj1345>() {
-                }.getType());
-                list.add(ejMyWProj1345);
+        try {
+            Constant.ctlm1345List = BusinessBaseDao
+                    .getCTLM1345NameColumn("mywproj", id_column, content, id_recorder);
+            if (Constant.ctlm1345List.size() > 0) {
+                for (int i = 0; i < Constant.ctlm1345List.size(); i++) {
+                    String json = Constant.ctlm1345List.get(i).getVar_value();
+                    Log.e("show", json);
+                    EjMyWProj1345 ejMyWProj1345 = new Gson().fromJson(StringUtil.clearSpecial(json),
+                            new TypeToken<EjMyWProj1345>() {
+                            }.getType());
+                    list.add(ejMyWProj1345);
+                }
+                return list;
+            } else {
+                return list;
             }
-            return list;
-        } else {
-            return list;
+        } catch (JsonSyntaxException js) {
+
         }
+        return list;
     }
 
     /**
@@ -116,7 +131,7 @@ public class BusinessQueryDao {
                 String json = Constant.ctlm1345List.get(i).getVar_value();
                 Constant.mDdisplocatBean = new Gson().fromJson(json, new TypeToken<DdisplocatBean>() {
                 }.getType());
-                Log.v("show",Constant.mDdisplocatBean.toString());
+                Log.v("show", Constant.mDdisplocatBean.toString());
             }
         }
     }
@@ -133,7 +148,7 @@ public class BusinessQueryDao {
                 }.getType());
             }
             Constant.ctlm7161Is = true;
-        }else{
+        } else {
             Constant.ctlm7161Is = false;
         }
     }

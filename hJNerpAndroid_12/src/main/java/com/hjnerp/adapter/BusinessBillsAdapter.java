@@ -55,7 +55,6 @@ public class BusinessBillsAdapter extends BaseAdapter {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.businessbills_item, parent, false);
-            viewHolder.line_id = (TextView) convertView.findViewById(R.id.line_id);
             viewHolder.bs_name_user = (TextView) convertView.findViewById(R.id.bs_name_user);
             viewHolder.bs_date_opr = (TextView) convertView.findViewById(R.id.bs_date_opr);
             viewHolder.rejust_type = (TextView) convertView.findViewById(R.id.rejust_type);
@@ -73,7 +72,6 @@ public class BusinessBillsAdapter extends BaseAdapter {
 
         String time = info.getDate_opr().substring(0, 10);
         viewHolder.bs_date_opr.setText(time);
-        viewHolder.line_id.setText("" + (position + 1));
         if (StringUtil.isStrTrue(info.getVar_rejust())) {
             list.add(position);
 
@@ -96,7 +94,6 @@ public class BusinessBillsAdapter extends BaseAdapter {
     }
 
     class ViewHolder {
-        TextView line_id;
         TextView bs_name_user;
         TextView bs_date_opr;
         TextView rejust_type;

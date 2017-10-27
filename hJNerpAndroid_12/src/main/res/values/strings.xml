@@ -98,8 +98,175 @@
     <string name="sgin_in">签到</string>
     <string name="sgin_out">签退</string>
 
-
     <string name="menu_save_performance">保存数据</string>
     <string name="menu_feedback">意见反馈</string>
+
+    <!-- 考勤 -->
+    <string name="buess_Title_CenterTitle">考勤打卡</string>
+
+    <!-- actionbar -->
+    <string name="action_left_content_back">返回</string>
+    <string name="action_right_content_save">保存</string>
+    <string name="action_right_content_send">送审</string>
+    <string name="action_right_content_add">新增</string>
+    <string name="action_right_content_commit">提交</string>
+    <string name="action_right_content_sure">确定</string>
+    <string name="action_right_content_SelectAll">全选</string>
+    <string name="action_right_content_title">大标题</string>
+    <string name="action_right_right_title">右标题</string>
+    <string name="action_right_right1_title">右标题1</string>
+    <string name="action_right_right_submit">提交</string>
+
+    <!-- dialog提示语 -->
+    <string name="dialog_Message_saveData">正在保存数据</string>
+    <string name="dialog_Message_submitData">正在提交数据</string>
+    <string name="dialog_Message_upLoadData">正在加载数据</string>
+    <string name="dialog_Message_selectData">正在查询数据</string>
+    <string name="dialog_Message_saveSucc">保存成功</string>
+    <string name="dialog_Message_upSucc">上传成功</string>
+
+    <!-- 订单查询 -->
+    <string name="orderFinding_Title_TlActivity">订单查询</string>
+    <string name="orderFinding_Title_RightTvSearch">查询</string>
+    <string name="orderFinding_Title_RightTvReset">重置</string>
+
+    <!-- 设置界面 -->
+    <string name="setting_Title_TlActivity">设置</string>
+
+    <!-- 修改密码界面 -->
+    <string name="setPWord_Title_TlActivity">修改密码</string>
+    <string name="setPWord_Title_NowAccount">当前用户：</string>
+    <string name="setPWord_Title_OldPword">请输入旧密码</string>
+    <string name="setPWord_Title_Pword">请输入新密码</string>
+    <string name="setPWord_Title_AgainPword">请确认新密码</string>
+    <string name="setPWord_Title_PwordSee">密码可见：</string>
+    <string name="setPWord_Title_PWordHintContent">注：可使用的特殊符号为  ^$._-@%!#$*\</string>
+
+    <!-- 关于 -->
+    <string name="about_Title_TvActivity">关于和佳</string>
+    <string name="about_Title_Hjsever">公司简介</string>
+    <string name="about_Title_Hjpolicy">发展历程</string>
+    <string name="about_Title_Hjcopyright">获得荣誉</string>
+    <string name="about_Title_Hjinfor">联系我们</string>
+    <!-- 登陆注册 -->
+    <string name="register_Title_TvActivity">企业注册</string>
+
+    <!-- 登陆注册 -->
+    <string name="MyInfor_Title_DepartmentName">部门：</string>
+    <!-- 个人信息中心 -->
+    <string name="MyInfor_Title_PhotoPortrait">个人头像</string>
+    <string name="toast_Title_PortraitFail">头像设置失败</string>
+    <string name="toast_Title_ChangeSucc">修改成功</string>
+    <string name="toast_Title_ChangeFail">修改失败</string>
+    <string name="toast_Title_ChangePhone">修改电话号码</string>
+    <string name="toast_Title_ChangeRemark">修改备注</string>
+    <string name="toast_Title_ChangeEmail">修改邮箱</string>
+    <string name="toast_Title_CheckMsg">验证信息</string>
+    <string name="toast_Title_PhoneFail">请输入正确的手机号!</string>
+    <string name="toast_Title_EmailFail">请输入正确的邮箱!</string>
+
+    <!-- 审批 -->
+    <string name="oval_Title_TvActivity">审批单详情</string>
+    <string name="oval_Title_ToastMsg1">驳回意见不能为空</string>
+    <string name="oval_Title_ToastMsg2">网络错误，请重试！</string>
+
+    <!-- 出差/外出单 -->
+    <string name="Travel_Title_TvActivity">出差/外出单</string>
+    <string name="Travel_Title_TravelName">出差人员</string>
+    <string name="Travel_Title_TravelPart">部门</string>
+    <string name="Travel_Title_TravelPartner">随行人员</string>
+    <string name="Travel_Title_TravelTimeBegin">开始时间</string>
+    <string name="Travel_Hint_TravelTimeBegin">请选择开始出差日期</string>
+    <string name="Travel_Title_TravelTimeEnd">结束时间</string>
+    <string name="Travel_Hint_TravelTimeEnd">请选择结束出差日期</string>
+    <string name="Travel_Title_TravelReason">出差原因</string>
+    <string name="Travel_Title_TravelWork">项目</string>
+    <string name="Travel_Hint_TravelWork">请选择出差项目</string>
+    <string name="Travel_Title_TravelClient">客户</string>
+    <string name="Travel_Title_TravelPay">预付金额</string>
+    <!--<string name="Travel_Title_Travel">起点</string>-->
+    <!--<string name="Travel_Title_Travel">终点</string>-->
+    <!--<string name="Travel_Hint_Travel">请选择启程时间</string>-->
+    <!--<string name="Travel_Hint_Travel">请选择到达时间</string>-->
+    <!--<string name="Travel_Title_Travel">费用项目</string>-->
+    <!--<string name="Travel_Title_Travel">费用金额</string>-->
+    <!--<string name="Travel_Title_Travel">备注</string>-->
+
+    <!-- 搜索 -->
+    <string name="search_Title_TvActivity">搜索</string>
+
+    <!-- 工作日志 -->
+    <string name="work_Title_TvActivity">工作日志</string>
+    <string name="work_Tile_TaskTime">任务时间</string>
+    <string name="work_Hint_TaskTime">请选择任务时间</string>
+    <string name="work_Tile_WkAddress">工作地点</string>
+    <string name="work_Hint_WkAddress">请选择工作地点</string>
+    <string name="work_Tile_WkType">工作类型</string>
+    <string name="work_Hint_WkType">请选择工作类型</string>
+    <string name="work_Tile_PjName">工作项目</string>
+    <string name="work_Hint_PjName">请选择工作项目</string>
+    <string name="work_Tile_Address">地址</string>
+    <string name="work_Tile_Contact">客户</string>
+    <string name="work_Tile_contactduty">职务</string>
+    <string name="work_Tile_WkTime">工时</string>
+    <string name="work_Tile_MyTheme">主题</string>
+    <string name="work_Tile_MyContent">内容</string>
+    <string name="work_Hint_MyContent">请填写内容</string>
+    <string name="work_Hint_MyContent_main">请填写主题(必填)</string>
+
+    <string name="toast_Hint_DateTask">请选择任务时间</string>
+    <string name="toast_Hint_idWtype">请选择工作类型</string>
+    <string name="toast_Hint_LogWproj">请选择工作项目</string>
+    <string name="toast_Hint_decWtime">请填写工时</string>
+    <string name="toast_Hint_varWtitle">请填写主题</string>
+    <string name="toast_Hint_flagWadd">请选择工作地点</string>
+
+
+    <!-- toast提示语 -->
+    <string name="toast_Message_CommitSucceed">提交成功</string>
+    <string name="toast_Message_CommitFail">提交失败</string>
+
+    <!-- 休假申请 -->
+    <string name="travel_Title_TvActivity">休假申请单</string>
+    <string name="travel_Title_RejustName">驳回意见</string>
+    <string name="travel_Title_LeaveName">休假人员</string>
+    <string name="travel_Title_LeavePart">部门</string>
+    <string name="travel_Title_LeavrTimeBegin">开始时间</string>
+    <string name="travel_Hint_LeavrTimeBegin">请选择开始休假的日期</string>
+    <string name="travel_Title_LeavrTimeEND">结束时间</string>
+    <string name="travel_Hint_LeavrTimeEND">请选择结束休假的日期</string>
+    <string name="travel_Title_LeavrType">休假类型</string>
+    <string name="travel_Hint_LeavrType">请选择休假类型</string>
+    <string name="travel_Title_LeavrDays">可休天数</string>
+    <string name="travel_Hint_LeavrTDays">剩余可休假天数</string>
+    <string name="travel_Title_LeavrDay">休假天数</string>
+    <string name="travel_Hint_LeavrDay">请输入休假天数</string>
+    <string name="travel_Title_LeavrReason">休假原因</string>
+    <string name="travel_Hint_LeavrReason">请填写休假原因</string>
+
+    <!-- 加班申请 -->
+    <string name="over_Title_TvActivity">加班申请单</string>
+    <string name="travel_Title_RejustNameOver">驳回意见</string>
+    <string name="over_Title_OverName">员工</string>
+    <string name="over_Title_OverPart">部门</string>
+    <string name="over_Title_OverTimeGegin">日期</string>
+    <string name="over_Hint_OverTimeGegin">请选择开始时间</string>
+    <string name="over_Title_OverDays">加班天数</string>
+    <string name="over_Hint_OverDays">请输入加班天数</string>
+    <string name="over_Title_OverReson">加班原因及内容</string>
+    <string name="over_Hint_OverReson">请输入加班内容及原因</string>
+
+    <!-- 考勤异常申述 -->
+    <string name="detail_Title_TvActivity">考勤异常申述</string>
+    <string name="detail_Title_NormalDetail">考勤异常记录</string>
+    <string name="detail_Title_AbnormalDate">日期</string>
+    <string name="detail_Hint_AbnormalDate">请选择考勤日期</string>
+    <string name="detail_Title_AbnormalType">类型</string>
+    <string name="detail_Title_AbnormalTime">打卡时间</string>
+    <string name="detail_Title_AbnormalUnderstand">异常说明</string>
+    <string name="detail_Title_AbnormalRemark">请填写考勤说明</string>
+    <string name="detail_Title_AbnormalName">员工</string>
+    <string name="detail_Title_AbnormalPart">部门</string>
+    <string name="detail_Title_AbnormalAddDetail">添加明细</string>
 
 </resources>

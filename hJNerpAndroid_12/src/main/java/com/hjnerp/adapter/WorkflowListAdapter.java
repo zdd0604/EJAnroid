@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,9 +32,10 @@ import com.hjnerp.service.WebSocketService;
 import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.Log;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
+import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
+import com.itheima.roundedimageview.RoundedImageView;
 
 import org.apache.cordova.LOG;
 import org.apache.http.HttpResponse;
@@ -65,22 +65,17 @@ public class WorkflowListAdapter extends BaseAdapter {
                     MainActivity.WORK_COUNT = MainActivity.WORK_COUNT - 1;
                     intent.setAction(WebSocketService.ACTION_ON_MSG);
                     context.sendBroadcast(intent);
-                    ToastUtil.ShowShort(context, (String) msg.obj);
+                    new MyToast(context, (String) msg.obj);
                     break;
                 case 1:
                     waitDialog.dismiss();
-                    ToastUtil.ShowShort(context, (String) msg.obj);
+                    new MyToast(context, (String) msg.obj);
                     break;
-
                 default:
                     waitDialog.dismiss();
                     break;
             }
-
-
         }
-
-        ;
     };
 
     public WorkflowListAdapter(Context context,
@@ -129,7 +124,7 @@ public class WorkflowListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             view = LayoutInflater.from(context).inflate(
                     R.layout.fragment_workflow_list, parent, false);
-            viewHolder.pic = (ImageView) view
+            viewHolder.pic = (RoundedImageView) view
                     .findViewById(R.id.workflow_photo_iv);
             viewHolder.type = (TextView) view
                     .findViewById(R.id.workflow_type_tv);
@@ -148,8 +143,9 @@ public class WorkflowListAdapter extends BaseAdapter {
                     .findViewById(R.id.ll_attach);
             viewHolder.iv_attach = (ImageView) view
                     .findViewById(R.id.iv_attach_adapter);
-            viewHolder.agree = (Button) view
+            viewHolder.agree = (TextView) view
                     .findViewById(R.id.work_button_agree);
+            viewHolder.workView = view.findViewById(R.id.workView);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -191,11 +187,13 @@ public class WorkflowListAdapter extends BaseAdapter {
         viewHolder.time.setText(time);
         String aName = user.getUserName().toString().trim();
         String aTitle = title1.toString().trim();
-        if (TextUtils.isEmpty(aName) || TextUtils.isEmpty(aTitle)) {
-            viewHolder.name.setText(user.getUserName() + title1);
-        } else {
-            viewHolder.name.setText(user.getUserName() + "的" + title1);
-        }
+        if (StringUtil.isStrTrue(aTitle))
+            viewHolder.name.setText(aTitle);
+//        if (TextUtils.isEmpty(aName) || TextUtils.isEmpty(aTitle)) {
+//            viewHolder.name.setText(user.getUserName() + title1);
+//        } else {
+//            viewHolder.name.setText(user.getUserName() + "的" + title1);
+//        }
 
         String content = info.getContent();
         Log.e(TAG, "原始：" + content);
@@ -217,7 +215,6 @@ public class WorkflowListAdapter extends BaseAdapter {
 //            viewHolder.content.setMaxLines(a.length);
 //
 //        }
-
 
         // 设置头像，此头像地址取自WorkflowInfo而不是联系人表
         if (!StringUtil.isNullOrEmpty(user.getAvatar().trim())) {
@@ -242,9 +239,11 @@ public class WorkflowListAdapter extends BaseAdapter {
         }
         if (info.getFlagDeal().equals("Y")) {
             viewHolder.agree.setVisibility(view.GONE);
+            viewHolder.workView.setVisibility(view.GONE);
             viewHolder.type.setBackgroundResource(R.drawable.work_type_text_bkg_green);
         } else {
             viewHolder.agree.setVisibility(view.VISIBLE);
+            viewHolder.workView.setVisibility(view.VISIBLE);
             viewHolder.type.setBackgroundResource(R.drawable.work_type_text_bkg_red);
         }
 
@@ -332,7 +331,7 @@ public class WorkflowListAdapter extends BaseAdapter {
     }
 
     public static class ViewHolder {
-        ImageView pic; // 单据申请人头像
+        RoundedImageView pic; // 单据申请人头像
         ImageView iv_attach;// 附件标志
         TextView type; // 单据类型
         TextView name; // 单据申请人名称
@@ -344,6 +343,7 @@ public class WorkflowListAdapter extends BaseAdapter {
         /**
          * @author haijian 同意按钮
          */
-        Button agree;// 同意
+        TextView agree;// 同意
+        View workView;
     }
 }

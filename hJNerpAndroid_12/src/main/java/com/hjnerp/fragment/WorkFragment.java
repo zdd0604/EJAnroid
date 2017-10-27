@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.hjnerp.activity.MainActivity;
 import com.hjnerp.activity.work.ApprovalActivity;
@@ -34,6 +32,7 @@ import com.hjnerp.activity.work.WorkListBillTypeWindow;
 import com.hjnerp.adapter.WorkflowListAdapter;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
+import com.hjnerp.common.FragmentSupport;
 import com.hjnerp.model.WorkflowBillTypeData;
 import com.hjnerp.model.WorkflowBillTypeInfo;
 import com.hjnerp.model.WorkflowBillTypeResp;
@@ -42,7 +41,6 @@ import com.hjnerp.model.WorkflowListResp;
 import com.hjnerp.net.HttpClientManager;
 import com.hjnerp.net.HttpClientManager.HttpResponseHandler;
 import com.hjnerp.util.SharePreferenceUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.util.myscom.StringUtils;
 import com.hjnerpandroid.R;
 import com.lidroid.xutils.util.LogUtils;
@@ -64,7 +62,7 @@ import java.util.List;
  * 数据接口类使用WorkflowInfo
  */
 @SuppressLint("HandlerLeak")
-public class WorkFragment extends Fragment {
+public class WorkFragment extends FragmentSupport {
     private WorkflowListAdapter listItemAdapter;
     public static PullToRefreshListView listview;
     //    private TextView tviewType;
@@ -89,17 +87,42 @@ public class WorkFragment extends Fragment {
     private View rightview;
     private View leftview;
     private int myGetWorkListFlag;
-    private Context context;
     private int index;
     public static WorkFragment workFragment = null;
     private int j = 0;
     private int num;
 
+    final Handler myHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            Bundle b = msg.getData();
+            int mmsg = b.getInt("flag");
+            switch (mmsg) {
+                case 1:
+                    refreshList();
+                    break;
+                case 2:
+                    listview.onRefreshComplete();
+                    break;
+                case 999:
+                    listYN.clear();
+                    refreshList();
+                    showFailToast("无结果");
+                    break;
+                case 4:
+                    listYN.remove(index);
+                    refreshList();
+                    break;
+                default:
+                    break;
+            }
+
+        }
+    };
+
     @SuppressWarnings("static-access")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = this.getActivity();
         contextView = inflater.inflate(R.layout.fragment_workflow, container,
                 false);
         workFragment = this;
@@ -117,8 +140,8 @@ public class WorkFragment extends Fragment {
         btnLeft.setOnClickListener(onClickListener);
 
         listview = (PullToRefreshListView) contextView.findViewById(R.id.pull_refresh_list);
-        listview.setMode(Mode.BOTH);//上下拉刷新
-//        listview.setMode(Mode.PULL_FROM_START);// 仅下拉刷新
+//        listview.setMode(Mode.BOTH);//上下拉刷新
+        listview.setMode(Mode.PULL_FROM_START);// 仅下拉刷新
 
         // 如果有网络加载网络数据，并在加载成功后删除之前保留的本地数据，没有网络加载本地数据
         if (((MainActivity) getActivity()).hasInternetConnected()) {
@@ -159,7 +182,7 @@ public class WorkFragment extends Fragment {
 //        });
 
         // //上下拉刷新
-        listview.setOnRefreshListener(new OnRefreshListener2<ListView>() {
+        listview.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
 
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -171,12 +194,12 @@ public class WorkFragment extends Fragment {
             @Override
             public void onPullUpToRefresh(
                     PullToRefreshBase<ListView> refreshView) {
-                num += 10;
-                new GetDataTask().execute(num);
+//                num += 10;
+//                new GetDataTask().execute(num);
             }
 
         });
-//        listview.onRefreshComplete();
+        listview.onRefreshComplete();
 
         return contextView;
     }
@@ -224,11 +247,10 @@ public class WorkFragment extends Fragment {
 
     // 从本地获取全部工单类型
     private void getBillTypeList() {
-        Gson gson = new Gson();
         if ("".equalsIgnoreCase(sputil.getWorkListBillType()))
             return;
 
-        WorkflowBillTypeData workflowData = gson.fromJson(
+        WorkflowBillTypeData workflowData = mGson.fromJson(
                 sputil.getWorkListBillType(), WorkflowBillTypeData.class);
         if (workflowData != null) {
             if (workflowData.items != null) {
@@ -277,7 +299,7 @@ public class WorkFragment extends Fragment {
                     btnRight.setTextColor(new Color().rgb(39, 164, 227));
                     btnLeft.setTextColor(new Color().rgb(89, 89, 89));
                     foot_tab_number = FOOT_TAB_NUMBER_Y;
-                    listYN.clear();
+//                    listYN.clear();
                     listItemAdapter.notifyDataSetChanged();
                     // new GetDataTask().execute();
                     listview.setRefreshing();
@@ -288,14 +310,13 @@ public class WorkFragment extends Fragment {
                     btnLeft.setTextColor(new Color().rgb(39, 164, 227));
                     btnRight.setTextColor(new Color().rgb(89, 89, 89));
                     foot_tab_number = FOOT_TAB_NUMBER_N;
-                    listYN.clear();
+//                    listYN.clear();
                     listItemAdapter.notifyDataSetChanged();
                     rightview.setVisibility(View.GONE);
                     leftview.setVisibility(View.VISIBLE);
-
                     // new GetDataTask().execute();
                     listview.setRefreshing();
-                    // listview.setRefreshing(true);
+                     listview.setRefreshing(true);
                     break;
                 default:
                     break;
@@ -351,7 +372,6 @@ public class WorkFragment extends Fragment {
             listYN.clear();
             listItemAdapter.notifyDataSetChanged();
             listview.setRefreshing();
-
         }
     };
 
@@ -361,22 +381,21 @@ public class WorkFragment extends Fragment {
     }
 
     private void getWorkFlowListN(Integer integer) {
-
         String type = null;
-//        if (listYN.size() > 0&&integer<=10) {
+//        if (listYN.size() > 0 && integer <= 10) {
 //            // 请求10个已处理
 //            if (selectedBillTypeList.size() > 0) {
 //                for (int i = 0; i < selectedBillTypeList.size(); i++) {
 //                    type = selectedBillTypeList.get(i).getId();
 //                }
 //                getWorkFlowList(MY_GET_WORKLIST_FLAG_SCROLL, null, type, "N",
-//                        listYN.get(0).getDate(), integer+"");
+//                        listYN.get(0).getDate(), integer + "");
 //            } else {
 //                getWorkFlowList(MY_GET_WORKLIST_FLAG_SCROLL, null, null, "N",
-//                        listYN.get(0).getDate(), integer+"");
+//                        listYN.get(0).getDate(), integer + "");
 //            }
 //        } else {
-        listYN.clear();
+//            listYN.clear();
         // 请求10个已处理
         if (selectedBillTypeList.size() > 0) {
             for (int i = 0; i < selectedBillTypeList.size(); i++) {
@@ -484,9 +503,11 @@ public class WorkFragment extends Fragment {
             public void onResponse(HttpResponse resp) {
                 try {
                     String msg = HttpClientManager.toStringContent(resp);
-                    Gson gson = new Gson();
+                    final WorkflowListResp workflowResp = mGson.fromJson(msg, WorkflowListResp.class);
 
-                    final WorkflowListResp workflowResp = gson.fromJson(msg, WorkflowListResp.class);
+                    if (workflowResp != null)
+                        listYN.clear();
+
                     if ("result".equalsIgnoreCase(workflowResp.type)
                             && workflowResp.data != null
                             && workflowResp.data.items.size() > 0) {
@@ -506,22 +527,16 @@ public class WorkFragment extends Fragment {
                         } else {
                             sendToMyHandler(999);
                         }
-
                     }
-
                 } catch (IOException e) {
                     onException(e);
                     sendToMyHandler(999);
-
                 }
             }
-
             @Override
             public void onException(Exception e) {
                 e.printStackTrace();
-                // //
                 sendToMyHandler(999);
-
             }
         }, post);
     }
@@ -531,39 +546,8 @@ public class WorkFragment extends Fragment {
         Bundle b = new Bundle();
         b.putInt("flag", msg);
         Msg.setData(b);
-
         myHandler.sendMessage(Msg);
     }
-
-    final Handler myHandler = new Handler() {
-
-        public void handleMessage(Message msg) {
-            Bundle b = msg.getData();
-            int mmsg = b.getInt("flag");
-
-            switch (mmsg) {
-                case 1:
-                    refreshList();
-                    break;
-                case 2:
-                    listview.onRefreshComplete();
-                    break;
-                case 999:
-                    listview.onRefreshComplete();
-                    ToastUtil.ShowShort(context, "当前没有您需要处理的单据");
-                    break;
-                case 4:
-                    listYN.remove(index);
-                    refreshList();
-                    break;
-                default:
-                    break;
-            }
-
-        }
-
-        ;
-    };
 
     // pageSize 为null时，请求全部，dealFlag是已处理未处理Y/N dealType-审批结果 remark-附加审批意见
     public static final HttpPost postWorkflow(String type, String comID,

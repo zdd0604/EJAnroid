@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_business_seach"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/actionbar_title_bg"
     android:orientation="vertical">
+
+    <include
+        android:id="@+id/actionbar_search"
+        layout="@layout/actionbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <com.hjnerp.widget.ClearEditText
         android:id="@+id/project_search"
+        style="@style/Item_EditeText_SearchEdStyle"
+        android:layout_below="@+id/actionbar_search"
+        android:layout_centerHorizontal="true"
+        android:hint="@string/search" />
+
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="请搜索关键字" />
+        android:layout_height="@dimen/size_1"
+        android:background="@color/item_table_divider" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/project_recy"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/project_search" />
+        android:layout_below="@id/project_search"
+        android:background="@color/white"
+        tools:listitem="@layout/bus_search_item" />
 
     <LinearLayout
         android:id="@+id/secah_error"
@@ -29,9 +45,10 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_data_null_error" />
+            android:src="@drawable/bujige" />
 
         <TextView
+            android:id="@+id/text_corr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"

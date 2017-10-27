@@ -266,7 +266,7 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
                                             params);
                                     final TextView textView = (TextView) view1
                                             .findViewById(R.id.tv_detail);
-                                    textView.setTextSize(16);
+                                    textView.setTextSize(15);
                                     if (!"".equalsIgnoreCase(cell.title)) {
                                         if ("实际结束时间".equalsIgnoreCase(cell.title) && wfInfo.getFlagDeal().equalsIgnoreCase("N") && wfInfo.getBillType().equalsIgnoreCase("dgtdout")) {
                                             textView.setText(cell.title + ": " + cell.value + "    点击修改");

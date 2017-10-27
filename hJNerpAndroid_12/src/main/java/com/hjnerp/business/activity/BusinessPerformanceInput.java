@@ -46,7 +46,7 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class BusinessPerformanceInput extends AppCompatActivity implements View.OnClickListener {
+    public class BusinessPerformanceInput extends AppCompatActivity implements View.OnClickListener {
     protected WaitDialogRectangle waitDialog;
     private TextView input_id_clerk;
     private LinearLayout lay_kpiView;
@@ -740,17 +740,17 @@ public class BusinessPerformanceInput extends AppCompatActivity implements View.
     private void deletelView(final View view) {
         final Dialog noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
         noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
-        RelativeLayout dialog_cancel_rl, dialog_confirm_rl;
+        TextView dialog_cancel_rl, dialog_confirm_rl;
         TextView notice = (TextView) noticeDialog
                 .findViewById(R.id.dialog_notice_tv);
         notice.setText("是否要删除该绩效明细？");
-        dialog_cancel_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_cancel_rl);
+        dialog_cancel_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_cancel_tv);
         TextView dialog_cancel_tv = (TextView) noticeDialog
                 .findViewById(R.id.dialog_cancel_tv);
         dialog_cancel_tv.setText("取消");
-        dialog_confirm_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_confirm_rl);
+        dialog_confirm_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_confirm_tv);
         TextView dialog_confirm_tv = (TextView) noticeDialog
                 .findViewById(R.id.dialog_confirm_tv);
         dialog_confirm_tv.setText("删除");
@@ -786,48 +786,53 @@ public class BusinessPerformanceInput extends AppCompatActivity implements View.
      *
      * @param view
      */
-    private void deletelGsView(final View view) {
-        final Dialog noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
-        noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
-        RelativeLayout dialog_cancel_rl, dialog_confirm_rl;
-        TextView notice = (TextView) noticeDialog
-                .findViewById(R.id.dialog_notice_tv);
-        notice.setText("是否要删除该绩效明细？");
-        dialog_cancel_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_cancel_rl);
-        TextView dialog_cancel_tv = (TextView) noticeDialog
-                .findViewById(R.id.dialog_cancel_tv);
-        dialog_cancel_tv.setText("取消");
-        dialog_confirm_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_confirm_rl);
-        TextView dialog_confirm_tv = (TextView) noticeDialog
-                .findViewById(R.id.dialog_confirm_tv);
-        dialog_confirm_tv.setText("删除");
-        dialog_cancel_rl.setOnClickListener(new View.OnClickListener() {
+        /**
+         * 删除View
+         *
+         * @param view
+         */
+        private void deletelGsView(final View view) {
+            final Dialog noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
+            noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
+            TextView dialog_cancel_rl, dialog_confirm_rl;
+            TextView notice = (TextView) noticeDialog
+                    .findViewById(R.id.dialog_notice_tv);
+            notice.setText("是否要删除该绩效明细？");
+            dialog_cancel_rl = (TextView) noticeDialog
+                    .findViewById(R.id.dialog_cancel_tv);
+            TextView dialog_cancel_tv = (TextView) noticeDialog
+                    .findViewById(R.id.dialog_cancel_tv);
+            dialog_cancel_tv.setText("取消");
+            dialog_confirm_rl = (TextView) noticeDialog
+                    .findViewById(R.id.dialog_confirm_tv);
+            TextView dialog_confirm_tv = (TextView) noticeDialog
+                    .findViewById(R.id.dialog_confirm_tv);
+            dialog_confirm_tv.setText("删除");
+            dialog_cancel_rl.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View arg0) {
-                noticeDialog.dismiss();
-            }
-        });
-        dialog_confirm_rl.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                noticeDialog.dismiss();
-//                计算
-                gsindexofView = gsListView.indexOf(view);
-                lay_gsView.removeView(view);
-                gsListView.remove(view);
-                Log.v("show", "计算后的下标：" + gsindexofView + ",,,,," + kpiListView.size());
-                if (gs_Widget.size() >= gsindexofView && gs_Widget.size() > 0) {
-                    gs_Widget.remove(gsindexofView);
+                @Override
+                public void onClick(View arg0) {
+                    noticeDialog.dismiss();
                 }
+            });
+            dialog_confirm_rl.setOnClickListener(new View.OnClickListener() {
 
-            }
-        });
-        noticeDialog.show();
-    }
+                @Override
+                public void onClick(View arg0) {
+                    noticeDialog.dismiss();
+//                计算
+                    gsindexofView = gsListView.indexOf(view);
+                    lay_gsView.removeView(view);
+                    gsListView.remove(view);
+                    Log.v("show", "计算后的下标：" + gsindexofView + ",,,,," + kpiListView.size());
+                    if (gs_Widget.size() >= gsindexofView && gs_Widget.size() > 0) {
+                        gs_Widget.remove(gsindexofView);
+                    }
+
+                }
+            });
+            noticeDialog.show();
+        }
 
     @Override
     protected void onDestroy() {

@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,20 +19,29 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.baoyz.actionsheet.ActionSheet;
 import com.hjnerp.activity.im.ChatActivity;
+import com.hjnerp.activity.myinfo.ShowPortraitActivity;
 import com.hjnerp.business.ContactBusiness;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.QiXinBaseDao;
@@ -45,10 +56,10 @@ import com.hjnerp.net.IQ;
 import com.hjnerp.util.AttachFileProcessor;
 import com.hjnerp.util.AttachFileProcessor.OnProcessResultListener;
 import com.hjnerp.util.ImageLoaderHelper;
+import com.hjnerp.util.SharePreferenceUtil;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
+import com.itheima.roundedimageview.RoundedImageView;
 import com.sdyy.utils.XPermissions;
 
 import java.io.BufferedOutputStream;
@@ -59,19 +70,23 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
-public class FriendsActivity extends ActivitySupport implements OnClickListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class FriendsActivity extends ActionBarWidgetActivity implements OnClickListener,
+        ActionSheet.ActionSheetListener,
+        PopupWindow.OnDismissListener {
 
     String sFriendId;
     private FriendInfo friend;
-    private Button sendBtn;
-    private ImageView callImg;
+    private Button sendBtn, callBtn;
     private TextView firstnameEdit, nicknameEdit, orgunitEdit, mobileEdit,
             emailhomeEdit, discEdit;
-    private ImageView email_edit, phone_edit;
-    private RelativeLayout dialog_confirm_rl, dialog_cancel_rl, rl_gally,
-            rl_camera;
-    private RelativeLayout rl_phone, rl_email, user_head_layout;
-    private ImageView photo, qrcode;
+    //    private ImageView email_edit, phone_edit;
+//    private RelativeLayout dialog_confirm_rl, dialog_cancel_rl, rl_gally, rl_camera;
+    private RelativeLayout rl_phone, rl_email;
+    private RoundedImageView photo;
+    private ImageView   qrcode;
     private FriendPopupWindow menuSet = null;
     private Dialog noticeDialog = null;
     private Dialog setNoteDialog;
@@ -91,32 +106,56 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
     public int flag_setwhat = 0;
 
     private File tempFile;
-    protected WaitDialogRectangle waitDialogRectangle;
 
     // TODO 检查联系人表有没有此人（自己是自己的朋友），如果不是自己的好友，按钮点击动作应为加为好友
     private boolean ifIsMyFriends = true;
 
+    private String photoUrl;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.user_head_layout)
+    RelativeLayout user_head_layout;
+    @BindView(R.id.ui_send_btn_Layout)
+    LinearLayout ui_send_btn_Layout;
+    //判断是否是我自己的手机号
+    private boolean isMyPhone = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        friend = (FriendInfo) getIntent().getSerializableExtra(
-                Constant.FRIEND_READ);
-
+        friend = (FriendInfo) getIntent().getSerializableExtra(Constant.FRIEND_READ);
         ifIsMyFriends = ContactBusiness.checkFriends(friend.getFriendid());
         setContentView(R.layout.friendinfo);
-        mActionBar = getSupportActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setHomeButtonEnabled(true);
-        mActionBar.setTitle("详细资料");// 设置左上角标题
-        init();
-        waitDialogRectangle = new WaitDialogRectangle(this);
+        ButterKnife.bind(this);
+        actionRightTv.setVisibility(View.GONE);
+        actionLeftTv.setOnClickListener(this);
+        actionCenterTv.setText("我的资料");
+
+        initView();
 
         // 有网络则更新用户信息
         if (hasInternetConnected() && ifIsMyFriends) {
             waitDialogRectangle.show();
             sendCheckUserInfo();
         }
+    }
 
+    @Override
+    protected void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+        if (noticeDialog != null) {
+            noticeDialog.dismiss();
+        }
+        if (menuSet != null) {
+            menuSet.dismiss();
+        }
     }
 
     // TODO 从通讯录进入好友详情，当对方解除好友关系后进行提示；从查看群成员信息进入时，进行同样的提示
@@ -125,7 +164,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         super.removeMeAsFriend(friendId);
         if (friendId.equals(friend.getFriendid())) {
             sendBtn.setEnabled(false);
-            callImg.setEnabled(false);
+            callBtn.setEnabled(false);
             showNoticeDialog("对方解除了好友关系");
         }
     }
@@ -133,12 +172,13 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
     /**
      * 初始化.
      *
+     *
      * @author 李庆义
      * @update 2012-5-16 上午9:13:01
      */
     // @SuppressLint("NewApi")
-    protected void init() {
-        photo = (ImageView) findViewById(R.id.user_head_avatar);
+    protected void initView() {
+        photo = (RoundedImageView) findViewById(R.id.user_head_avatar);
         firstnameEdit = (TextView) findViewById(R.id.user_head_name);
         nicknameEdit = (TextView) findViewById(R.id.user_head_content);
         orgunitEdit = (TextView) findViewById(R.id.orgunit);
@@ -146,19 +186,26 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         emailhomeEdit = (TextView) findViewById(R.id.emailhome);
         qrcode = (ImageView) findViewById(R.id.iv_qrcode);
         sendBtn = (Button) findViewById(R.id.ui_send_btn);
-        callImg = (ImageView) findViewById(R.id.ui_call_btn);
+
         rl_email = (RelativeLayout) findViewById(R.id.rl_email);
         rl_phone = (RelativeLayout) findViewById(R.id.rl_phone);
-        user_head_layout = (RelativeLayout) findViewById(R.id.user_head_layout);
-        email_edit = (ImageView) findViewById(R.id.ui_edit_iv_email);
-        phone_edit = (ImageView) findViewById(R.id.ui_edit_iv_phone);
-
         rl_email.setOnClickListener(this);
         rl_phone.setOnClickListener(this);
-        callImg.setOnClickListener(this);
         sendBtn.setOnClickListener(this);
+        user_head_layout.setOnClickListener(this);
+        photo.setOnClickListener(this);
+
         setFriendView();
+
         closeInput();
+
+//        callBtn = (Button) findViewById(R.id.ui_call_btn);
+//        user_head_layout = (RelativeLayout) findViewById(R.id.user_head_layout);
+//        rl_remark = (RelativeLayout) findViewById(R.id.rl_remark);
+//        email_edit = (ImageView) findViewById(R.id.ui_edit_iv_email);
+//        phone_edit = (ImageView) findViewById(R.id.ui_edit_iv_phone);
+//        rl_remark.setOnClickListener(listener);
+//        callBtn.setOnClickListener(listener);
 
         // 二维码名片
         // try {
@@ -204,104 +251,28 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         mThread.start();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ui_send_btn:
-                if (ifIsMyFriends) {// 进入聊天
-                    Intent intent = new Intent(context, ChatActivity.class);
-                    Bundle mBundle = new Bundle();
-                    mBundle.putSerializable(Constant.IM_NEWS,
-                            (Serializable) friend);
-                    intent.putExtras(mBundle);
-                    startActivity(intent);
-                    ((Activity) context).finish();
-                } else {// 加为好友
-                    flag_setwhat = ADD_FRIEND;
-                    showsetNoteDialog();
-                }
-                break;
-            //拨打电话
-            case R.id.ui_call_btn:
-                if (!isPermissions(new String[]{XPermissions.CALL_PHONE}))
-                {
-                    toastLONG("拨打电话未授权！");
-                    return;
-                }
-                String inputStr = friend.getFriendmtel();
-                Intent phoneIntent = new Intent("android.intent.action.CALL",
-                        Uri.parse("tel:" + inputStr));
-                startActivity(phoneIntent);
-                break;
-            case R.id.dialog_group_confirm_tv:
-                extra_note = et_note.getText().toString();
-                if (StringUtil.isNullOrEmpty(extra_note))
-                    return;
-                setNoteDialog.dismiss();
-                switch (flag_setwhat) {
-                    case ADD_FRIEND:// 添加好友
-                        addFriend();
-                        break;
-                    case SET_EMAIL:
-                        setEmai();
-                        break;
-                    case SET_PHONE:
-                        setPhone();
-                        break;
-                    case SET_REMARK:
-                        break;
-                    default:
-                        break;
-                }
-
-                break;
-            case R.id.dialog_group_cancel_tv:
-                setNoteDialog.dismiss();
-                break;
-            case R.id.rl_phone:
-                if (friend.getFriendid().equals(sputil.getMyId())) {
-                    flag_setwhat = SET_PHONE;
-                    showsetNoteDialog();
-                }
-                break;
-            case R.id.rl_email:
-                if (friend.getFriendid().equals(sputil.getMyId())) {
-                    flag_setwhat = SET_EMAIL;
-                    showsetNoteDialog();
-                }
-                break;
-//                case R.id.rl_remark:
-//                    // if(friend.getFriendid().equals(sputil.getMyId())){
-//                    // flag_setwhat = SET_REMARK;
-//                    // showsetNoteDialog();
-//                    // }
-//                    break;
-
-            default:
-                break;
-        }
-
-    }
-
     private OnClickListener setOnClick = new OnClickListener() {
         public void onClick(View v) {
             menuSet.dismiss();
-
             switch (v.getId()) {
-
                 case R.id.linear_delete:
                     // show dialog if delete friend
                     showNoticeDialog();
                     break;
-
                 default:
                     break;
-
             }
         }
     };
 
+    /**
+     * 邮箱设置
+     */
     private void setEmai() {
+        if (!isEmail(extra_note)) {
+            showFailToast(mContext.getString(R.string.toast_Title_EmailFail));
+            return;
+        }
         mThread = new Thread() {
             @Override
             public void run() {
@@ -313,12 +284,8 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                String respond = HJWebSocketManager.getInstance()
-                        .requestChangeEmail(extra_note);
-
-                if (!StringUtil.isNullOrEmpty(respond)
-                        && respond.contains("result")) {
-
+                String respond = HJWebSocketManager.getInstance().requestChangeEmail(extra_note);
+                if (!StringUtil.isNullOrEmpty(respond) && respond.contains("result")) {
                     sendToMyHandler("setemail_ok");
                 } else if (!StringUtil.isNullOrEmpty(respond)
                         && respond.contains("session")) {
@@ -331,7 +298,14 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         mThread.start();
     }
 
+    /**
+     * 修改手机号码
+     */
     private void setPhone() {
+        if (!isMobileNO(extra_note)) {
+            showFailToast(mContext.getString(R.string.toast_Title_PhoneFail));
+            return;
+        }
         mThread = new Thread() {
             @Override
             public void run() {
@@ -343,9 +317,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                String respond = HJWebSocketManager.getInstance()
-                        .requestChangePhone(extra_note.toCharArray());
-
+                String respond = HJWebSocketManager.getInstance().requestChangePhone(extra_note.toCharArray());
                 if (!StringUtil.isNullOrEmpty(respond)
                         && respond.contains("result")) {
                     sendToMyHandler("setphone_ok");
@@ -524,7 +496,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                                 if (!(event instanceof Throwable)) {
 
                                     // 添加提示框
-                                    ToastUtil.ShowShort(FriendsActivity.this, "删除成功");
+                                    showFailToast("删除成功");
                                     jumpToMain(FriendsActivity.this);
                                 }
                             }
@@ -538,7 +510,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                         });
 
                     } else {
-                        ToastUtil.ShowShort(FriendsActivity.this, errorMsg);
+                        showFailToast(errorMsg);
                     }
 
                 } else {
@@ -549,7 +521,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                             if (!(event instanceof Throwable)) {
                                 // deleteOneSingleChatNewMsg(friend.getFriendid());
                                 // 添加提示框
-                                ToastUtil.ShowShort(FriendsActivity.this, "删除成功");
+                                showFailToast("删除成功");
                                 jumpToMain(FriendsActivity.this);
                             }
                         }
@@ -571,61 +543,6 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         deleteFriendThread.start();
 
     }
-
-    // TODO
-    private OnClickListener dialogOnClickListener = new OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.dialog_cc_cancel_rl:
-                    noticeDialog.dismiss();
-                    break;
-                case R.id.dialog_rl_cancel:
-                    noticeDialog.dismiss();
-                    break;
-                case R.id.dialog_cc_confirm_rl:
-
-                    noticeDialog.dismiss();
-                    removeFriend(friend.getFriendid());
-                    break;
-                case R.id.dialog_nc_confirm_rl:
-
-                    // jumpToMain(FriendsActivity.this);
-                    finish();
-                    break;
-                case R.id.dialog_rl_gally:// TODO
-
-                    Intent intent1 = new Intent(Intent.ACTION_PICK, null);
-                    intent1.setDataAndType(
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                    startActivityForResult(intent1, REQUEST_CODE_GALLY);
-
-                    break;
-
-                case R.id.dialog_rl_camera:
-                    tempFile = new File(Constant.CHAT_CACHE_DIR,
-                            "avartar-" + UUID.randomUUID()
-                                    + ".photo");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        Uri imageUri = FileProvider.getUriForFile(context, "com.hjnerp.takephoto.fileprovider", tempFile);//通过FileProvider创建一个content类型的Uri
-                        Intent intent = new Intent();
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
-                        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//设置Action为拍照
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//将拍取的照片保存到指定URI
-                        startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
-                    } else {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
-                        startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-        }
-    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -653,16 +570,15 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
     }
 
     private void setFriendView() {
-        String url = friend.getFriendimage();
+        photoUrl = friend.getFriendimage();
         /**
          * @author haijian
          * 获取群成员详情中的头像地址
          */
-        Log.i("info", "群成员详情头像地址：" + url);
-        if (!StringUtil.isNullOrEmpty(url)) {
-            ImageLoaderHelper
-                    .displayImage(ChatPacketHelper.buildImageRequestURL(url,
-                            ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH), photo);
+        Log.i("info", "群成员详情头像地址：" + photoUrl);
+        if (!StringUtil.isNullOrEmpty(photoUrl)) {
+            ImageLoaderHelper.displayImage(ChatPacketHelper.buildImageRequestURL(photoUrl,
+                    ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH), photo);
         }
         firstnameEdit.setText(friend.getFriendname());
         nicknameEdit.setText(friend.getFriendid());
@@ -672,23 +588,23 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
 
         // 是否显示相机团和发送消息按钮
         if (friend.getFriendid().equals(sputil.getMyId())) {// 我自己的详情
-            sendBtn.setVisibility(View.INVISIBLE);
-            callImg.setVisibility(View.INVISIBLE);
-            user_head_layout.setOnClickListener(cameraClickListener);
-            phone_edit.setVisibility(View.VISIBLE);
-            email_edit.setVisibility(View.VISIBLE);
+            sendBtn.setVisibility(View.GONE);
+            ui_send_btn_Layout.setVisibility(View.GONE);
+//            callBtn.setVisibility(View.INVISIBLE);
+//            user_head_layout.setOnClickListener(cameraClickListener);
+//            phone_edit.setVisibility(View.VISIBLE);
+//            email_edit.setVisibility(View.VISIBLE);
             mobileEdit.setText(friend.getFriendmtel());
-
         } else {// 好友的详情
             sendBtn.setVisibility(View.VISIBLE);
+            ui_send_btn_Layout.setVisibility(View.VISIBLE);
             if (StringUtil.isNullOrEmpty(friend.getFriendmtel().trim())) {
-                callImg.setVisibility(View.INVISIBLE);
+//                callBtn.setVisibility(View.INVISIBLE);
                 mobileEdit.setText(friend.getFriendmtel());
             } else {
-                callImg.setVisibility(View.VISIBLE);
+//                callBtn.setVisibility(View.VISIBLE);
                 mobileEdit.setText(friend.getFriendmtel());
             }
-
         }
 
         if (!ifIsMyFriends) {
@@ -698,34 +614,21 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
 
     }
 
-    @Override
-    protected void onPause() {
-        // TODO Auto-generated method stub
-        super.onPause();
-        if (noticeDialog != null) {
-            noticeDialog.dismiss();
-        }
-        if (menuSet != null) {
-            menuSet.dismiss();
-        }
-    }
-
     /* 提示用户是否删除 */
     private void showNoticeDialog() {
         noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
         noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
 
-        RelativeLayout dialog_cancel_rl, dialog_confirm_rl;
+        TextView dialog_cancel_rl, dialog_confirm_rl;
         TextView notice = (TextView) noticeDialog
                 .findViewById(R.id.dialog_notice_tv);
         notice.setText("删除好友后，聊天记录和好友关系都将被删除，是否继续");
-        dialog_cancel_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_cancel_rl);
-        dialog_confirm_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_confirm_rl);
-        dialog_cancel_rl.setOnClickListener(dialogOnClickListener);
-        dialog_confirm_rl.setOnClickListener(dialogOnClickListener);
-
+        dialog_cancel_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_cancel_tv);
+        dialog_confirm_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_confirm_tv);
+        dialog_cancel_rl.setOnClickListener(this);
+        dialog_confirm_rl.setOnClickListener(this);
         noticeDialog.show();
     }
 
@@ -742,7 +645,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         notice.setText(msg);
         noticedialog_confirm_rl = (RelativeLayout) noticeDialog
                 .findViewById(R.id.dialog_nc_confirm_rl);
-        noticedialog_confirm_rl.setOnClickListener(dialogOnClickListener);
+        noticedialog_confirm_rl.setOnClickListener(this);
 
         noticeDialog.show();
     }
@@ -759,10 +662,12 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         noticeDialog.show();
     }
 
+    /**
+     * 旧版本的设置头像弹框
+     */
     private void showSelectPicDialog() {
         noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
         noticeDialog.setContentView(R.layout.dialog_select_photo);
-
         RelativeLayout rl_gally, rl_camera, rl_cancel;
         rl_gally = (RelativeLayout) noticeDialog
                 .findViewById(R.id.dialog_rl_gally);
@@ -771,19 +676,12 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         rl_cancel = (RelativeLayout) noticeDialog
                 .findViewById(R.id.dialog_rl_cancel);
 
-        rl_gally.setOnClickListener(dialogOnClickListener);
-        rl_camera.setOnClickListener(dialogOnClickListener);
-        rl_cancel.setOnClickListener(dialogOnClickListener);
+        rl_gally.setOnClickListener(this);
+        rl_camera.setOnClickListener(this);
+        rl_cancel.setOnClickListener(this);
         noticeDialog.show();
     }
 
-    private OnClickListener cameraClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showSelectPicDialog();
-
-        }
-    };
     private Thread mThread;
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -805,7 +703,6 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                 }
             }
             break;
-
             case REQUEST_CODE＿IMAGE_CAPTURE:// 拍照返回
             {
                 if (resultCode == RESULT_OK) {
@@ -833,8 +730,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
             break;
 
             case REQUEST_CODE_GALLY_CROP: {
-
-                Log.d("android7.0", resultCode + "");
+                LogShow(resultCode + "");
                 if (resultCode == RESULT_OK || resultCode == RESULT_CANCELED) {
                     try {
                         waitDialogRectangle.show();
@@ -847,8 +743,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                             avartar = data.getExtras().getParcelable("data");
                         }
 
-                        String fileName = "avartar_" + UUID.randomUUID()
-                                + "_320x320.jpg";
+                        String fileName = "avartar_" + UUID.randomUUID() + "_320x320.jpg";
                         File file = new File(Constant.CHAT_CACHE_DIR, fileName);
                         BufferedOutputStream bos = new BufferedOutputStream(
                                 new FileOutputStream(file));
@@ -861,19 +756,17 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                                             final boolean success, final String msg/* fileID */) {
                                         if (success) {
                                             sendChangePhoto(msg);
-
                                         } else {
                                             com.hjnerp.util.Log.w(msg);
                                             waitDialogRectangle.dismiss();
-                                            ToastUtil.ShowShort(
-                                                    FriendsActivity.this, "头像设置失败");
+                                            showFailToast(mContext.getString(R.string.toast_Title_PortraitFail));
                                         }
                                     }
                                 });
                     } catch (Exception e) {
                         // com.hjnerp.util.Log.e(e);
                         waitDialogRectangle.dismiss();
-                        ToastUtil.ShowShort(this, "头像设置失败");
+                        showFailToast(mContext.getString(R.string.toast_Title_PortraitFail));
                     }
                 }
                 if (tempFile != null && tempFile.exists()) {
@@ -918,38 +811,39 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
         }
     }
 
+    /**
+     * 上传头像
+     *
+     * @param content
+     */
     private void sendChangePhoto(final String content) {
+        LogShow(content);
         mThread = new Thread() {
             @Override
             public void run() {
-
-                final IQ iq = HJWebSocketManager.getInstance().changeAvartar(
-                        content);
+                final IQ iq = HJWebSocketManager.getInstance().changeAvartar(content);
                 ((Handler) EapApplication.getApplication().getExtra(
                         EapApplication.EXTRA_MAIN_HANDLER))
                         .post(new Runnable() {
                             @Override
                             public void run() {
-
                                 String message;
-                                if ((message = ChatPacketHelper
-                                        .parseErrorCode(iq)) == null) {
+                                if ((message = ChatPacketHelper.parseErrorCode(iq)) == null) {
                                     SQLiteWorker.getSharedInstance().postDML(
                                             new SQLiteWorker.AbstractSQLable() {
                                                 @Override
-                                                public void onCompleted(
-                                                        Object event) {
+                                                public void onCompleted(Object event) {
                                                     if (!(event instanceof Throwable)) {
                                                         photo.post(new Runnable() {
                                                             @Override
                                                             public void run() {
                                                                 ImageLoaderHelper
                                                                         .displayImage(
-                                                                                ChatPacketHelper
-                                                                                        .buildImageRequestURL(
-                                                                                                content,
-                                                                                                ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH),
+                                                                                ChatPacketHelper.buildImageRequestURL(
+                                                                                        content,
+                                                                                        ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH),
                                                                                 photo);
+                                                                showFailToast(mContext.getString(R.string.dialog_Message_saveSucc));
                                                             }
                                                         });
                                                     }
@@ -970,6 +864,11 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                                                                     userID,
                                                                     Tables.ContactTable.COL_VAR_IMGFRIEND,
                                                                     content);
+                                                    friend = QiXinBaseDao.queryFriendInfo(
+                                                            SharePreferenceUtil.getInstance(EapApplication.getApplication().getApplicationContext())
+                                                                    .getMyUserId());
+
+                                                    setFriendView();
                                                     return null;
                                                 }
                                             });
@@ -978,8 +877,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                                     if (waitDialogRectangle != null
                                             && waitDialogRectangle.isShowing())
                                         waitDialogRectangle.dismiss();
-                                    ToastUtil.ShowShort(FriendsActivity.this,
-                                            "头像设置失败");
+                                    showFailToast(mContext.getString(R.string.toast_Title_PortraitFail));
                                 }
 
                             }
@@ -1012,14 +910,12 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                 intent.putExtras(mBundle);
                 startActivity(intent);
                 ((Activity) context).finish();
-
             }
             if ("check_friendinfo_ok".equalsIgnoreCase(mmsg)) {
                 if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
                     waitDialogRectangle.dismiss();
                 }
-                init();
-
+                initView();
             }
             if ("check_friendinfo_error".equalsIgnoreCase(mmsg)) {
                 if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
@@ -1032,26 +928,26 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                 }
                 emailhomeEdit.setText(extra_note);
                 // 添加提示框
-                ToastUtil.ShowShort(FriendsActivity.this, "修改成功");
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeSucc));
             }
             if ("setphone_ok".equalsIgnoreCase(mmsg)) {
                 if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
                     waitDialogRectangle.dismiss();
                 }
                 mobileEdit.setText(extra_note);
-                ToastUtil.ShowShort(FriendsActivity.this, "修改成功");
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeSucc));
             }
             if ("setemail_error".equalsIgnoreCase(mmsg)) {
                 if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
                     waitDialogRectangle.dismiss();
                 }
-                ToastUtil.ShowShort(FriendsActivity.this, "修改失败");
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeFail));
             }
             if ("setphone_error".equalsIgnoreCase(mmsg)) {
                 if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
                     waitDialogRectangle.dismiss();
                 }
-                ToastUtil.ShowShort(FriendsActivity.this, "修改失败");
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeFail));
             }
             if ("session_error".equalsIgnoreCase(mmsg)) {
                 if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
@@ -1059,10 +955,7 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                 }
                 isForcedExit(ChatConstants.error_string.ERROR_STRING_SESSION_INVALID);
             }
-
         }
-
-        ;
     };
 
     /* 添加验证信息 */
@@ -1080,27 +973,25 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
                 .findViewById(R.id.dialog_group_cancel_tv);
         switch (flag_setwhat) {
             case ADD_FRIEND:// 添加好友
-                title.setText("验证信息");
+                title.setText(mContext.getString(R.string.toast_Title_CheckMsg));
                 String text = "我是";
                 et_note.setText(text);
                 et_note.setSelection(text.length());
                 break;
             case SET_EMAIL:
-                title.setText("修改邮箱");
+                title.setText(mContext.getString(R.string.toast_Title_ChangeEmail));
                 break;
             case SET_PHONE:
-                title.setText("修改手机号");
+                title.setText(mContext.getString(R.string.toast_Title_ChangePhone));
                 break;
             case SET_REMARK:
-                title.setText("修改备注");
+                title.setText(mContext.getString(R.string.toast_Title_ChangeRemark));
                 break;
-
             default:
                 break;
         }
         tv_setnote_confirm.setOnClickListener(this);
         tv_setnote_cancel.setOnClickListener(this);
-
         setNoteDialog.show();
     }
 
@@ -1134,8 +1025,308 @@ public class FriendsActivity extends ActivitySupport implements OnClickListener 
     // }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-
         super.onConfigurationChanged(newConfig);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.action_left_tv:
+                finish();
+                break;
+            case R.id.ui_send_btn:
+                if (ifIsMyFriends) {// 进入聊天
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putSerializable(Constant.IM_NEWS,
+                            (Serializable) friend);
+                    intent.putExtras(mBundle);
+                    startActivity(intent);
+                    ((Activity) context).finish();
+                } else {// 加为好友
+                    flag_setwhat = ADD_FRIEND;
+                    showsetNoteDialog();
+                }
+                break;
+//                case R.id.ui_call_btn:
+//                    String inputStr = friend.getFriendmtel();
+//                    Intent phoneIntent = new Intent("android.intent.action.CALL",
+//                            Uri.parse("tel:" + inputStr));
+//                    startActivity(phoneIntent);
+//                    break;
+            case R.id.dialog_group_confirm_tv:
+                extra_note = et_note.getText().toString();
+                if (StringUtil.isNullOrEmpty(extra_note))
+                    return;
+                setNoteDialog.dismiss();
+                switch (flag_setwhat) {
+                    case ADD_FRIEND:// 添加好友
+                        addFriend();
+                        break;
+                    case SET_PHONE:
+                        setPhone();
+                        break;
+                    case SET_EMAIL:
+                        setEmai();
+                        break;
+                    case SET_REMARK:
+                        break;
+                    default:
+                        break;
+
+                }
+                break;
+            case R.id.dialog_group_cancel_tv:
+                setNoteDialog.dismiss();
+                break;
+            case R.id.rl_phone:
+                if (friend.getFriendid().equals(sputil.getMyId())) {
+                    flag_setwhat = SET_PHONE;
+                    showsetNoteDialog();
+                } else {
+                    if (!isPermissions(new String[]{XPermissions.CALL_PHONE})) {
+                        showFailToast("拨打电话未授权！");
+                        return;
+                    }
+                    String phone = friend.getFriendmtel();
+                    if (!StringUtil.isStrTrue(phone)) {
+                        showFailToast("手机号不能为空！");
+                        return;
+                    }
+                    showDialog(phone);
+                }
+                break;
+            case R.id.rl_email:
+                if (friend.getFriendid().equals(sputil.getMyId())) {
+                    flag_setwhat = SET_EMAIL;
+                    showsetNoteDialog();
+                }
+                break;
+//                case R.id.rl_remark:
+//                    // if(friend.getFriendid().equals(sputil.getMyId())){
+//                    // flag_setwhat = SET_REMARK;
+//                    // showsetNoteDialog();
+//                    // }
+//                    break;
+            case R.id.dialog_cancel_tv:
+                noticeDialog.dismiss();
+                break;
+            case R.id.dialog_rl_cancel:
+                noticeDialog.dismiss();
+                break;
+            case R.id.dialog_confirm_tv:
+                noticeDialog.dismiss();
+                removeFriend(friend.getFriendid());
+                break;
+            case R.id.dialog_nc_confirm_rl:
+                // jumpToMain(FriendsActivity.this);
+                finish();
+                break;
+            //跳转相册
+//            case R.id.dialog_rl_gally:// TODO
+//                Intent intent1 = new Intent(Intent.ACTION_PICK, null);
+//                intent1.setDataAndType(
+//                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+//                startActivityForResult(intent1, REQUEST_CODE_GALLY);
+//                break;
+
+//            case R.id.dialog_rl_camera:
+//                tempFile = new File(Constant.CHAT_CACHE_DIR,
+//                        "avartar-" + UUID.randomUUID()
+//                                + ".photo");
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                    Uri imageUri = FileProvider.getUriForFile(context, "com.hjnerp.takephoto.fileprovider", tempFile);//通过FileProvider创建一个content类型的Uri
+//                    Intent intent = new Intent();
+//                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+//                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//设置Action为拍照
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//将拍取的照片保存到指定URI
+//                    startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
+//                } else {
+//                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+//                    startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
+//                }
+//                break;
+            //点击更换头像
+            case R.id.user_head_layout:
+//                showSelectPicDialog();
+                if (friend.getFriendid().equals(sputil.getMyId())) // 我自己的详情
+//                    popupWindow();
+                    openPopupWindow(v);
+                break;
+            //点击头像查看照片
+            case R.id.user_head_avatar:
+                Bundle bundle = new Bundle();
+                bundle.putString("photoUrl", photoUrl);
+                intentActivity(ShowPortraitActivity.class, bundle);
+                break;
+            case R.id.tv_pick_phone:
+                popupWindow.dismiss();
+                //跳转相机
+                tempFile = new File(Constant.CHAT_CACHE_DIR,
+                        "avartar-" + UUID.randomUUID()
+                                + ".photo");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Uri imageUri = FileProvider.getUriForFile(context, "com.hjnerp.takephoto.fileprovider", tempFile);//通过FileProvider创建一个content类型的Uri
+                    Intent intent = new Intent();
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//设置Action为拍照
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//将拍取的照片保存到指定URI
+                    startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+                    startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
+                }
+                break;
+            case R.id.tv_pick_zone:
+                //跳转相册
+                Intent intent1 = new Intent(Intent.ACTION_PICK, null);
+                intent1.setDataAndType(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent1, REQUEST_CODE_GALLY);
+                popupWindow.dismiss();
+                break;
+            case R.id.tv_cancel:
+                popupWindow.dismiss();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 判断点击的是什么
+     *
+     * @param index
+     */
+    private void dateCommit(int index) {
+        switch (index) {
+            case Constant.HANDLERTYPE_0:
+                //跳转相机
+                tempFile = new File(Constant.CHAT_CACHE_DIR,
+                        "avartar-" + UUID.randomUUID()
+                                + ".photo");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Uri imageUri = FileProvider.getUriForFile(context, "com.hjnerp.takephoto.fileprovider", tempFile);//通过FileProvider创建一个content类型的Uri
+                    Intent intent = new Intent();
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//设置Action为拍照
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//将拍取的照片保存到指定URI
+                    startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
+                } else {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+                    startActivityForResult(intent, REQUEST_CODE＿IMAGE_CAPTURE);
+                }
+                break;
+            case Constant.HANDLERTYPE_1:
+                //跳转相册
+                Intent intent1 = new Intent(Intent.ACTION_PICK, null);
+                intent1.setDataAndType(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent1, REQUEST_CODE_GALLY);
+                break;
+        }
+    }
+
+    /**
+     * 拨打电话弹框
+     *
+     * @param phone
+     */
+    private void showDialog(final String phone) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(phone);
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent phoneIntent = new Intent("android.intent.action.CALL", Uri.parse("tel:" + phone));
+                startActivity(phoneIntent);
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * 底部popupwindow弹框
+     */
+    private void popupWindow() {
+        setTheme(R.style.ActionSheetStyleiOS7);
+        ActionSheet.createBuilder(this, getSupportFragmentManager())
+                .setCancelButtonTitle("取消")
+                .setOtherButtonTitles("拍照", "从手机相册选择")
+                .setCancelableOnTouchOutside(true)
+                .setListener(this).show();
+    }
+
+    @Override
+    public void onDismiss(ActionSheet actionSheet, boolean isCancel) {
+
+    }
+
+    @Override
+    public void onOtherButtonClick(ActionSheet actionSheet, int index) {
+        dateCommit(index);
+    }
+
+    /**
+     * 显示popup
+     *
+     * @param v
+     */
+    private void openPopupWindow(View v) {
+        //防止重复按按钮
+        if (popupWindow != null && popupWindow.isShowing()) {
+            return;
+        }
+        //设置PopupWindow的View
+        View view = LayoutInflater.from(this).inflate(R.layout.view_popupwindow, null);
+        popupWindow = new PopupWindow(view, RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        //设置背景,这个没什么效果，不添加会报错
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        //设置点击弹窗外隐藏自身
+        popupWindow.setFocusable(true);
+        popupWindow.setOutsideTouchable(true);
+        //设置动画
+        popupWindow.setAnimationStyle(R.style.PopupWindow);
+        //设置位置
+        popupWindow.showAtLocation(v, Gravity.BOTTOM, 0, 0);
+        //设置消失监听
+        popupWindow.setOnDismissListener(this);
+        //设置PopupWindow的View点击事件
+        setOnPopupViewClick(view);
+        //设置背景色
+        setBackgroundAlpha(0.5f);
+    }
+
+    private void setOnPopupViewClick(View view) {
+        TextView tv_pick_phone, tv_pick_zone, tv_cancel;
+        tv_pick_phone = (TextView) view.findViewById(R.id.tv_pick_phone);
+        tv_pick_zone = (TextView) view.findViewById(R.id.tv_pick_zone);
+        tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);
+        tv_pick_phone.setOnClickListener(this);
+        tv_pick_zone.setOnClickListener(this);
+        tv_cancel.setOnClickListener(this);
+    }
+
+    //设置屏幕背景透明效果
+    public void setBackgroundAlpha(float alpha) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = alpha;
+        getWindow().setAttributes(lp);
+    }
+
+    @Override
+    public void onDismiss() {
+        setBackgroundAlpha(1);
+    }
 }

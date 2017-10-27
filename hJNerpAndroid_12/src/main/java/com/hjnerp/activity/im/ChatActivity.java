@@ -83,7 +83,7 @@ import java.util.Map;
  * Actity 聊天类 单人和群聊公用此类（通过上级跳转页面携带的对象来判断是单聊还是群聊）
  * 通过广播接收消息（群解散、群成员添加、群成员减少），做出相应反应
  * Activity首次创立是在onWebSocketServiceReady（）方法中加载数据，其余时刻在onResume中刷新数据
- * 
+ *
  */
 
 public class ChatActivity extends ActivitySupport {
@@ -209,7 +209,7 @@ public class ChatActivity extends ActivitySupport {
 		String[] friendsId = QiXinBaseDao.queryGroupRelations(group.groupID);
 
 		for (int i = 0; i < friendsId.length; i++) {
-			
+
 			FriendInfo friendInfo = new FriendInfo();
 			friendInfo = ContactBusiness.queryUserInfo(friendsId[i]);
 			if (friendInfo.getFriendid() == null) {
@@ -454,7 +454,7 @@ public class ChatActivity extends ActivitySupport {
 		rrl.setOnHeightSmallerListener(new ResizeRelativeLayout.OnHeightSmallerListener() {
 			@Override
 			public void onHeightSmaller(ResizeRelativeLayout layout, int oldh,
-					int h) {
+										int h) {
 				if (oldh < h) { // 可能是输入法缩回
 				} else { // 可能是输入法勃起
 					listview.getRefreshableView().postDelayed(new Runnable() {
@@ -470,11 +470,11 @@ public class ChatActivity extends ActivitySupport {
 		});
 		messageInput.addTextChangedListener(new TextWatcher() {
 			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
+									  int count) {
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
+										  int after) {
 			}
 
 			public void afterTextChanged(Editable s) {
@@ -630,7 +630,7 @@ public class ChatActivity extends ActivitySupport {
 
 					@Override
 					public void OnClickListener(View parentV, View v,
-							Integer position, Object values) {
+												Integer position, Object values) {
 						// 重发消息
 						showResendDialog(parentV, v, values);
 					}
@@ -643,7 +643,7 @@ public class ChatActivity extends ActivitySupport {
 
 					@Override
 					public void OnClickListener(View parentV, View v,
-							Integer position, Object values) {
+												Integer position, Object values) {
 						// 重发消息
 						showResendDialog(parentV, v, values);
 					}
@@ -656,7 +656,7 @@ public class ChatActivity extends ActivitySupport {
 
 					@Override
 					public void OnClickListener(View parentV, View v,
-							Integer position, Object values) {
+												Integer position, Object values) {
 						// 重发消息
 						showResendDialog(parentV, v, values);
 					}
@@ -668,7 +668,7 @@ public class ChatActivity extends ActivitySupport {
 
 					@Override
 					public void OnClickListener(View parentV, View v,
-							Integer position, Object values) {
+												Integer position, Object values) {
 						RecordPlayManager
 								.getInstance(context)
 								.recordPaly(
@@ -686,7 +686,7 @@ public class ChatActivity extends ActivitySupport {
 
 					@Override
 					public void OnClickListener(View parentV, View v,
-							Integer position, Object values) {
+												Integer position, Object values) {
 						RecordPlayManager
 								.getInstance(context)
 								.recordPaly(
@@ -700,7 +700,7 @@ public class ChatActivity extends ActivitySupport {
 	}
 
 	public void animSwitch2(final View gone, final View visible,
-			final Runnable run) {
+							final Runnable run) {
 		AlphaAnimation aa1 = new AlphaAnimation(1.0f, 0.0f);
 		aa1.setDuration(800);
 		gone.startAnimation(aa1);
@@ -731,7 +731,7 @@ public class ChatActivity extends ActivitySupport {
 	}
 
 	public void animSwitch(final View gone, final View visible,
-			final Runnable run) {
+						   final Runnable run) {
 		AlphaAnimation aa1 = new AlphaAnimation(1.0f, 0.0f);
 		aa1.setDuration(400);
 		gone.setAnimation(aa1);
@@ -743,7 +743,7 @@ public class ChatActivity extends ActivitySupport {
 	}
 
 	public void animGone(final View view, final Runnable start,
-			final Runnable end) {
+						 final Runnable end) {
 		AlphaAnimation aa = new AlphaAnimation(1.0f, 0.0f);
 		aa.setDuration(500);
 		aa.setAnimationListener(new Animation.AnimationListener() {
@@ -765,7 +765,7 @@ public class ChatActivity extends ActivitySupport {
 	}
 
 	public void animShow(final View view, final Runnable start,
-			final Runnable end) {
+						 final Runnable end) {
 		AlphaAnimation aa = new AlphaAnimation(0.0f, 1.0f);
 		aa.setDuration(500);
 		aa.setAnimationListener(new Animation.AnimationListener() {
@@ -823,35 +823,35 @@ public class ChatActivity extends ActivitySupport {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_chat:
-			if (ifGroupOrFriendExit
-					&& !StringUtil.isNullOrEmpty(friend.getFriendid())) {
-				Intent intent = new Intent(this, FriendsActivity.class);
-				Bundle mBundle = new Bundle();
-				mBundle.putSerializable(Constant.FRIEND_READ,
-						(Serializable) friend);
-				intent.putExtras(mBundle);
-				startActivity(intent);
-			}
-			break;
-		case R.id.menu_groupchat:
-			if (ifGroupOrFriendExit && !StringUtil.isNullOrEmpty(group.groupID)) {
-				Intent intent1 = new Intent(this,
-						ShowGroupChatMemberActivity.class);
-				Bundle mBundle1 = new Bundle();
-				mBundle1.putSerializable(Constant.GROUP_READ,
-						(Serializable) group);
-				intent1.putExtras(mBundle1);
-				startActivity(intent1);
-			}
-			break;
+			case R.id.menu_chat:
+				if (ifGroupOrFriendExit
+						&& !StringUtil.isNullOrEmpty(friend.getFriendid())) {
+					Intent intent = new Intent(this, FriendsActivity.class);
+					Bundle mBundle = new Bundle();
+					mBundle.putSerializable(Constant.FRIEND_READ,
+							(Serializable) friend);
+					intent.putExtras(mBundle);
+					startActivity(intent);
+				}
+				break;
+			case R.id.menu_groupchat:
+				if (ifGroupOrFriendExit && !StringUtil.isNullOrEmpty(group.groupID)) {
+					Intent intent1 = new Intent(this,
+							ShowGroupChatMemberActivity.class);
+					Bundle mBundle1 = new Bundle();
+					mBundle1.putSerializable(Constant.GROUP_READ,
+							(Serializable) group);
+					intent1.putExtras(mBundle1);
+					startActivity(intent1);
+				}
+				break;
 
-		case android.R.id.home:
-			Intent intent = new Intent();
-			intent.setClass(this, MainActivity.class);
-			startActivity(intent);
-			this.finish();
-			break;
+			case android.R.id.home:
+				Intent intent = new Intent();
+				intent.setClass(this, MainActivity.class);
+				startActivity(intent);
+				this.finish();
+				break;
 		}
 
 		return false;
@@ -871,24 +871,24 @@ public class ChatActivity extends ActivitySupport {
 		public void onClick(View arg0) {
 
 			switch (arg0.getId()) {
-			case R.id.chatting_send_btn:
+				case R.id.chatting_send_btn:
 
-				messageInput.setFocusable(true); // EditText重新获取焦点，保持键盘弹出
-				messageInput.requestFocus();
+					messageInput.setFocusable(true); // EditText重新获取焦点，保持键盘弹出
+					messageInput.requestFocus();
 
-				if (ifGroupOrFriendExit) {
-					String message = messageInput.getText().toString();
-					if ("".equals(message)) {
-						ToastUtil.ShowLong(ChatActivity.this, "不能为空");
-					} else {
-						sendMsg(message);
-						messageInput.setText("");
+					if (ifGroupOrFriendExit) {
+						String message = messageInput.getText().toString();
+						if ("".equals(message)) {
+							ToastUtil.ShowLong(ChatActivity.this, "不能为空");
+						} else {
+							sendMsg(message);
+							messageInput.setText("");
+						}
 					}
-				}
-				break;
+					break;
 
-			default:
-				break;
+				default:
+					break;
 			}
 
 		}
@@ -971,7 +971,7 @@ public class ChatActivity extends ActivitySupport {
 	}
 
 	private ChatHisBean newChatHisBean(String fileId, String filetype,
-			String sendStatus, String time, String msgContent) {
+									   String sendStatus, String time, String msgContent) {
 		ChatHisBean cBean = new ChatHisBean();
 		if (friend != null) {
 			cBean.setMsgTo(friend.getFriendid());
@@ -1075,12 +1075,12 @@ public class ChatActivity extends ActivitySupport {
 		} else if (!sputil.getMyId().equalsIgnoreCase(chb.getMsgFrom())
 				&& !TextUtils.isEmpty(chb.getmsgIdFile())
 				&& Constant.FILE_TYPE_PIC
-						.equalsIgnoreCase(chb.getmsgTypeFile())) {
+				.equalsIgnoreCase(chb.getmsgTypeFile())) {
 			msgType = ChatConstants.VALUE_LEFT_IMAGE;// 别人发的图片
 		} else if (!sputil.getMyId().equalsIgnoreCase(chb.getMsgFrom())
 				&& !TextUtils.isEmpty(chb.getmsgIdFile())
 				&& Constant.FILE_TYPE_AUDIO.equalsIgnoreCase(chb
-						.getmsgTypeFile())) {
+				.getmsgTypeFile())) {
 			msgType = ChatConstants.VALUE_LEFT_AUDIO;// 别人发的语音
 		} else if (sputil.getMyId().equalsIgnoreCase(chb.getMsgFrom())
 				&& TextUtils.isEmpty(chb.getmsgIdFile())) {
@@ -1088,23 +1088,23 @@ public class ChatActivity extends ActivitySupport {
 		} else if (sputil.getMyId().equalsIgnoreCase(chb.getMsgFrom())
 				&& !TextUtils.isEmpty(chb.getmsgIdFile())
 				&& Constant.FILE_TYPE_PIC
-						.equalsIgnoreCase(chb.getmsgTypeFile())) {
+				.equalsIgnoreCase(chb.getmsgTypeFile())) {
 			msgType = ChatConstants.VALUE_RIGHT_IMAGE;// 我发的图片
 		} else if (sputil.getMyId().equalsIgnoreCase(chb.getMsgFrom())
 				&& !TextUtils.isEmpty(chb.getmsgIdFile())
 				&& Constant.FILE_TYPE_AUDIO.equalsIgnoreCase(chb
-						.getmsgTypeFile())) {
+				.getmsgTypeFile())) {
 			msgType = ChatConstants.VALUE_RIGHT_AUDIO;// 我发的语音
-			
+
 		} else if (sputil.getMyId().equalsIgnoreCase(chb.getMsgFrom())
 				&& !TextUtils.isEmpty(chb.getmsgIdFile())
 				&& Constant.FILE_TYPE_LOCATION.equalsIgnoreCase(chb
-						.getmsgTypeFile())) {
+				.getmsgTypeFile())) {
 			msgType = ChatConstants.VALUE_RIGHT_LOCATION;// 我发的位置
 		} else if (!sputil.getMyId().equalsIgnoreCase(chb.getMsgFrom())
 				&& !TextUtils.isEmpty(chb.getmsgIdFile())
 				&& Constant.FILE_TYPE_LOCATION.equalsIgnoreCase(chb
-						.getmsgTypeFile())) {
+				.getmsgTypeFile())) {
 			msgType = ChatConstants.VALUE_LEFT_LOCATION;// 别人发的位置
 		}
 		return msgType;
@@ -1293,23 +1293,23 @@ public class ChatActivity extends ActivitySupport {
 	}
 
 	// 发送文件
-		public ExtendGridDataItem getFileExtend() {
-			ExtendGridDataItem item = new ExtendGridDataItem();
-			item.tipResId = R.string.app_pane_file_str;
-			item.iconResId = R.drawable.takepfile_btn;
-			item.action = new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					
-					Intent intent = new Intent(ChatActivity.this,
-							FileListActivity.class);
+	public ExtendGridDataItem getFileExtend() {
+		ExtendGridDataItem item = new ExtendGridDataItem();
+		item.tipResId = R.string.app_pane_file_str;
+		item.iconResId = R.drawable.takepfile_btn;
+		item.action = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				Intent intent = new Intent(ChatActivity.this,
+						FileListActivity.class);
 //					intent.putExtra("type", "select");
-					startActivity(intent);
-					Toast.makeText(ChatActivity.this, "文件", Toast.LENGTH_LONG).show();
-				}
-			};
-			return item;
-		}
+				startActivity(intent);
+				Toast.makeText(ChatActivity.this, "文件", Toast.LENGTH_LONG).show();
+			}
+		};
+		return item;
+	}
 	// 拍照选取图片
 	public ExtendGridDataItem getCameraExtend() {
 		ExtendGridDataItem item = new ExtendGridDataItem();
@@ -1388,71 +1388,71 @@ public class ChatActivity extends ActivitySupport {
 			return;
 		}
 		switch (requestCode) {
-		case 1:
-			if (resultCode == RESULT_OK) {
+			case 1:
+				if (resultCode == RESULT_OK) {
 
-				String filePath = Constant.CHAT_CACHE_DIR + strImage;
-				// //压缩成功后直接显示到聊天记录中
-				Bitmap bitmap = imageCompressUtil.getCompressImage(filePath);
-				if (bitmap != null) {
-					try {
+					String filePath = Constant.CHAT_CACHE_DIR + strImage;
+					// //压缩成功后直接显示到聊天记录中
+					Bitmap bitmap = imageCompressUtil.getCompressImage(filePath);
+					if (bitmap != null) {
+						try {
 
-						imageCompressUtil.saveImage(bitmap, filePath);
-						System.gc();
-						sendPicMessage(strImage);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						Log.i("发送图片异常：" + e.toString());
+							imageCompressUtil.saveImage(bitmap, filePath);
+							System.gc();
+							sendPicMessage(strImage);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							Log.i("发送图片异常：" + e.toString());
+						}
 					}
-				}
 
-			}
-			break;
-		case 2:
-			if (data == null) {
+				}
 				break;
-			}
-			Uri uri = data.getData();
-			if (uri != null) {
-
-				String strImage = uri.getPath();
-				String fileName = makePicFileName();
-				strImage = fileName;
-
-				// //压缩成功后直接显示到聊天记录中
-				Bitmap bitmapuri = imageCompressUtil.getCompressUri(
-						this.getContext(), uri);
-
-				if (bitmapuri != null) {
-					try {
-						imageCompressUtil.saveImage(bitmapuri,
-								Constant.CHAT_CACHE_DIR + strImage);
-						System.gc();
-						sendPicMessage(strImage);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						Log.i("发送图片异常2：" + e.toString());
-					}
-
-				} else {
-					return;
+			case 2:
+				if (data == null) {
+					break;
 				}
-			}
-			break;
-		case 0x000003:
-			String path = data.getStringExtra("path");
-			latitude = data.getDoubleExtra("y", 0)+"";//("x");
-			lonlongtitude = data.getDoubleExtra("x", 0)+"";
-			address = data.getStringExtra("address");
-			try {
-				sendLocationMessage(path);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				android.util.Log.i("info", "发送位置异常："+e.toString());
-			}
-			break;
-		default:
-			break;
+				Uri uri = data.getData();
+				if (uri != null) {
+
+					String strImage = uri.getPath();
+					String fileName = makePicFileName();
+					strImage = fileName;
+
+					// //压缩成功后直接显示到聊天记录中
+					Bitmap bitmapuri = imageCompressUtil.getCompressUri(
+							this.getContext(), uri);
+
+					if (bitmapuri != null) {
+						try {
+							imageCompressUtil.saveImage(bitmapuri,
+									Constant.CHAT_CACHE_DIR + strImage);
+							System.gc();
+							sendPicMessage(strImage);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							Log.i("发送图片异常2：" + e.toString());
+						}
+
+					} else {
+						return;
+					}
+				}
+				break;
+			case 0x000003:
+				String path = data.getStringExtra("path");
+				latitude = data.getDoubleExtra("y", 0)+"";//("x");
+				lonlongtitude = data.getDoubleExtra("x", 0)+"";
+				address = data.getStringExtra("address");
+				try {
+					sendLocationMessage(path);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					android.util.Log.i("info", "发送位置异常："+e.toString());
+				}
+				break;
+			default:
+				break;
 
 		}
 
@@ -1493,7 +1493,7 @@ public class ChatActivity extends ActivitySupport {
 
 	/**
 	 * 显示重发按钮 showResendDialog
-	 * 
+	 *
 	 * @Title: showResendDialog
 	 * @Description: TODO
 	 * @param @param recent
@@ -1504,18 +1504,18 @@ public class ChatActivity extends ActivitySupport {
 		noticeDialog = new Dialog(context, R.style.noticeDialogStyle);
 		noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
 
-		RelativeLayout dialog_confirm_rl;
-		RelativeLayout dialog_cc_cancel_rl;
+		TextView dialog_confirm_rl;
+		TextView dialog_cc_cancel_rl;
 		TextView notice = (TextView) noticeDialog
 				.findViewById(R.id.dialog_notice_tv);
 		notice.setText("确定重发该消息");
 
 		TextView confirm = (TextView) noticeDialog
-				.findViewById(R.id.dialog_confirm_tv);
+				.findViewById(R.id.dialog_cancel_tv);
 		confirm.setText("重发");
 
-		dialog_confirm_rl = (RelativeLayout) noticeDialog
-				.findViewById(R.id.dialog_cc_confirm_rl);
+		dialog_confirm_rl = (TextView) noticeDialog
+				.findViewById(R.id.dialog_confirm_tv);
 		dialog_confirm_rl.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1524,63 +1524,63 @@ public class ChatActivity extends ActivitySupport {
 				// TODO Auto-generated method stub
 				int type = chatBean.getType();
 				switch (type) {
-				case ChatConstants.VALUE_RIGHT_TEXT:
-					ProgressBar pb;
-					ImageView fail;
-					pb = (ProgressBar) parentV
-							.findViewById(R.id.chat_right_item_pb_righttext);
-					fail = (ImageView) parentV
-							.findViewById(R.id.chat_right_item_text_sendfail_righttext);
-					chatBean.setmsgSendStatus(Constant.MSG_SEND_STATUS_ING);
-					reSendMsg sendTxtMsg = new reSendMsg(fail, pb, chatBean);
-					sendTxtMsg.execute();
-					break;
-				case ChatConstants.VALUE_RIGHT_IMAGE:
-					ProgressBar pb1;
-					ImageView fail1;
-					pb1 = (ProgressBar) parentV
-							.findViewById(R.id.chat_right_item_pb_rightpic);
-					fail1 = (ImageView) parentV
-							.findViewById(R.id.chat_right_item_pic_sendfail_rightpic);
-
-					if (Constant.MSG_SEND_STATUS_FAIL.equalsIgnoreCase(chatBean
-							.getmsgSendStatus())) {
+					case ChatConstants.VALUE_RIGHT_TEXT:
+						ProgressBar pb;
+						ImageView fail;
+						pb = (ProgressBar) parentV
+								.findViewById(R.id.chat_right_item_pb_righttext);
+						fail = (ImageView) parentV
+								.findViewById(R.id.chat_right_item_text_sendfail_righttext);
 						chatBean.setmsgSendStatus(Constant.MSG_SEND_STATUS_ING);
-					}
-					if (Constant.FILE_SEND_STATUS_FILE_FAIL
-							.equalsIgnoreCase(chatBean.getmsgSendStatus())) {
-						chatBean.setmsgSendStatus(Constant.FILE_SEND_STATUS_FILE_ING);
-					}
-					reSendMsg sendPicMsg = new reSendMsg(fail1, pb1, chatBean);
-					sendPicMsg.execute();
-					break;
-				case ChatConstants.VALUE_RIGHT_AUDIO:
-					ProgressBar pb2;
-					ImageView fail2;
-					pb2 = (ProgressBar) parentV
-							.findViewById(R.id.chat_right_item_pb_rightaudio);
-					fail2 = (ImageView) parentV
-							.findViewById(R.id.chat_right_item_pic_sendfail_rightaudio);
+						reSendMsg sendTxtMsg = new reSendMsg(fail, pb, chatBean);
+						sendTxtMsg.execute();
+						break;
+					case ChatConstants.VALUE_RIGHT_IMAGE:
+						ProgressBar pb1;
+						ImageView fail1;
+						pb1 = (ProgressBar) parentV
+								.findViewById(R.id.chat_right_item_pb_rightpic);
+						fail1 = (ImageView) parentV
+								.findViewById(R.id.chat_right_item_pic_sendfail_rightpic);
 
-					if (Constant.MSG_SEND_STATUS_FAIL.equalsIgnoreCase(chatBean
-							.getmsgSendStatus())) {
-						chatBean.setmsgSendStatus(Constant.MSG_SEND_STATUS_ING);
-					}
-					if (Constant.FILE_SEND_STATUS_FILE_FAIL
-							.equalsIgnoreCase(chatBean.getmsgSendStatus())) {
-						chatBean.setmsgSendStatus(Constant.FILE_SEND_STATUS_FILE_ING);
-					}
-					reSendMsg sendAudioMsg = new reSendMsg(fail2, pb2, chatBean);
-					sendAudioMsg.execute();
-					break;
-				default:
-					break;
+						if (Constant.MSG_SEND_STATUS_FAIL.equalsIgnoreCase(chatBean
+								.getmsgSendStatus())) {
+							chatBean.setmsgSendStatus(Constant.MSG_SEND_STATUS_ING);
+						}
+						if (Constant.FILE_SEND_STATUS_FILE_FAIL
+								.equalsIgnoreCase(chatBean.getmsgSendStatus())) {
+							chatBean.setmsgSendStatus(Constant.FILE_SEND_STATUS_FILE_ING);
+						}
+						reSendMsg sendPicMsg = new reSendMsg(fail1, pb1, chatBean);
+						sendPicMsg.execute();
+						break;
+					case ChatConstants.VALUE_RIGHT_AUDIO:
+						ProgressBar pb2;
+						ImageView fail2;
+						pb2 = (ProgressBar) parentV
+								.findViewById(R.id.chat_right_item_pb_rightaudio);
+						fail2 = (ImageView) parentV
+								.findViewById(R.id.chat_right_item_pic_sendfail_rightaudio);
+
+						if (Constant.MSG_SEND_STATUS_FAIL.equalsIgnoreCase(chatBean
+								.getmsgSendStatus())) {
+							chatBean.setmsgSendStatus(Constant.MSG_SEND_STATUS_ING);
+						}
+						if (Constant.FILE_SEND_STATUS_FILE_FAIL
+								.equalsIgnoreCase(chatBean.getmsgSendStatus())) {
+							chatBean.setmsgSendStatus(Constant.FILE_SEND_STATUS_FILE_ING);
+						}
+						reSendMsg sendAudioMsg = new reSendMsg(fail2, pb2, chatBean);
+						sendAudioMsg.execute();
+						break;
+					default:
+						break;
 				}
 
 			}
 		});
-		dialog_cc_cancel_rl = (RelativeLayout) noticeDialog
-				.findViewById(R.id.dialog_cc_cancel_rl);
+		dialog_cc_cancel_rl = (TextView) noticeDialog
+				.findViewById(R.id.dialog_cancel_tv);
 		dialog_cc_cancel_rl.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

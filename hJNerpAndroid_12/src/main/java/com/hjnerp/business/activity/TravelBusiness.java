@@ -11,19 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.hjnerp.business.BusinessJsonCallBack.BFlagCallBack;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.BusinessBaseDao;
@@ -35,7 +31,7 @@ import com.hjnerp.model.PerformanceBean;
 import com.hjnerp.model.PerformanceDatas;
 import com.hjnerp.model.UserInfo;
 import com.hjnerp.model.businessFlag;
-import com.hjnerp.util.ToastUtil;
+import com.hjnerp.widget.ClearEditText;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
@@ -50,34 +46,67 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class TravelBusiness extends ActivitySupport implements View.OnClickListener {
+/**
+ * 出差外出单
+ */
+public class TravelBusiness extends ActionBarWidgetActivity implements View.OnClickListener {
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.travel_name)
+    TextView travel_name;
+    @BindView(R.id.travel_part)
+    TextView travel_part;
+    @BindView(R.id.travel_time_begin)
+    TextView travel_time_begin;
+    @BindView(R.id.travel_time_end)
+    TextView travel_time_end;
+    @BindView(R.id.travel_reason)
+    ClearEditText travel_reason;
+    @BindView(R.id.travel_work)
+    TextView travel_work;
+    @BindView(R.id.travel_client)
+    TextView travel_client;
+    @BindView(R.id.addlayout)
+    LinearLayout addlayout;
+    @BindView(R.id.addtravel)
+    TextView addtravel;
+    @BindView(R.id.travel_partner)
+    ClearEditText travel_partner;
+    @BindView(R.id.travel_pay)
+    ClearEditText travel_pay;
+    @BindView(R.id.var_rejust_name)
+    TextView var_rejust_name;
+    @BindView(R.id.rejust_list)
+    LinearLayout rejust_list;
 
-    private EditText travel_name;
-    private EditText travel_part;
-    private EditText travel_time_begin;
-    private EditText travel_time_end;
-    private EditText travel_reason;
-    private EditText travel_work;
-    private EditText travel_client;
-    private LinearLayout addlayout;
-    private TextView addtravel;
-    private Button submit_travel;
+    private EditText traveltimefrom;
+    private EditText travelfrom;
+    private EditText travelto;
+    private EditText traveltimeto;
+    private Spinner travelpayfee;
+    private EditText travelothers;
+    private EditText traveldetailpayfee;
+
+    private Calendar c = Calendar.getInstance();
     private int i = 1;
     private List<View> listaddview;
-    private EditText travel_partner;
-    private Calendar c = Calendar.getInstance();
     private UserInfo myInfo;
     private String username;
     private String userID;
     private String departmentName;
     private String companyID;
     private String id_dept;
-    private EditText travel_pay;
-    private TextView nofocus;
-
     private List<Ctlm1345> fees;
     private String[] feeItems;
     private String[] feeItemsMark;
@@ -90,92 +119,53 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
     private String id_clerk;
     private String id_linem;
     private String id_auditlvl;
-    private EditText var_rejust_name;
-    private LinearLayout rejust_list;
     private PerformanceDatas pds;
     private PerformanceDatas.MainBean mainBean;
     private List<PerformanceBean> details;
-    private EditText traveltimefrom;
-    private EditText travelfrom;
-    private EditText travelto;
-    private EditText traveltimeto;
-    private Spinner travelpayfee;
-    private EditText travelothers;
-    private EditText traveldetailpayfee;
     private int countDetail;
     private int mark;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travel_business);
-
+        ButterKnife.bind(this);
         initData();
         initView();
     }
 
-    private void initData() {
-
-
-
-        fees = new ArrayList<>();
-        users = new ArrayList<>();
-        users = BusinessBaseDao.getCTLM1345ByIdTable("user");
-        if (users.size() == 0) {
-            ToastUtil.ShowShort(this, "请先下载基础数据");
-            finish();
-            return;
-        }
-        String userinfos = users.get(0).getVar_value();
-//        id_clerk =
-        Gson gson1 = new Gson();
-        Ej1345 ej1345 = gson1.fromJson(userinfos, Ej1345.class);
-        id_clerk = ej1345.getId_clerk();
-        id_linem = ej1345.getId_linem();
-        id_auditlvl = ej1345.getId_auditlvl();
-        fees = BusinessBaseDao.getCTLM1345ByIdTable("fee");
-
-        feeItems = new String[fees.size() + 1];
-        feeItems[0] = "";
-        feeItemsMark = new String[fees.size() + 1];
-        feeItemsMark[0] = "";
-        feeId = new String[fees.size() + 1];
-        feeId[0] = "";
-        for (int i = 0; i < fees.size(); i++) {
-            String feevalue = fees.get(i).getVar_value();
-//            Log.d("feevalue",feevalue);
-            Gson gson = new Gson();
-            BusinessFee businessFee = gson.fromJson(feevalue, BusinessFee.class);
-            feeItems[i + 1] = businessFee.getName_fee();
-            feeItemsMark[i + 1] = businessFee.getVar_remark();
-            feeId[i + 1] = businessFee.getId_fee();
-        }
-        stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, feeItems);
-        stringArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
-
-    }
-
     private void initView() {
+        actionCenterTv.setText(getString(R.string.Travel_Title_TvActivity));
+        actionRightTv.setText(getString(R.string.action_right_right_submit));
 
-        getSupportActionBar().show();
-        getSupportActionBar().setTitle("出差/外出单");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        travel_name = (EditText) findViewById(R.id.travel_name);
-        travel_part = (EditText) findViewById(R.id.travel_part);
-        travel_time_begin = (EditText) findViewById(R.id.travel_time_begin);
+        actionRightTv.setOnClickListener(this);
+        actionLeftTv.setOnClickListener(this);
         travel_time_begin.setOnClickListener(this);
-        travel_time_end = (EditText) findViewById(R.id.travel_time_end);
         travel_time_end.setOnClickListener(this);
-        travel_reason = (EditText) findViewById(R.id.travel_reason);
-        travel_work = (EditText) findViewById(R.id.travel_work);
-        travel_client = (EditText) findViewById(R.id.travel_client);
-        addlayout = (LinearLayout) findViewById(R.id.addlayout);
-        addtravel = (TextView) findViewById(R.id.addtravel);
         addtravel.setOnClickListener(this);
-        submit_travel = (Button) findViewById(R.id.submit_travel);
-        submit_travel.setOnClickListener(this);
+
+        myInfo = QiXinBaseDao.queryCurrentUserInfo();
+        username = myInfo.username;
+        userID = myInfo.userID;
+        companyID = myInfo.companyID;
+        id_dept = myInfo.departmentID;
+        departmentName = myInfo.departmentName;
+//        clerkID = myInfo.clerkID;
+//        Toast.makeText(this,clerkID,Toast.LENGTH_SHORT).show();
+//        departmentID = myInfo.departmentID;
+        travel_name.setText(username);
+        travel_part.setText(departmentName);
+
+        travel_work.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), BusinessSearch.class);
+                Constant.travel = true;
+                startActivityForResult(intent, 33);
+            }
+        });
+
         LayoutInflater inflater = LayoutInflater.from(this);
         View view1 = inflater.inflate(R.layout.travel_detail, addlayout, false);
         TextView traveldelete1 = (TextView) view1.findViewById(R.id.travel_delete);
@@ -188,7 +178,6 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
         travelpayfee = (Spinner) view1.findViewById(R.id.travel_pay_work);
         travelothers = (EditText) view1.findViewById(R.id.travel_others);
         traveldetailpayfee = (EditText) view1.findViewById(R.id.travel_pay_fee);
-
         travelpayfee.setAdapter(stringArrayAdapter);
         traveltimefrom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,32 +204,12 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
 
             }
         });
+
         listaddview = new ArrayList<View>();
         listaddview.add(view1);
-        travel_partner = (EditText) findViewById(R.id.travel_partner);
-        travel_pay = (EditText) findViewById(R.id.travel_pay);
         travel_pay.setOnClickListener(this);
-        nofocus = (TextView) findViewById(R.id.nofocus);
-        nofocus.requestFocus();
-        myInfo = QiXinBaseDao.queryCurrentUserInfo();
-        username = myInfo.username;
-        userID = myInfo.userID;
-        companyID = myInfo.companyID;
-        id_dept = myInfo.departmentID;
-//        clerkID = myInfo.clerkID;
-//        Toast.makeText(this,clerkID,Toast.LENGTH_SHORT).show();
-//        departmentID = myInfo.departmentID;
-        travel_name.setText(username);
-        departmentName = myInfo.departmentName;
-        travel_part.setText(departmentName);
-        travel_work.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), BusinessSearch.class);
-                Constant.travel = true;
-                startActivityForResult(intent, 33);
-            }
-        });
+
+
 //        TravelAdapter adapter = new TravelAdapter(travelDatas, this);
 //        travel_work.setAdapter(adapter);
 //        travel_work.setThreshold(1);
@@ -254,12 +223,44 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
 //                travel_client.setText(pc.getName_corr().trim());
 //            }
 //        });
-        var_rejust_name = (EditText) findViewById(R.id.var_rejust_name);
-        rejust_list = (LinearLayout) findViewById(R.id.rejust_list);
+
         if (!Constant.JUDGE_TYPE) {
             rejust_list.setVisibility(View.VISIBLE);
             setRejustContext();
         }
+    }
+
+    private void initData() {
+        fees = new ArrayList<>();
+        users = new ArrayList<>();
+        users = BusinessBaseDao.getCTLM1345ByIdTable("user");
+        if (users.size() == 0) {
+            showFailToast("请先下载基础数据");
+            finish();
+            return;
+        }
+        String userinfos = users.get(0).getVar_value();
+        Ej1345 ej1345 = mGson.fromJson(userinfos, Ej1345.class);
+        id_clerk = ej1345.getId_clerk();
+        id_linem = ej1345.getId_linem();
+        id_auditlvl = ej1345.getId_auditlvl();
+        fees = BusinessBaseDao.getCTLM1345ByIdTable("fee");
+
+        feeItems = new String[fees.size() + 1];
+        feeItems[0] = "";
+        feeItemsMark = new String[fees.size() + 1];
+        feeItemsMark[0] = "";
+        feeId = new String[fees.size() + 1];
+        feeId[0] = "";
+        for (int i = 0; i < fees.size(); i++) {
+            String feevalue = fees.get(i).getVar_value();
+            BusinessFee businessFee = mGson.fromJson(feevalue, BusinessFee.class);
+            feeItems[i + 1] = businessFee.getName_fee();
+            feeItemsMark[i + 1] = businessFee.getVar_remark();
+            feeId[i + 1] = businessFee.getId_fee();
+        }
+        stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, feeItems);
+        stringArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 
     @Override
@@ -426,39 +427,35 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
     }
 
 
-
-
-
-
     private void submit() {
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
         String a = f.format(c.getTime());
         String name = travel_name.getText().toString().trim();
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "出差人员不能为空", Toast.LENGTH_SHORT).show();
+            showFailToast("出差人员不能为空");
             return;
         }
         String partner = travel_partner.getText().toString().trim();
         String begin = travel_time_begin.getText().toString().trim();
         if (TextUtils.isEmpty(begin)) {
-            Toast.makeText(this, "开始时间不能为空", Toast.LENGTH_SHORT).show();
+            showFailToast("开始时间不能为空");
             return;
         }
         String end = travel_time_end.getText().toString().trim();
         if (TextUtils.isEmpty(end)) {
-            Toast.makeText(this, "结束时间不能为空", Toast.LENGTH_SHORT).show();
+            showFailToast("结束时间不能为空");
             return;
         }
         String reason = travel_reason.getText().toString().trim();
         if (TextUtils.isEmpty(reason)) {
-            Toast.makeText(this, "出差原因不能为空", Toast.LENGTH_SHORT).show();
+            showFailToast("出差原因不能为空");
             return;
         }
         String pay = travel_pay.getText().toString().trim();
         HjUpload hjUpload = new HjUpload(this);
         try {
             if (hjUpload.compare(end, begin)) {
-                ToastUtil.ShowShort(this, "开始时间不能大于结束时间。");
+                showFailToast("开始时间不能大于结束时间。");
                 return;
             }
         } catch (ParseException e) {
@@ -473,7 +470,7 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
                 try {
                     dec_samt = dec_samt + Double.parseDouble(travelpayfee.getText().toString().trim());
                 } catch (Exception e) {
-                    ToastUtil.ShowShort(this, "金额项中请输入正确的数字格式");
+                    showFailToast("金额项中请输入正确的数字格式");
                 }
             }
         }
@@ -624,14 +621,14 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
                         Constant.billsNo = businessFlag.getNo();
                         if (businessFlag.getFlag().equals("Y")) {
                             if (dealtype.equalsIgnoreCase("send")) {
-                                ToastUtil.ShowShort(getContext(), "上传成功");
+                                showFailToast("上传成功");
 //                                resetAll();
                                 setResult(22);
                                 finish();
                             }
 
                         } else {
-                            ToastUtil.ShowShort(getContext(), "上传失败");
+                            showFailToast("上传失败");
                         }
                         if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
                             waitDialogRectangle.dismiss();
@@ -642,11 +639,9 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
                         if (e instanceof OkGoException) {
-                            ToastUtil.ShowShort(getContext(), "网络错误");
-
+                            showFailToast("网络错误");
                         } else {
-                            ToastUtil.ShowShort(getContext(), e.getMessage());
-
+                            showFailToast(e.getMessage());
                         }
                         if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
                             waitDialogRectangle.dismiss();
@@ -685,7 +680,7 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.submit_travel:
+            case R.id.action_right_tv:
                 submit();
                 break;
             case R.id.addtravel:
@@ -739,7 +734,9 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
             case R.id.travel_time_end:
                 showCalendar(travel_time_end);
                 break;
-
+            case R.id.action_left_tv:
+                finish();
+                break;
         }
 
     }
@@ -748,17 +745,17 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
 
         final Dialog noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
         noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
-        RelativeLayout dialog_cancel_rl, dialog_confirm_rl;
+        TextView dialog_cancel_rl, dialog_confirm_rl;
         TextView notice = (TextView) noticeDialog
                 .findViewById(R.id.dialog_notice_tv);
         notice.setText("是否要删除该行程明细？");
-        dialog_cancel_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_cancel_rl);
+        dialog_cancel_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_cancel_tv);
         TextView dialog_cancel_tv = (TextView) noticeDialog
                 .findViewById(R.id.dialog_cancel_tv);
         dialog_cancel_tv.setText("取消");
-        dialog_confirm_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_confirm_rl);
+        dialog_confirm_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_confirm_tv);
         TextView dialog_confirm_tv = (TextView) noticeDialog
                 .findViewById(R.id.dialog_confirm_tv);
         dialog_confirm_tv.setText("删除");
@@ -783,7 +780,6 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
     }
 
     private void showtime(final EditText timetext) {
-
 //        c.setTimeInMillis(System.currentTimeMillis());
         final StringBuilder str = new StringBuilder("");
         new DatePickerDialog(this,
@@ -822,36 +818,6 @@ public class TravelBusiness extends ActivitySupport implements View.OnClickListe
                 }
                 , c.get(Calendar.YEAR), c.get(Calendar.MONTH), c
                 .get(Calendar.DAY_OF_MONTH)).show();
-
     }
-
-    private void showCalendar(final EditText editText) {
-//        c = Calendar.getInstance();
-        new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        int month = monthOfYear + 1;
-                        if (month < 10 && dayOfMonth < 10) {
-                            editText.setText(year + "-0" + month
-                                    + "-0" + dayOfMonth);
-                        } else if (month < 10 && dayOfMonth >= 10) {
-                            editText.setText(year + "-0" + month
-                                    + "-" + dayOfMonth);
-                        } else if (month >= 10 && dayOfMonth < 10) {
-                            editText.setText(year + "-" + month
-                                    + "-0" + dayOfMonth);
-                        } else {
-                            editText.setText(year + "-" + month
-                                    + "-" + dayOfMonth);
-                        }
-
-                    }
-                }
-                , c.get(Calendar.YEAR), c.get(Calendar.MONTH), c
-                .get(Calendar.DAY_OF_MONTH)).show();
-    }
-
 
 }

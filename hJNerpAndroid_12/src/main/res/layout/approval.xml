@@ -6,6 +6,8 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
+    <include
+        layout="@layout/actionbar_layout"/>
 
     <!--  com.hjnerp.widget.PullRefreshListView
         android:id="@+id/plv_approval"

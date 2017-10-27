@@ -188,13 +188,668 @@
     </style>
 
 
-
-    <style name="menu_item_text_style">
+    <!-- 垂直布局 宽度与父控件一样高度自适应 -->
+    <style name="Item_LinearLayout_VerticalDefaultStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/white</item>
+    </style>
+    <!--水平 宽度与父控件一样高度自适应 -->
+    <style name="Item_LinearLayout_HorizontalDefaultStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/white</item>
+    </style>
+    <!-- 垂直布局 自适应-->
+    <style name="Item_LinearLayout_VerticalDefaultWHStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/white</item>
+    </style>
+    <!-- 垂直布局 高宽全屏 -->
+    <style name="Item_LinearLayout_VerticalStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/activity_bg</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+    <!-- 水平布局 高度40 -->
+    <style name="Item_LinearLayout_HorizontalStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginTop">@dimen/size_1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <!-- 水平布局 高度40 -->
+    <style name="Item_LinearLayout_HorizontalDefaultHStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginTop">@dimen/size_1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <!-- 水平布局 高度44 -->
+    <style name="Item_LinearLayout_HorizontalStyle44">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_44</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginTop">@dimen/size_1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <!-- 水平布局 高度45 -->
+    <style name="Item_LinearLayout_HorizontalContacterStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_50</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginTop">@dimen/size_1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <!-- actionbar的相对布局 -->
+    <style name="Item_RelativeLayout_ActionBarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_44</item>
+        <item name="android:background">@color/actionbar_title_bg</item>
+    </style>
+    <!-- Item的相对布局高度为40 -->
+    <style name="Item_RelativeLayout_ListItemStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:background">@drawable/app_out_btn_style</item>
+    </style>
+    <!-- Item的相对布局高度为45 -->
+    <style name="Item_RelativeLayout_ContacterItemStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_45</item>
+        <item name="android:background">@drawable/app_out_btn_style</item>
+    </style>
+    <!-- 相对布局默认-->
+    <style name="Item_RelativeLayout_DefaultStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/white</item>
+    </style>
+    <!-- actionbar的相对布局左边标题-->
+    <style name="Item_TextView_ActionBarLeftStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:drawableLeft">@drawable/icon_action_back_img</item>
         <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/actionbar_title_tcolor</item>
+        <item name="android:textSize">@dimen/font_size_17</item>
+        <item name="android:drawablePadding">@dimen/size_.5</item>
+        <item name="android:text">@string/action_left_content_back</item>
+        <item name="android:layout_marginLeft">@dimen/size_5</item>
+    </style>
+    <!-- actionbar的相对布局大标题-->
+    <style name="Item_TextView_ActionBarCenterStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_centerVertical">true</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:background">@drawable/menu_item_selector</item>
+        <item name="android:textSize">@dimen/font_size_18</item>
+        <item name="android:text">@string/action_right_content_title</item>
+    </style>
+    <!-- actionbar的相对布局右标题  -->
+    <style name="Item_TextView_ActionBarRightStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/actionbar_title_tcolor</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:textSize">@dimen/font_size_17</item>
+        <item name="android:text">@string/action_right_right_title</item>
+    </style>
+    <!-- actionbar的相对布局右标题 -->
+    <style name="Item_TextView_ActionBarRight1Style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/actionbar_title_tcolor</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:textSize">@dimen/font_size_17</item>
+        <item name="android:text">@string/action_right_right1_title</item>
+    </style>
+    <!-- actionbar 分割线  -->
+    <style name="Item_TextView_ActionBarViewDividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:background">@color/acbar_view_bg</item>
+    </style>
+    <!-- actionbar 分割线  -->
+    <style name="Item_View_DividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:background">@color/item_group_bg</item>
+    </style>
+    <!-- actionbar 分割线  -->
+    <style name="Item_View_LayoutViewDividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:background">@color/item_viewDivider_bg</item>
+    </style>
+    <!-- actionbar 分割线  -->
+    <style name="Item_View_ViewDividerVerticalStyle">
+        <item name="android:layout_width">@dimen/size_1</item>
+        <item name="android:layout_height">@dimen/size_30</item>
+        <item name="android:background">@color/item_group_bg</item>
+    </style>
+    <!-- actionbar 分割线  -->
+    <style name="Item_View_ListViewDividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:background">@color/actionbar_bg</item>
+    </style>
+    <!-- 工作日志左侧标题  -->
+    <style name="Item_LinearLayout_TVLeftTieleStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+        <item name="android:layout_weight">1</item>
     </style>
 
+
+    <!-- 左边标题默认 -->
+    <style name="Item_LeftTextView_Weight1">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <!-- 右侧输入框 权重为4 -->
+    <style name="Item_RightTextView_Weight4">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">4</item>
+    </style>
+
+
+    <!-- 右侧TextView框 没有照片-->
+    <style name="Item_LinearLayout_TvRightTitleStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+
+
+    <!-- 工作日志右侧输入框标题 -->
+    <style name="Item_LinearLayout_EdRightTitleStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+
+    <!-- 右侧TextView框 -->
+    <style name="Item_LinearLayout_TvRightContacterStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <!-- 右侧ImageView -->
+    <style name="Item_LinearLayout_ImgRightTitleStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+    </style>
+
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头-->
+    <style name="Item_LinearLayout_TvRightTitleImgStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的-->
+    <style name="Item_LinearLayout_TvImgStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:textSize">@dimen/font_size_17</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/app_out_btn_style</item>
+        <item name="android:drawablePadding">@dimen/size_10</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:layout_marginTop">@dimen/size_1</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+    </style>
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的-->
+    <style name="Item_Contacter_TvImgStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的-->
+    <style name="Item_Group_TvImgStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/app_out_btn_style</item>
+        <item name="android:drawablePadding">@dimen/size_10</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+    </style>
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的-->
+    <style name="Item_Contacater_TvStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/activity_child_item_bkg</item>
+        <item name="android:drawablePadding">@dimen/size_10</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+    </style>
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的，无margintop-->
+    <style name="Item_LinearLayout_TvImgStyle_no_one">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_45</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/app_out_btn_style</item>
+        <item name="android:drawablePadding">@dimen/size_10</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+    </style>
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头,不需要paddingLeft-->
+    <style name="Item_LinearLayout_TvRightTitleImgStyle2">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+
+    <!-- 工作日志左侧标题固定宽度  -->
+    <style name="Item_LinearLayout_TVLeftTieleStyle2">
+        <item name="android:layout_width">@dimen/size_65</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+    </style>
+
+    <!-- 右侧TextView跳转页面的图片框 向右的箭头,不需要paddingLeft-->
+    <style name="Item_LinearLayout_TvRightTitleImgStyle3">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <!--(默认单行一个textview) TextView跳转页面的图片框 向右的箭头-->
+    <style name="Item_LinearLayout_TvTitleImgStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:textSize">@dimen/font_size_17</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:layout_marginTop">@dimen/size_1</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+    </style>
+
+    <!--(默认单行一个textview) TextView跳转页面的图片框 向右的箭头-->
+    <style name="Item_LinearLayout_TvTitleImgStyle2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:textSize">@dimen/font_size_17</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+    </style>
+
+    <!-- 右侧TextView跳转页面的图片框 向下的箭头 -->
+    <style name="Item_LinearLayout_TvRightTitleImgDownStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:drawableRight">@drawable/icon_sp_down_bg</item>
+        <item name="android:paddingRight">@dimen/size_17</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+    <!-- 左边内容 -->
+    <style name="Item_TextView_LiftStyleH40">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!-- 工作日志右侧spaner -->
+    <style name="Item_LinearLayout_SpRightStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+    <!-- 右侧spinner -->
+    <style name="Item_LinearLayout_Spinner_RightStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:drawSelectorOnTop">false</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+
+    <!-- popup的ITEM -->
+    <style name="poppup_item_TvStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_35</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/button_normal_bg</item>
+    </style>
+
+    <!-- 搜索的EditText -->
+    <style name="Item_EditeText_SearchEdStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_30</item>
+        <item name="android:layout_margin">@dimen/size_5</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/search_ed_bg</item>
+        <item name="android:drawableLeft">@drawable/icon_edit_search</item>
+        <item name="android:drawablePadding">@dimen/size_10</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!-- 修改个人信息界面 -->
+    <style name="Item_EditeText_ChangeInfoStyleH40">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_45</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:background">@drawable/input_bar_bg_active</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <!-- 修改个人信息界面 -->
+    <style name="Item_TextView_ChangeInfoStyleH40">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_45</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:background">@drawable/dialog_item_bkg</item>
+        <item name="android:textColor">@color/actionbar_title_tcolor</item>
+    </style>
+
+    <!-- 搜索的Item 标题 -->
+    <style name="Item_Search_TvTitleStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+        <item name="android:layout_marginTop">@dimen/size_2</item>
+        <item name="android:layout_marginBottom">@dimen/size_2</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/item_search_tvTitleColor</item>
+        <item name="android:textSize">@dimen/font_size_15</item>
+    </style>
+
+    <!-- 搜索的Item 内容-->
+    <style name="Item_Search_TvContentStyle">
+        <item name="android:layout_width">@dimen/size_0</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:layout_marginTop">@dimen/size_2</item>
+        <item name="android:layout_marginBottom">@dimen/size_2</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_weight">6</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/font_size_15</item>
+    </style>
+    <!-- 搜索的Item 内容(单行)-->
+    <style name="Item_Search_TvContentStyle_oneline">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/size_2</item>
+        <item name="android:layout_marginBottom">@dimen/size_2</item>
+        <item name="android:paddingLeft">@dimen/size_15</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+    </style>
+
+    <!-- 搜索的Item LinearLayoutHorizontal 水平布局 -->
+    <style name="Item_Search_LinearLayoutHorizontalStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/size_1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <!-- app退出按钮 -->
+    <style name="Item_Setting_AppOutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_44</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_size_18</item>
+        <item name="android:layout_marginTop">@dimen/size_15</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/app_out_btn_style</item>
+    </style>
+    <!-- 修改密码的输入框 -->
+    <style name="Item_Setting_EdPWordStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:paddingLeft">@dimen/size_10</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:digits">@string/available_chars</item>
+        <item name="android:maxLength">16</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:inputType">textPassword</item>
+    </style>
+
+    <!-- 按钮的风格 -->
+    <style name="Item_Button_BuleStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:layout_marginTop">@dimen/size_10</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:textSize">@dimen/font_size_18</item>
+        <item name="android:enabled">false</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/login_btn_style</item>
+    </style>
+
+    <!-- TextView部分提示语 -->
+    <style name="Item_TextView_HintStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_40</item>
+        <item name="android:layout_marginTop">@dimen/size_10</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!-- 登录注册界面的输入框 -->
+    <style name="Item_EditText_PwordStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_45</item>
+        <item name="android:layout_marginLeft">@dimen/size_10</item>
+        <item name="android:layout_marginRight">@dimen/size_20</item>
+        <item name="android:textSize">@dimen/font_size_17</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:maxLength">16</item>
+        <item name="android:background">@null</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:drawablePadding">@dimen/size_10</item>
+    </style>
+    <!--设置中的全屏线 1dp-->
+    <style name="full_screen_line1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:background">@color/common_item_press</item>
+    </style>
+    <!--设置中的全屏线 10dp-->
+    <style name="full_screen_line10">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_10</item>
+        <item name="android:background">@color/ss_back</item>
+    </style>
+    <!--设置中的全屏线 15dp-->
+    <style name="full_screen_line15">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_15</item>
+        <item name="android:background">@color/ss_back</item>
+    </style>
+    <!--设置中的非全屏线 left45-->
+    <style name="full_screen_line_45">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:layout_marginLeft">@dimen/size_45</item>
+        <item name="android:background">@color/item_group_bg</item>
+    </style>
+    <!--设置中的非全屏线 left60-->
+    <style name="full_screen_line_60">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:layout_marginLeft">@dimen/size_60</item>
+        <item name="android:background">@color/item_group_bg</item>
+    </style>
+
+    <!-- 个人信息中左边的标题 TextView  -->
+    <style name="Item_RelativeLayout_TvLiftFriendStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/size_15</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <!-- 个人信息中右边的标题 TextView 不带图标的 -->
+    <style name="Item_RelativeLayout_TvRightFriendStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/size_15</item>
+        <item name="android:textColor">@color/item_Friend_TvContentCl</item>
+        <item name="android:textSize">@dimen/font_size_15</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+    <!-- 个人信息中右边的标题 TextView 不带图标的 -->
+    <style name="Item_RelativeLayout_TvRightImgFriendStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:textColor">@color/item_Friend_TvContentCl</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_size_15</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:drawableRight">@drawable/icon_right_orientation</item>
+    </style>
+
+    <!--弹窗动画-->
+    <style name="PopupWindow">
+        <item name="android:windowEnterAnimation">@anim/window_in</item>
+        <item name="android:windowExitAnimation">@anim/window_out</item>
+    </style>
+
+    <!--工作日志弹框-->
+    <style name="menu_item_text_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_30</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/login_select_bg</item>
+        <item name="android:layout_margin">@dimen/size_1</item>
+    </style>
 </resources>

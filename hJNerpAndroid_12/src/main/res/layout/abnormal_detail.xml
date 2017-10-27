@@ -3,165 +3,68 @@
     android:id="@+id/abnormal_detail_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#efeff4"
+    android:background="@color/activity_bg"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/size_30"
+        android:layout_marginLeft="@dimen/size_10"
+        android:gravity="center_vertical"
+        android:text="考勤明细" />
+
+    <LinearLayout
+        style="@style/Item_LinearLayout_HorizontalStyle"
+        android:layout_marginTop="@dimen/size_1">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="10dp"
-            android:paddingLeft="5dp"
-            android:text="考勤明细" />
-    </RelativeLayout>
+            style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+            android:text="@string/detail_Title_AbnormalDate" />
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:background="#ffffff"
-        android:gravity="center">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="日期"
-                android:textColor="#000000"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="*"
-                android:textColor="@color/red" />
-
-            <EditText
-                android:id="@+id/abnormal_date"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:focusable="false"
-                android:gravity="center"
-                android:hint="请选择考勤日期"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="30dp"
-            android:background="#99efeff4" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="2dp"
-                android:text="上下班类型"
-                android:textColor="#000000"
-                android:textSize="16sp" />
-
-            <EditText
-                android:id="@+id/abnormal_type"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:focusable="false"
-                android:gravity="center"
-                android:textSize="14sp" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/abnormal_date"
+            style="@style/Item_LinearLayout_TvRightTitleStyle" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#99efeff4" />
+    <LinearLayout
+        style="@style/Item_LinearLayout_HorizontalStyle"
+        android:layout_marginTop="@dimen/size_1">
+
+        <TextView
+            style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+            android:text="@string/detail_Title_AbnormalType" />
+
+        <TextView
+            android:id="@+id/abnormal_type"
+            style="@style/Item_LinearLayout_TvRightTitleStyle" />
+    </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:background="#ffffff"
-        android:gravity="center">
+        style="@style/Item_LinearLayout_HorizontalStyle"
+        android:layout_marginTop="@dimen/size_1">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+        <TextView
+            style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+            android:text="@string/detail_Title_AbnormalTime" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="2dp"
-                android:text="打卡时间"
-                android:textColor="#000000"
-                android:textSize="16sp" />
-
-            <EditText
-                android:id="@+id/abnormal_time"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:focusable="false"
-                android:gravity="center"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="30dp"
-            android:background="#99efeff4" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="异常说明"
-                android:textColor="#000000"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="*"
-                android:textColor="@color/red" />
-
-            <EditText
-                android:id="@+id/abnormal_remark"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:gravity="center"
-                android:hint="请填写考勤说明"
-                android:textSize="14sp" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/abnormal_time"
+            style="@style/Item_LinearLayout_TvRightTitleStyle" />
     </LinearLayout>
+
+    <LinearLayout
+        style="@style/Item_LinearLayout_HorizontalStyle"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_1"
+        android:minHeight="@dimen/size_40">
+
+        <TextView
+            style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+            android:text="@string/detail_Title_AbnormalUnderstand" />
+
+        <com.hjnerp.widget.ClearEditText
+            android:id="@+id/abnormal_remark"
+            style="@style/Item_LinearLayout_EdRightTitleStyle" />
+    </LinearLayout>
+
 </LinearLayout>

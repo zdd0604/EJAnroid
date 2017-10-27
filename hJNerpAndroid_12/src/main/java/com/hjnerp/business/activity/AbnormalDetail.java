@@ -1,47 +1,64 @@
 package com.hjnerp.business.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
+import com.hjnerp.common.Constant;
 import com.hjnerp.dao.BusinessBaseDao;
 import com.hjnerp.model.AbnormalDetailModel;
 import com.hjnerp.model.Ctlm1345;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerpandroid.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AbnormalDetail extends ActivitySupport implements View.OnClickListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    private CheckBox checkbox_all;
-    private ListView abnormal_list_view;
-    private Button submit_over;
-    private MyListAdapter adapter;
+public class AbnormalDetail extends ActionBarWidgetActivity implements View.OnClickListener {
+
     private List<AbnormalDetailModel> data;
-    private List<AbnormalDetailModel> data2;
+    private List<AbnormalDetailModel> sureData;
     private List<Ctlm1345> abnormals;
-    private List<Integer> listItemID = new ArrayList<Integer>();
-    private Context mContext;
+    private MyListAdapter adapter;
+    //是否全选
+    private boolean isALL = false;
+
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.abnormal_list_view)
+    ListView abnormal_list_view;
+
+    public static AbNormalDetailListener abListener;
+
+    public static void setAbListener(AbNormalDetailListener abListener) {
+        AbnormalDetail.abListener = abListener;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_abnormal_detail);
+        ButterKnife.bind(this);
         initData();
         initView();
     }
@@ -51,96 +68,109 @@ public class AbnormalDetail extends ActivitySupport implements View.OnClickListe
         abnormals = new ArrayList<>();
         abnormals = BusinessBaseDao.getCTLM1345ByIdTable("dgtdabn");
         if (abnormals.size() == 0) {
-            ToastUtil.ShowShort(this, "没有考勤异常记录");
+            showFailToast("没有考勤异常记录");
             finish();
             return;
         }
         for (int i = 0; i < abnormals.size(); i++) {
             String abstrings = abnormals.get(i).getVar_value();
-            Gson gson1 = new Gson();
-            AbnormalDetailModel abnormalDetailModel = gson1.fromJson(abstrings, AbnormalDetailModel.class);
+            AbnormalDetailModel abnormalDetailModel = mGson.fromJson(abstrings, AbnormalDetailModel.class);
+            abnormalDetailModel.setSelect(false);
             data.add(abnormalDetailModel);
         }
-        Collections.sort(data);
-
     }
 
     private void initView() {
-        getSupportActionBar().show();
-        getSupportActionBar().setTitle("考勤异常明细");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        checkbox_all = (CheckBox) findViewById(R.id.checkbox_all);
-        abnormal_list_view = (ListView) findViewById(R.id.abnormal_list_view);
-        submit_over = (Button) findViewById(R.id.submit_over);
-        submit_over.setOnClickListener(this);
+        actionCenterTv.setText(getString(R.string.detail_Title_NormalDetail));
+        actionRightTv.setText(getString(R.string.action_right_content_sure));
+        actionRightTv1.setVisibility(View.VISIBLE);
+        actionRightTv1.setText(getString(R.string.action_right_content_SelectAll));
+        actionLeftTv.setOnClickListener(this);
+        actionRightTv.setOnClickListener(this);
+        actionRightTv1.setOnClickListener(this);
+
         adapter = new MyListAdapter(data);
         abnormal_list_view.setAdapter(adapter);
-        mContext = getApplicationContext();
-        checkbox_all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CheckBox cb= (CheckBox) v;
-                if (cb.isChecked()){
-                    for (int i=0;i<adapter.mChecked2.size();i++){
-                        adapter.mChecked2.set(i,true);
-                    }
-                }else {
-                    for (int i=0;i<adapter.mChecked2.size();i++){
-                        adapter.mChecked2.set(i,false);
-                    }
-                }
-                adapter.notifyDataSetChanged();
-            }
-        });
+
+        sureData = new ArrayList<>();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.submit_over:
+            case R.id.action_right_tv:
                 submit();
+                break;
+            case R.id.action_right_tv1:
+                selecAll();
+                break;
+            case R.id.action_left_tv:
+                finish();
                 break;
         }
     }
 
-    private void submit() {
-        listItemID.clear();
-        data2 = new ArrayList<>();
-
-        for (int i=0;i<adapter.mChecked2.size();i++){
-            if (adapter.mChecked2.get(i)){
-                listItemID.add(i);
-
-            }
-        }
-        if (listItemID.size()==0){
-            ToastUtil.ShowShort(this,"没有选择任何记录");
-        }else {
-            for (int i=0;i<listItemID.size();i++){
-                data2.add(data.get(listItemID.get(i)));
-            }
-        }
-
-        if (data2.size() > 0) {
-            Intent intent = new Intent(this, AbnormalBusiness.class);
-            ArrayList<AbnormalDetailModel> mlist=new ArrayList<>();
-            mlist.addAll(data2);
-            intent.putParcelableArrayListExtra("data", mlist);
-            this.startActivity(intent);
-            this.finish();
+    /**
+     * 全选按钮
+     */
+    private void selecAll() {
+        if (isALL) {
+            isALL = false;
+            selectAll(isALL);
+        } else {
+            isALL = true;
+            selectAll(isALL);
         }
     }
-    class MyListAdapter extends BaseAdapter {
-        List<Boolean> mChecked2;
+
+    /**
+     * 全选以及取消
+     *
+     * @param isck
+     */
+    private void selectAll(boolean isck) {
+        waitDialogRectangle.show();
+        for (int i = 0; i < data.size(); i++) {
+            data.get(i).setSelect(isck);
+        }
+        adapter.notifyDataSetChanged();
+        waitDialogRectangle.dismiss();
+    }
+
+
+    /**
+     * 提交
+     */
+    private void submit() {
+        sureData.clear();
+
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i).getSelect())
+                sureData.add(data.get(i));
+        }
+
+        if (sureData.size() == 0) {
+            showFailToast("请选择数据");
+            return;
+        }
+
+        if (abListener == null) {
+            showFailToast("未设置回调");
+            return;
+        }
+
+        abListener.GetNDetail(sureData);
+
+        finish();
+    }
+
+
+    private class MyListAdapter extends BaseAdapter {
+
         List<AbnormalDetailModel> listAbnormal;
 
-        MyListAdapter(List<AbnormalDetailModel> data) {
-            listAbnormal=new ArrayList<AbnormalDetailModel>();
-            listAbnormal=data;
-            mChecked2=new ArrayList<Boolean>();
-            for (int i = 0; i < data.size(); i++) {
-                mChecked2.add(false);
-            }
+        public MyListAdapter(List<AbnormalDetailModel> listAbnormal) {
+            this.listAbnormal = listAbnormal;
         }
 
         @Override
@@ -159,15 +189,11 @@ public class AbnormalDetail extends ActivitySupport implements View.OnClickListe
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
             if (convertView == null) {
-                Log.e("AbnormalDetailAdapter","position1 = "+position);
-                LayoutInflater mInflater = (LayoutInflater) mContext
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 holder = new ViewHolder();
-                convertView = mInflater.inflate(
-                        R.layout.abnormal_detail_item, null);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.abnormal_detail_item, null);
                 holder.date = (TextView) convertView.findViewById(R.id.date_abnormal_item);
                 holder.type = (TextView) convertView.findViewById(R.id.type_abnormal_item);
                 holder.onoff = (TextView) convertView.findViewById(R.id.startoff_abnormal_item);
@@ -176,10 +202,8 @@ public class AbnormalDetail extends ActivitySupport implements View.OnClickListe
                 holder.layout = (LinearLayout) convertView.findViewById(R.id.abnormal_detail_layout);
                 convertView.setTag(holder);
             } else {
-                Log.e("AbnormalDetailAdapter","position2 = "+position);
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.checkBox.setChecked(mChecked2.get(position));
 
             holder.date.setText("日期：" + listAbnormal.get(position).getVar_date());
 
@@ -200,48 +224,46 @@ public class AbnormalDetail extends ActivitySupport implements View.OnClickListe
                     holder.type.setText("类型：特殊班（保洁）");
                     break;
                 case "F":
+                    holder.type.setText("类型：特殊班（哺乳期)");
                     break;
                 case "G":
-                    holder.type.setText("类型：特殊班（哺乳期）");
-                    break;
-                default:
                     holder.type.setText("类型：特殊班");
+                    break;
+                case "H":
+                    holder.type.setText("类型：正常班(弹性)");
                     break;
             }
             holder.onoff.setText("上/下班：" + listAbnormal.get(position).getVar_on());
             holder.time.setText("时间：" + listAbnormal.get(position).getVar_off());
-            final int p=position;
+            holder.checkBox.setChecked(listAbnormal.get(position).getSelect());
             final ViewHolder finalHolder = holder;
             holder.layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    CheckBox checkBox= (CheckBox) v;
-                    if (mChecked2.get(p)){
-                        mChecked2.set(p, false);
-                    }else {
-                        mChecked2.set(p, true);
+                    if (finalHolder.checkBox.isChecked()) {
+                        finalHolder.checkBox.setChecked(false);
+                    } else {
+                        finalHolder.checkBox.setChecked(true);
                     }
-                    finalHolder.checkBox.setChecked(mChecked2.get(p));
+
+                    data.get(position).setSelect(finalHolder.checkBox.isChecked());
                 }
             });
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    CheckBox checkBox= (CheckBox) v;
-                    if (mChecked2.get(p)){
-                        mChecked2.set(p, false);
-                    }else {
-                        mChecked2.set(p, true);
+                    if (finalHolder.checkBox.isChecked()) {
+                        finalHolder.checkBox.setChecked(false);
+                    } else {
+                        finalHolder.checkBox.setChecked(true);
                     }
-                    finalHolder.checkBox.setChecked(mChecked2.get(p));
+                    data.get(position).setSelect(finalHolder.checkBox.isChecked());
                 }
             });
-            holder.checkBox.setChecked(mChecked2.get(p));
             return convertView;
         }
 
         class ViewHolder {
-
             TextView date;
             TextView type;
             TextView onoff;
@@ -249,5 +271,9 @@ public class AbnormalDetail extends ActivitySupport implements View.OnClickListe
             CheckBox checkBox;
             LinearLayout layout;
         }
+    }
+
+    public interface AbNormalDetailListener {
+        void GetNDetail(List<AbnormalDetailModel> detailList);
     }
 }

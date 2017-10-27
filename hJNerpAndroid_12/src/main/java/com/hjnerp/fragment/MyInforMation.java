@@ -24,29 +24,30 @@ import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.SharePreferenceUtil;
 import com.hjnerp.util.StringUtil;
 import com.hjnerpandroid.R;
+import com.itheima.roundedimageview.RoundedImageView;
 
 import java.io.Serializable;
 
 public class MyInforMation extends Fragment implements View.OnClickListener {
-    private RelativeLayout mysettingrel, myuserinfor;
+    private TextView mysettingrel;
+    private RelativeLayout myuserinfor;
     private View view;
     private TextView myusername;
     private TextView my_company;
-    private ImageView myImageView;
+    private RoundedImageView myImageView;
     private UserInfo myinfo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.fragment_myinformation, container, false);
         initView();
         return view;
     }
 
     private void initView() {
-        mysettingrel = (RelativeLayout) view.findViewById(R.id.mysettingrel);
+        mysettingrel = (TextView) view.findViewById(R.id.mysettingrel);
         myuserinfor = (RelativeLayout) view.findViewById(R.id.myuserinfor);
-        myImageView = (ImageView) view.findViewById(R.id.myInforphoto);
+        myImageView = (RoundedImageView) view.findViewById(R.id.myInforphoto);
         myusername = (TextView) view.findViewById(R.id.myusername);
         my_company = (TextView) view.findViewById(R.id.my_company);
         mysettingrel.setOnClickListener(this);
@@ -65,7 +66,7 @@ public class MyInforMation extends Fragment implements View.OnClickListener {
         }
 //        String user_name = SharePreferenceUtil.getInstance(EapApplication.getApplication().getApplicationContext()).getMyUserName();
         myusername.setText(myinfo.username);
-        my_company.setText(myinfo.companyName);
+        my_company.setText(myinfo.departmentName);
     }
 
     @Override

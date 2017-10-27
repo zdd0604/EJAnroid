@@ -11,36 +11,35 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hjnerp.business.Ctlm1345Update;
 import com.hjnerp.business.Ctlm1346Update;
 import com.hjnerp.business.Ctlm1347UpdateAgain;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.dao.BaseDao;
 import com.hjnerp.model.CommonSetInfo;
 import com.hjnerp.util.Command;
 import com.hjnerp.util.Command.OnResultListener;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.util.VersionManager;
-import com.hjnerp.widget.WaitDialog;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetActivity extends ActivitySupport implements OnClickListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class SetActivity extends ActionBarWidgetActivity implements OnClickListener {
 
     protected static final String TAG = "SetActivity";
     //    private TextView tv_tologin_without_clean, tv_tologin_with_clean;
     private ArrayList<CommonSetInfo> commonSetInfoList = new ArrayList<CommonSetInfo>();
     private Thread mThread;
 
-    private RelativeLayout dialog_cancel_rl, dialog_confirm_rl;
+    private TextView dialog_cancel_rl, dialog_confirm_rl;
     private Dialog noticeDialog;
-    private WaitDialogRectangle waitDialog;
     private static String DOWNLOAD_XML_SUCCESS = "download_xml_success";
     private static String DOWNLOAD_XML_CONTAINS_ERROR = "download_xml_contains_error";
 
@@ -48,16 +47,32 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
     private static String DOWNLOAD_CTLM1347_CONTAINS_ERROR = "download_1347_contains_error";
 
     private int withclean_counts, withoutclean_counts;
-    private RelativeLayout rel_wrapdata;
-    private RelativeLayout rel_wrapcache;
-    private RelativeLayout rel_versioncheck;
-    private RelativeLayout rel_updata;
-    private RelativeLayout rel_updatadate;
-    private RelativeLayout rel_updatabasedate;
-    private RelativeLayout rel_setpwd;
-    private RelativeLayout rel_hjabout;
-
-    private Button app_logout;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.rel_wrapdata)
+    TextView rel_wrapdata;
+    @BindView(R.id.rel_wrapcache)
+    TextView rel_wrapcache;
+    @BindView(R.id.rel_versioncheck)
+    TextView rel_versioncheck;
+    @BindView(R.id.rel_updata)
+    TextView rel_updata;
+    @BindView(R.id.rel_updatadate)
+    TextView rel_updatadate;
+    @BindView(R.id.rel_updatabasedate)
+    TextView rel_updatabasedate;
+    @BindView(R.id.rel_setpwd)
+    TextView rel_setpwd;
+    @BindView(R.id.rel_hjabout)
+    TextView rel_hjabout;
+    @BindView(R.id.app_logout)
+    Button app_logout;
 
 
     //	private Handler mHandler;
@@ -67,23 +82,12 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActionBar = getSupportActionBar();
         setContentView(R.layout.commonset);
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setTitle("设置");
-//        tv_tologin_with_clean = (TextView) findViewById(R.id.tv_with_clean);
-//        tv_tologin_without_clean = (TextView) findViewById(R.id.tv_without_clean);
+        ButterKnife.bind(this);
 
-        rel_wrapdata = (RelativeLayout) findViewById(R.id.rel_wrapdata);
-        rel_wrapcache = (RelativeLayout) findViewById(R.id.rel_wrapcache);
-        rel_versioncheck = (RelativeLayout) findViewById(R.id.rel_versioncheck);
-        rel_updata = (RelativeLayout) findViewById(R.id.rel_updata);
-        rel_updatadate = (RelativeLayout) findViewById(R.id.rel_updatadate);
-        rel_updatabasedate = (RelativeLayout) findViewById(R.id.rel_updatabasedate);
-        rel_setpwd = (RelativeLayout) findViewById(R.id.rel_setpwd);
-        rel_hjabout = (RelativeLayout) findViewById(R.id.rel_hjabout);
-        app_logout = (Button) findViewById(R.id.app_logout);
-
+        actionRightTv.setVisibility(View.GONE);
+        actionLeftTv.setOnClickListener(this);
+        actionCenterTv.setText(getString(R.string.setting_Title_TlActivity));
         app_logout.setOnClickListener(this);
         rel_hjabout.setOnClickListener(this);
         rel_wrapdata.setOnClickListener(this);
@@ -93,10 +97,10 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
         rel_updatadate.setOnClickListener(this);
         rel_updatabasedate.setOnClickListener(this);
         rel_setpwd.setOnClickListener(this);
-
-        waitDialog = new WaitDialogRectangle(context);
         waitDialog.setCanceledOnTouchOutside(false);
 
+//        tv_tologin_with_clean = (TextView) findViewById(R.id.tv_with_clean);
+//        tv_tologin_without_clean = (TextView) findViewById(R.id.tv_without_clean);
 //        tv_tologin_with_clean.setOnClickListener(this);
 //        tv_tologin_without_clean.setOnClickListener(this);
 
@@ -125,7 +129,7 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
 ////							Tables.UserTable.COL_VAR_SESSION,"");
 ////
 //
-//                    ToastUtil.ShowShort(SetActivity.this, "程序重启");
+//                    showFailToast( "程序重启");
 //                    exitAPP();
 ////					throw new NullPointerException();
 //
@@ -135,17 +139,17 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
 //                withclean_counts = 0;
 //                withoutclean_counts++;
 //                if (withoutclean_counts == 5) {
-//                    ToastUtil.ShowShort(SetActivity.this, "程序重启");
+//                    showFailToast( "程序重启");
 ////					throw new NullPointerException();
 //
 //                    exitAPP();
 //                }
 //                break;
             case R.id.rel_wrapdata:
-                showNoticeDialog("确定清除数据吗？", 0);
+                showNoticeDialog("是否清除数据吗？", 0);
                 break;
             case R.id.rel_wrapcache:
-                showNoticeDialog("确定清除缓存吗？", 1);
+                showNoticeDialog("是否清除缓存吗？", 1);
                 break;
             case R.id.rel_versioncheck:
                 showNoticeDialog("检查新版本", 2);
@@ -171,6 +175,9 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
                 LogOut(SetActivity.this);
 //                onclickAppLogin.onclickOutLogin();
                 break;
+            case R.id.action_left_tv:
+                finish();
+                break;
             default:
                 break;
 
@@ -182,17 +189,20 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
      *
      * @param context
      */
+    /**
+     * 退出登录
+     *
+     * @param context
+     */
     public void LogOut(Context context) {
         final Dialog noticeDialog = new Dialog(context, R.style.noticeDialogStyle);
         noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
 
-        RelativeLayout dialog_cancel_rl, dialog_confirm_rl;
+        TextView dialog_cancel_rl, dialog_confirm_rl;
         TextView notice = (TextView) noticeDialog.findViewById(R.id.dialog_notice_tv);
-        notice.setText("确认要退出和佳ERP吗?");
-        dialog_cancel_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_cancel_rl);
-        dialog_confirm_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_confirm_rl);
+        notice.setText("是否退出当前用户?");
+        dialog_cancel_rl = (TextView) noticeDialog.findViewById(R.id.dialog_cancel_tv);
+        dialog_confirm_rl = (TextView) noticeDialog.findViewById(R.id.dialog_confirm_tv);
         dialog_cancel_rl.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -234,20 +244,20 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
                 noticeDialog.dismiss();
             }
             switch (v.getId()) {
-                case R.id.dialog_cc_cancel_rl:
+                case R.id.dialog_cancel_tv:
 
                     break;
-                case R.id.dialog_cc_confirm_rl:
+                case R.id.dialog_confirm_tv:
                     int tag = (Integer) dialog_confirm_rl.getTag();
                     if (tag == 0) {
                         //清除数据
                         BaseDao.wrapData();
-                        ToastUtil.ShowShort(SetActivity.this, "清除成功！");
+                        showFailToast("清除成功！");
                     }
                     if (tag == 1) {
                         //清楚缓存
                         BaseDao.wrapcache();
-                        ToastUtil.ShowShort(SetActivity.this, "清除成功！");
+                        showFailToast("清除成功！");
                     }
                     if (tag == 2) {
                         //检查版本
@@ -256,7 +266,7 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
                             @Override
                             public void onUpgradeResult(boolean success, String msg) {
                                 if (!success) {
-                                    ToastUtil.ShowShort(SetActivity.this, msg);
+                                    showFailToast(msg);
                                 }
                             }
                         });
@@ -266,7 +276,7 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
                         if (hasInternetConnected()) {
                             updateModelThread();
                         } else {
-                            ToastUtil.ShowShort(SetActivity.this, getResources().getString(R.string.check_connection));
+                            showFailToast(getResources().getString(R.string.check_connection));
                         }
                     }
                     if (tag == 4) {
@@ -274,14 +284,14 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
                         if (hasInternetConnected()) {
                             updateCtlm1347Thread();
                         } else {
-                            ToastUtil.ShowShort(SetActivity.this, getResources().getString(R.string.check_connection));
+                            showFailToast(getResources().getString(R.string.check_connection));
                         }
                     }
                     if (tag == 5) {//手动下载基础数据
                         if (hasInternetConnected()) {
                             updateCtlm1345Thread();
                         } else {
-                            ToastUtil.ShowShort(SetActivity.this, getResources().getString(R.string.check_connection));
+                            showFailToast(getResources().getString(R.string.check_connection));
                         }
                     }
                     break;
@@ -389,18 +399,17 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
             }
 
             if (DOWNLOAD_XML_CONTAINS_ERROR.equalsIgnoreCase(mmsg)) {
-                ToastUtil.ShowShort(SetActivity.this, "更新失败，请重试！");
+                showFailToast("更新失败，请重试！");
             } else if (DOWNLOAD_XML_SUCCESS.equalsIgnoreCase(mmsg)) {
-                ToastUtil.ShowShort(SetActivity.this, "更新成功！");
+                showFailToast("更新成功！");
                 MainActivity.need_fresh_businessmenu = true;
             } else if (DOWNLOAD_CTLM1347_SUCCESS.equalsIgnoreCase(mmsg)) {
-                ToastUtil.ShowShort(SetActivity.this, "下载成功！");
+                showFailToast("下载成功！");
             } else if (DOWNLOAD_CTLM1347_CONTAINS_ERROR.equalsIgnoreCase(mmsg)) {
-                ToastUtil.ShowShort(SetActivity.this, "下载失败，请重试！");
+                showFailToast("下载失败，请重试！");
             }
         }
 
-        ;
     };
 
     public void showNoticeDialog(String text, int tag) {
@@ -411,10 +420,10 @@ public class SetActivity extends ActivitySupport implements OnClickListener {
         TextView notice = (TextView) noticeDialog
                 .findViewById(R.id.dialog_notice_tv);
         notice.setText(text);
-        dialog_cancel_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_cancel_rl);
-        dialog_confirm_rl = (RelativeLayout) noticeDialog
-                .findViewById(R.id.dialog_cc_confirm_rl);
+        dialog_cancel_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_cancel_tv);
+        dialog_confirm_rl = (TextView) noticeDialog
+                .findViewById(R.id.dialog_confirm_tv);
         dialog_confirm_rl.setTag(tag);
 
         dialog_cancel_rl.setOnClickListener(onClickListener);

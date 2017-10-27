@@ -1,147 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#efeff4"
-    tools:context="com.hjnerp.business.activity.OverBusiness">
+    android:background="@color/activity_bg">
 
-    <Button
-        android:id="@+id/submit_abnormal"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="10dp"
-        android:background="@drawable/per_button_shape"
-        android:text="提交"
-        android:textColor="#ffffff" />
+    <include
+        android:id="@+id/abnormal_action"
+        layout="@layout/actionbar_layout" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_below="@id/abnormal_action">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <LinearLayout style="@style/Item_LinearLayout_VerticalStyle">
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:background="#ffffff"
                 android:id="@+id/rejust_list_abnormal"
-                android:visibility="gone"
-                android:gravity="center">
+                style="@style/Item_LinearLayout_HorizontalStyle"
+                android:layout_marginTop="@dimen/size_8"
+                android:visibility="gone">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="14dp"
-                    android:text="驳回意见"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:textColor="#ee0000"
-                    android:textSize="16sp" />
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/travel_Title_RejustName"
+                    android:textColor="@color/red" />
 
-
-
-                <EditText
+                <TextView
                     android:id="@+id/var_rejust_name_abnormal"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:textSize="14sp" />
+                    style="@style/Item_LinearLayout_TvRightTitleStyle" />
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:background="#efeff4" />
+            <LinearLayout style="@style/Item_LinearLayout_HorizontalStyle">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:background="#ffffff"
-                android:gravity="center">
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/detail_Title_AbnormalName" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:text="员工"
-                        android:textColor="#000000"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:text="*"
-                        android:textColor="@color/red" />
-
-                    <EditText
-                        android:id="@+id/abnormal_name"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:focusable="false"
-                        android:gravity="center"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="30dp"
-                    android:background="#99efeff4" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="部门"
-                        android:textColor="#000000"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:text="*"
-                        android:textColor="@color/red" />
-
-
-                    <EditText
-                        android:id="@+id/abnormal_part"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:focusable="false"
-                        android:gravity="center"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/abnormal_name"
+                    style="@style/Item_LinearLayout_TvRightTitleStyle" />
             </LinearLayout>
+
+            <LinearLayout style="@style/Item_LinearLayout_HorizontalStyle">
+
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/detail_Title_AbnormalPart" />
+
+                <TextView
+                    android:id="@+id/abnormal_part"
+                    style="@style/Item_LinearLayout_TvRightTitleStyle" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/add_layout_abnormal"
@@ -149,21 +60,32 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#99efeff4" />
-
-            <TextView
+            <LinearLayout
                 android:id="@+id/add_abnormal"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
+                android:layout_height="@dimen/size_40"
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="1dp"
                 android:background="#ffffff"
+                android:focusableInTouchMode="true"
                 android:gravity="center"
-                android:text="+ 添加明细"
-                android:textColor="#27a4e3"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </ScrollView>
+                android:orientation="horizontal">
 
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_add_img" />
+
+                <TextView
+                    android:id="@+id/busadd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/detail_Title_AbnormalAddDetail"
+                    android:textColor="#27a4e3"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 </RelativeLayout>

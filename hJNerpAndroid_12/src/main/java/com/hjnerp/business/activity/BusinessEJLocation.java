@@ -2,7 +2,6 @@ package com.hjnerp.business.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -44,13 +43,12 @@ import com.hjnerp.business.businessutils.BuinessImgUtils;
 import com.hjnerp.business.businessutils.BusinessFileUtils;
 import com.hjnerp.business.businessutils.BusinessTimeUtils;
 import com.hjnerp.business.businessutils.MyOrientationListener;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.OtherBaseDao;
 import com.hjnerp.model.IDComConfig;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.util.ZipUtils;
 import com.hjnerp.widget.HorizontalListView;
 import com.hjnerp.widget.WaitDialogRectangle;
@@ -67,28 +65,44 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
 /**
  * EJ的考勤签到
  */
-public class BusinessEJLocation extends ActivitySupport implements
-        View.OnClickListener,
+public class BusinessEJLocation extends ActionBarWidgetActivity implements View.OnClickListener,
         MyOrientationListener.OnOrientationListener {
-    private Context mContext;
 
     //布局
-    private EditText login_ej_location;
-    private TextView ej_sgin_title;
-    private TextView ej_sgin_timetx;
-    private TextView sgin_type;
-    private HorizontalListView ej_photo_list;
-    private RadioButton ej_sign_in;
-    private RadioButton ej_sign_out;
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.ej_location_path)
+    EditText login_ej_location;
+    @BindView(R.id.ej_sgin_title)
+    TextView ej_sgin_title;
+    @BindView(R.id.ej_sgin_timetx)
+    TextView ej_sgin_timetx;
+    @BindView(R.id.sgin_type)
+    TextView sgin_type;
+    @BindView(R.id.ej_photo_list)
+    HorizontalListView ej_photo_list;
+    @BindView(R.id.ej_sign_in)
+    RadioButton ej_sign_in;
+    @BindView(R.id.ej_sign_out)
+    RadioButton ej_sign_out;
 
     //地图
-    private MapView ej_mapview;
+    @BindView(R.id.ej_location_bdmap)
+    MapView ej_mapview;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
     private BitmapDescriptor mIconLocation;
@@ -106,10 +120,6 @@ public class BusinessEJLocation extends ActivitySupport implements
     private static int location_success = 0;//定位成功
     private static int SET_IMAGE = 1;//设置照片
     private static int TOAST_MESSAGES = 2;//弹框信息
-
-
-    //弹框
-    private WaitDialogRectangle waitDialog;
 
     //适配器
     private BusinessSginImageViewAdapter businessSginImageViewAdapter;
@@ -158,7 +168,7 @@ public class BusinessEJLocation extends ActivitySupport implements
                     break;
                 case 2:
                     if (StringUtil.isStrTrue(msgContent))
-                        ToastUtil.ShowLong(mContext, msgContent);
+                        showFailToast(msgContent);
                     break;
             }
         }
@@ -167,34 +177,22 @@ public class BusinessEJLocation extends ActivitySupport implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActionBar = getSupportActionBar();
         setContentView(R.layout.activity_business_ejlocation);
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setTitle("考勤");
+        ButterKnife.bind(this);
         initView();
     }
 
     private void initView() {
-        mContext = BusinessEJLocation.this;
-        waitDialog = new WaitDialogRectangle(mContext);
-        login_ej_location = (EditText) findViewById(R.id.ej_location_path);
-        ej_sgin_title = (TextView) findViewById(R.id.ej_sgin_title);
-        ej_sgin_timetx = (TextView) findViewById(R.id.ej_sgin_timetx);
-        ej_photo_list = (HorizontalListView) findViewById(R.id.ej_photo_list);
-        ej_mapview = (MapView) findViewById(R.id.ej_location_bdmap);
-        ej_sign_in = (RadioButton) findViewById(R.id.ej_sign_in);
+        actionCenterTv.setText(getString(R.string.buess_Title_CenterTitle));
+        actionRightTv.setVisibility(View.GONE);
+        actionLeftTv.setOnClickListener(this);
         ej_sign_in.setOnClickListener(this);
-        ej_sign_out = (RadioButton) findViewById(R.id.ej_sign_out);
         ej_sign_out.setOnClickListener(this);
-        sgin_type = (TextView) findViewById(R.id.sgin_type);
 
         photoUUID = StringUtil.getMyUUID();
         photoPath = Constant.SGIN_SAVE_DIR + "/" + photoUUID;
-
         BusinessQueryDao.getSgin_Section("ctlm7161");
-
         initMapLocation();
-
         setHListImage();
     }
 
@@ -210,6 +208,9 @@ public class BusinessEJLocation extends ActivitySupport implements
                 ej_sgin_title.setText(sgin_title_N);
                 submitSginDatas(sgin_type_N);
                 isSgin = false;
+                break;
+            case R.id.action_left_tv:
+                finish();
                 break;
         }
     }
@@ -242,25 +243,25 @@ public class BusinessEJLocation extends ActivitySupport implements
 
         if (!Constant.ctlm7161Is) {
             //7161表不存在的时候
-            toastSHORT("获取排班数据失败请联系管理员");
+            showFailToast("获取排班数据失败请联系管理员");
             remove();
             return;
         }
 
         if (!StringUtil.isStrTrue(Constant.ej1345.getVar_on())) {
-            toastSHORT("计划上班时间获取失败");
+            showFailToast("计划上班时间获取失败");
             remove();
             return;
         }
 
         if (!StringUtil.isStrTrue(Constant.ej1345.getVar_off())) {
-            toastSHORT("计划下班时间获取失败");
+            showFailToast("计划下班时间获取失败");
             remove();
             return;
         }
 
         if (!iSTrue) {
-            toastSHORT("定位点不在工作区,请到工作区内重新打卡");
+            showFailToast("定位点不在工作区,请到工作区内重新打卡");
             remove();
             return;
         }
@@ -322,7 +323,7 @@ public class BusinessEJLocation extends ActivitySupport implements
                 if (!isPermissions(new String[]{
                         XPermissions.CAMERA,
                         XPermissions.READ_CONTACTS})) {
-                    ToastUtil.ShowLong(BusinessEJLocation.this, "相机未授权");
+                    showFailToast("相机未授权");
                     return;
                 }
                 ej1345Exist();
@@ -368,7 +369,7 @@ public class BusinessEJLocation extends ActivitySupport implements
                     startActivityForResult(intent, Activity.DEFAULT_KEYS_DIALER);
                 }
             } else {
-                ToastUtil.ShowLong(BusinessEJLocation.this, "文件夹创建失败");
+                showFailToast("文件夹创建失败");
             }
         } catch (Exception b) {
             Log.v("show", photoLocation + "相机输出出错" + photoName);
@@ -379,7 +380,7 @@ public class BusinessEJLocation extends ActivitySupport implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
-            ToastUtil.ShowLong(this, "获取图片失败,请重试");
+            showFailToast("获取图片失败,请重试");
             photoBitmapList.clear();
             photoBitmapList.add(defaultBt);
             return;
@@ -763,11 +764,6 @@ public class BusinessEJLocation extends ActivitySupport implements
         photoPathList.clear();
         photoName = "";
 
-        //根据 Tag 取消请求
-        OkGo.getInstance().cancelTag(this);
-
-        //取消所有请求
-        OkGo.getInstance().cancelAll();
         addImageView();
         setHListImage();
     }

@@ -20,10 +20,10 @@ public class BusinessSearchAdapter extends RecyclerView.Adapter<BusinessSearchAd
     private Context mContext;
     private List<EjMyWProj1345> list;
 
-    private OnItemClickLitener mOnItemClickLitener;
+    public static OnItemClickLitener mOnItemClickLitener;
 
-    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
-        this.mOnItemClickLitener = mOnItemClickLitener;
+    public static void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        BusinessSearchAdapter.mOnItemClickLitener = mOnItemClickLitener;
     }
 
     public BusinessSearchAdapter(Context mContext, List<EjMyWProj1345> list) {
@@ -42,7 +42,6 @@ public class BusinessSearchAdapter extends RecyclerView.Adapter<BusinessSearchAd
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.item_peoject.setText(list.get(position).getName_wproj());
         holder.item_client.setText(list.get(position).getName_corr());
-        holder.item_line_id.setText(String.valueOf((position + 1)));
         // 如果设置了回调，则设置点击事件
         if (mOnItemClickLitener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -61,16 +60,14 @@ public class BusinessSearchAdapter extends RecyclerView.Adapter<BusinessSearchAd
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-
         TextView item_peoject;
         TextView item_client;
-        TextView item_line_id;
+
 
         public MyViewHolder(View itemView) {
             super(itemView);
             item_peoject = (TextView) itemView.findViewById(R.id.item_peoject);
             item_client = (TextView) itemView.findViewById(R.id.item_client);
-            item_line_id = (TextView) itemView.findViewById(R.id.item_line_id);
         }
     }
 

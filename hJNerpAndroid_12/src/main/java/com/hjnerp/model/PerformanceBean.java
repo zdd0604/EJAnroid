@@ -67,6 +67,7 @@ public class PerformanceBean  implements Serializable {
     private String var_comp;
     private String dec_mark;
     private String var_dremark;
+    private String date_today;
     //出差外出单新增
     private String var_rejust;
     private String var_start;
@@ -84,6 +85,7 @@ public class PerformanceBean  implements Serializable {
     private String var_on;
     private String var_off;
     private String name_schtype;
+
 
     public String getDate_chinkin() {
         return date_chinkin;
@@ -148,10 +150,6 @@ public class PerformanceBean  implements Serializable {
     public void setDate_today(String date_today) {
         this.date_today = date_today;
     }
-
-    private String date_today;
-
-
 
     public String getVar_rejust() {
         return var_rejust;

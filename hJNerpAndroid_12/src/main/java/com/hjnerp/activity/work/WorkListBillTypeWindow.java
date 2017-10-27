@@ -74,6 +74,7 @@ public class WorkListBillTypeWindow extends PopupWindow {
 
         if (billTypeList != null) {
             for (int i = 0; i < billTypeList.size(); i++) {
+
                 RadioButton radio = new RadioButton(context);
                 radio.setText(billTypeList.get(i).getName());
                 radio.setTextColor(context.getResources().getColor(color.black));

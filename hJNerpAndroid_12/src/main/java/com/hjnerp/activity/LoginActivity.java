@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.ActivitySupport;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.BaseDao;
@@ -41,9 +42,11 @@ import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.ToastUtil;
 import com.hjnerp.util.myscom.StringUtils;
+import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.SelectPopupWindow;
 import com.hjnerp.widget.SelectText;
 import com.hjnerpandroid.R;
+import com.itheima.roundedimageview.RoundedImageView;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 
@@ -61,7 +64,7 @@ import okhttp3.Response;
  * @author 李庆义 使用google官方库appcompat_v7支持Actionbar
  */
 
-public class LoginActivity extends ActivitySupport {
+public class LoginActivity extends ActionBarWidgetActivity {
 
     private EditText edt_username, edt_pwd;
     private SelectText edt_company;
@@ -73,8 +76,7 @@ public class LoginActivity extends ActivitySupport {
     private List<IDComConfig> listConfig = null;// new ArrayList<IDComConfig>();
     private LoginConfig loginConfig;
     private int type;
-    Toast mToast;
-    private ImageView myImageView;
+    private RoundedImageView myImageView;
     Handler mHandler;
     private UserInfo myinfo;
 
@@ -97,8 +99,8 @@ public class LoginActivity extends ActivitySupport {
                 .request();
         isReceiver = false;
         mIconEdittextClear = getResources().getDrawable(R.drawable.reader_news_fontcancel_pressed);
-        mIconUser = getResources().getDrawable(R.drawable.icon_login_account);
-        mIconPWd = getResources().getDrawable(R.drawable.icon_login_password);
+//        mIconUser = getResources().getDrawable(R.drawable.icon_login_account);
+//        mIconPWd = getResources().getDrawable(R.drawable.icon_login_password);
         loginConfig = new LoginConfig();
         mHandler = new Handler();
         // 应用程序崩溃报告 开发测时可以关掉
@@ -181,7 +183,7 @@ public class LoginActivity extends ActivitySupport {
 
         btn_login.setOnClickListener(onClickListener);
         tv_register.setOnClickListener(onClickListener);
-        myImageView = (ImageView) findViewById(R.id.myphoto);
+        myImageView = (RoundedImageView) findViewById(R.id.myphoto);
         edt_company.addTextChangedListener(textWatcher);
         edt_username.addTextChangedListener(textWatcher);
         edt_pwd.addTextChangedListener(textWatcher);
@@ -248,7 +250,7 @@ public class LoginActivity extends ActivitySupport {
                     if (validateInternet()) {
                         forwardRegister();
                     } else {
-                        ToastUtil.ShowLong(LoginActivity.this, getResources()
+                        showFailToast(getResources()
                                 .getString(R.string.net_connect_error));
                     }
                     break;
@@ -505,13 +507,13 @@ public class LoginActivity extends ActivitySupport {
                     long warn = DateUtil.StrToDate(dateWarning).getTime();
                     long current = new Date().getTime();
                     if (current > stopReg) {
-                        showToast("当前软件已过期，请联系软件提供商！");
+                        showFailToast("当前软件已过期，请联系软件提供商！");
                         if (type == 0) {
                             handlInit();
                         }
                     } else {
                         if (current > warn) {
-                            showToast("当前软件即将过期，请及时联系软件提供商！");
+                            showFailToast("当前软件即将过期，请及时联系软件提供商！");
                         }
 
                         // 正常登陆
@@ -527,7 +529,7 @@ public class LoginActivity extends ActivitySupport {
                     if (type == 0) {
                         handlInit();
                     }
-                    showToast(data.message);
+                    showFailToast(data.message);
                 }
             }
 
@@ -657,19 +659,6 @@ public class LoginActivity extends ActivitySupport {
         });
     }
 
-    void showToast(final String msg) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mToast == null) {
-                    mToast = Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG);
-                } else {
-                    mToast.setText(msg);
-                }
-                mToast.show();
-            }
-        });
-    }
 
     @Override
     public void saveLoginConfig(LoginConfig loginConfig) {

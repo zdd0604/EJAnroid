@@ -178,14 +178,12 @@ public class Constant {
      * 签到时间
      */
     public static final String SGIN_FORMART = "yyyy-MM-dd HH:mm:ss";
-
     public static final String SGIN_PHOTONAME = "yyyyMMddHHmmss";
-
     public static final String TODAY = "yyyy/MM/dd";
-
     public static final String NOWTIME = "yyyy-MM-dd HH:mm:ss";
     public static final String NOWTIME2 = " HH:mm:ss";
-
+    public static final String TIME_yyyy_MM_dd = "yyyy-MM-dd";
+    public static final String TIME_yyyy_MM_dd_HH_mm_ss = "yyyy-MM-dd HH:mm:ss";
 
     /*广播，通知imfrgmeng更新ui*/
     public static final String ACTION_HAVENEWMSG_REFLASHUI = "action_havenewmsg_reflashui";
@@ -399,5 +397,16 @@ public class Constant {
      * 关于
      */
     public static List<HJAboutBean> HJbean;
+
+
+    //Handler传递
+    public static final int HANDLERTYPE_0 = 0;
+    public static final int HANDLERTYPE_1 = 1;
+    public static final int HANDLERTYPE_2 = 2;
+    public static final int HANDLERTYPE_3 = 3;
+    public static final int HANDLERTYPE_4 = 4;
+    public static final int HANDLERTYPE_5 = 5;
+    public static final int HANDLERTYPE_6 = 6;
+
 
 }

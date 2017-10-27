@@ -89,6 +89,7 @@ public class BusinessFragment<Divider> extends Fragment {
     private MyHandler<Divider> myHandler;
     private static String clicked_id_model;// 用户想要进入的业务类型（用户点击了哪一个菜单）
     private static String clicked_xml_version;// 用户想要进入的业务类型的xml模板本地版本（用户点击的菜单的xml模板版本）
+    private static String clicked_xml_nameModel;// 用户想要进入的业务类型的xml模板名称
     private static String CHECT_XML_EXIT = "check_xml_exit";
     private static String CHECT_XML_OK = "check_xml_ok";
     private static String CHECT_XML_OLD = "check_xml_OLD";
@@ -107,6 +108,165 @@ public class BusinessFragment<Divider> extends Fragment {
     private LinearLayout find_layout;
     private LinearLayout performance_layout;
 
+    private static class MyHandler<Divider> extends Handler {
+        ArrayList<MenuContent> listCurrent;
+        BusinessFragment<Divider> fragment;
+
+        public MyHandler(BusinessFragment<Divider> fragment,
+                         ArrayList<MenuContent> listCurrent) {
+            this.fragment = fragment;
+            this.listCurrent = listCurrent;
+        }
+
+        public void handleMessage(Message msg) {
+            Bundle b = msg.getData();
+            String flag = b.getString("flag");
+            setMenuIntent(flag);
+        }
+
+        /**
+         * 设置跳转界面
+         */
+        private void setMenuIntent(String flag) {
+            if (fragment.waitDialogRectangle != null && fragment.waitDialogRectangle.isShowing()) {
+                fragment.waitDialogRectangle.dismiss();
+            }
+
+            // 下载菜单成功
+            if (flag.equals("getmenusok")) {
+                listCurrent = BusinessBaseDao.queryBusinessMenus();
+                fragment.listCurrent = listCurrent;
+                fragment.refreshList(listCurrent);
+                Log.v("show", "菜单的数据:" + listCurrent.toString());
+            } else if (CHECT_XML_EXIT.equalsIgnoreCase(flag)) {
+
+            } else if (CHECT_XML_OK.equalsIgnoreCase(flag)
+                    || CHECT_XML_OLD.equalsIgnoreCase(flag)
+                    || DOWNLOAD_XML_OK.equalsIgnoreCase(flag)) {
+
+                // 不需要更新
+//                fragment.refreshList(listCurrent);
+                if (clicked_id_model == null || "".equals(clicked_id_model)) {
+                    return;
+                }
+                Intent intent = null;
+                if (clicked_id_model.substring(clicked_id_model.length() - 4)
+                        .equals("html")) {
+                    if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
+                        if (BusinessQueryDao.getUserInfo(context)) {
+//                            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+                            intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
+                        } else {
+                            intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        }
+                    } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
+                            clicked_id_model.equals(Constant.dgtdothtml) ||
+                            clicked_id_model.equals(Constant.dgtdvathtml) ||
+                            clicked_id_model.equals(Constant.dgtdabnhtml)) {
+                        intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
+                    } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
+                        if (BusinessQueryDao.getUserInfo(context)) {
+                            intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
+                        } else {
+                            intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        }
+                    } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
+                        if (BusinessQueryDao.getUserInfo(context)) {
+                            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+                        } else {
+                            intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        }
+                    } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
+                            clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
+                            clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
+                            clicked_id_model.equals(Constant.dkpipostratehtml) ||
+                            clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
+                        if (BusinessQueryDao.getUserInfo(context)) {
+                            intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
+                        } else {
+                            intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        }
+                    } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
+                        if (BusinessQueryDao.getUserInfo(context)) {
+                            intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
+                        } else {
+                            intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        }
+                    } else {
+                        intent = new Intent(fragment.getActivity(), BussinessHtmlActivity.class);
+                        intent.putExtra("id_model", clicked_id_model);
+                    }
+                    Log.v("show", "HTML模板名称：" + clicked_id_model);
+                } else {
+                    intent = new Intent(fragment.getActivity(), BusinessActivity.class);
+                    intent.putExtra("id_parentnode", "");
+                    intent.putExtra("var_billno", "");
+                    intent.putExtra("id_node", "");
+                    intent.putExtra("id_model", clicked_id_model);
+                    intent.putExtra("xml_version", clicked_xml_version);
+                    Log.v("show", "XML模板名称：" + clicked_id_model);
+                }
+                fragment.startActivity(intent);
+            } else if (DOWNLOAD_XML_ERROR.equalsIgnoreCase(flag)) {
+                if (clicked_id_model == null || "".equals(clicked_id_model)) {
+                    ToastUtil.ShowLong(context, "下载模板错误，请重新尝试。");
+                    return;
+                }
+                Intent intent = null;
+                if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
+                    if (BusinessQueryDao.getUserInfo(context)) {
+                        intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
+                        fragment.startActivity(intent);
+                    } else {
+                        intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        fragment.startActivity(intent);
+                    }
+                } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
+                    intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+                    fragment.startActivity(intent);
+                } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
+                        clicked_id_model.equals(Constant.dgtdothtml) ||
+                        clicked_id_model.equals(Constant.dgtdvathtml) ||
+                        clicked_id_model.equals(Constant.dgtdabnhtml)) {
+                    intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
+                    fragment.startActivity(intent);
+                } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
+                    if (BusinessQueryDao.getUserInfo(context)) {
+                        intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
+                        fragment.startActivity(intent);
+                    } else {
+                        intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        fragment.startActivity(intent);
+                    }
+                } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
+                    if (BusinessQueryDao.getUserInfo(context)) {
+                        intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
+                        fragment.startActivity(intent);
+                    } else {
+                        intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        fragment.startActivity(intent);
+                    }
+                } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
+                        clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
+                        clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
+                        clicked_id_model.equals(Constant.dkpipostratehtml) ||
+                        clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
+                    if (BusinessQueryDao.getUserInfo(context)) {
+                        intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
+                        fragment.startActivity(intent);
+                    } else {
+                        intent = new Intent(fragment.getActivity(), SetActivity.class);
+                        fragment.startActivity(intent);
+                    }
+                } else {
+                    ToastUtil.ShowLong(context, "下载模板错误，请重新尝试。");
+                }
+            }
+
+        }
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -116,20 +276,15 @@ public class BusinessFragment<Divider> extends Fragment {
                 container, false);
         context = getActivity();
         businessFragment = this;
-        getBusinessMenus();
-
 
         // 从服务器获取显示菜单
 //		listView = (ExpandableListView) contextView
 //				.findViewById(R.id.listview_businessmenu_ex);
 
         initView(contextView);
+
         listCurrent = BusinessBaseDao.queryBusinessMenus();
 
-        listCurrent1 = new ArrayList<>();
-        listCurrent2 = new ArrayList<>();
-        listCurrent3 = new ArrayList<>();
-        listCurrent4 = new ArrayList<>();
 //        sortlist(listCurrent);
 //        dogridview(adapter1, listCurrent1, gridView1);
 //        dogridview(adapter2, listCurrent2, gridView2);
@@ -139,26 +294,46 @@ public class BusinessFragment<Divider> extends Fragment {
         return contextView;
     }
 
+    private void initView(View contextView) {
+        listCurrent1 = new ArrayList<>();
+        listCurrent2 = new ArrayList<>();
+        listCurrent3 = new ArrayList<>();
+        listCurrent4 = new ArrayList<>();
+
+        gridView1 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex1);
+        gridView2 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex2);
+        gridView3 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex3);
+        gridView4 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex4);
+        visit_layout = (LinearLayout) contextView.findViewById(R.id.visit_layout);
+        other_layout = (LinearLayout) contextView.findViewById(R.id.other_layout);
+        find_layout = (LinearLayout) contextView.findViewById(R.id.find_layout);
+        bus_error = (LinearLayout) contextView.findViewById(R.id.bus_error);
+        performance_layout = (LinearLayout) contextView.findViewById(R.id.performance_layout);
+
+        getBusinessMenus();
+    }
+
+
     private void dogridview(BusinessGridViewAdapter adapter, final ArrayList<MenuContent> listCurrent, GridView gridView) {
         adapter = new BusinessGridViewAdapter(getActivity(), listCurrent);
         adapter.notifyDataSetChanged();
         gridView.setAdapter(adapter);
         final BusinessGridViewAdapter finalAdapter = adapter;
+
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 menuContent = finalAdapter.getItem(position);
                 clicked_id_model = menuContent.getVarParm();
                 Constant.ID_MENU = menuContent.getIdMenu();
-                Log.v("show", Constant.ID_MENU);
+                clicked_xml_nameModel = menuContent.getNameMenu();
                 clicked_xml_version = listCurrent.get(position).getVarParm();
                 if (checkSigleXMLModelexit(menuContent.getVarParm() + ".xml")) {// 检查当前模板是否存在
-
                     // TODO 1、检查xml版本，是否需要更新
                     String serverVersion = menuContent.getModelWindow();
                     String localVersion = BusinessBaseDao
                             .getTemlateVersion(menuContent.getVarParm());
-
                     if (serverVersion != null
                             && serverVersion.equalsIgnoreCase(localVersion)) {
                         // 不需要更新
@@ -171,9 +346,7 @@ public class BusinessFragment<Divider> extends Fragment {
                             // 网络无连接，用老版本
                             sendToHandler(CHECT_XML_OLD);
                         }
-
                     }
-
                 } else {
 //                     showNoticeDialog();
                     updateModelThread();
@@ -182,7 +355,11 @@ public class BusinessFragment<Divider> extends Fragment {
         });
     }
 
-
+    /**
+     * 添加菜单
+     *
+     * @param listCurrent
+     */
     private void sortlist(ArrayList<MenuContent> listCurrent) {
         if (listCurrent.size() == 0) {
             bus_error.setVisibility(View.VISIBLE);
@@ -199,7 +376,6 @@ public class BusinessFragment<Divider> extends Fragment {
                 listCurrent3.add(listCurrent.get(i));
             } else {
                 listCurrent4.add(listCurrent.get(i));
-
             }
         }
         if (listCurrent1.size() > 0) {
@@ -227,6 +403,10 @@ public class BusinessFragment<Divider> extends Fragment {
         addlist(listCurrent3);
         addlist(listCurrent4);
 
+        dogridview(adapter1, listCurrent1, gridView1);
+        dogridview(adapter2, listCurrent2, gridView2);
+        dogridview(adapter3, listCurrent3, gridView3);
+        dogridview(adapter4, listCurrent4, gridView4);
     }
 
     private void addlist(ArrayList<MenuContent> listCurrent) {
@@ -238,14 +418,13 @@ public class BusinessFragment<Divider> extends Fragment {
                 menuContent.setModelWindow("0");
                 listCurrent.add(menuContent);
             }
-
         }
     }
 
     /**
      * 获得菜单
      */
-    void getBusinessMenus() {
+    private void getBusinessMenus() {
         HttpPost post = null;
         try {
             post = HttpClientBuilder
@@ -263,13 +442,11 @@ public class BusinessFragment<Divider> extends Fragment {
                     String msg = HttpClientManager.toStringContent(resp);
 
                     Gson gson = new Gson();
-                    final BusinessMenuResp businessMenuResp = gson.fromJson(
-                            msg, BusinessMenuResp.class);
+                    final BusinessMenuResp businessMenuResp = gson.fromJson(msg, BusinessMenuResp.class);
                     Log.d("businessresp",
                             businessMenuResp.data.items.toString());
                     if ("result".equalsIgnoreCase(businessMenuResp.type)) {
                         if (businessMenuResp.data != null) {
-
                             SQLiteWorker.getSharedInstance().postDML(
                                     new SQLiteWorker.AbstractSQLable() {
                                         @Override
@@ -281,17 +458,12 @@ public class BusinessFragment<Divider> extends Fragment {
 
                                         @Override
                                         public Object doAysncSQL() {
-                                            BusinessBaseDao
-                                                    .deleteBusinessMenus();// 插入新菜单前清除旧数据
-                                            BusinessBaseDao
-                                                    .replaceBusinessMenus(businessMenuResp.data.items);
-
+                                            BusinessBaseDao.deleteBusinessMenus();// 插入新菜单前清除旧数据
+                                            BusinessBaseDao.replaceBusinessMenus(businessMenuResp.data.items);
                                             return null;
                                         }
                                     });
-
                         } else {
-
                         }
                     }
                 } catch (IOException e) {
@@ -313,13 +485,12 @@ public class BusinessFragment<Divider> extends Fragment {
         /*
          * @author haijian 检查是否显示泡泡
 		 */
-        checkPaoPao();
-
+//        checkPaoPao();
+        refreshList();
     }
 
     @Override
     public void onPause() {
-
 //        refreshList(listCurrent);
         if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
             waitDialogRectangle.dismiss();
@@ -327,6 +498,8 @@ public class BusinessFragment<Divider> extends Fragment {
         super.onPause();
     }
 
+
+    //刷新菜单
     private void refreshList(ArrayList<MenuContent> list) {
 //        sortlist(list);
         if (adapter1 == null || adapter2 == null || adapter3 == null || adapter4 == null) {
@@ -334,20 +507,21 @@ public class BusinessFragment<Divider> extends Fragment {
             listCurrent2 = new ArrayList<>();
             listCurrent3 = new ArrayList<>();
             listCurrent4 = new ArrayList<>();
-            sortlist(listCurrent);
-            dogridview(adapter1, listCurrent1, gridView1);
-            dogridview(adapter2, listCurrent2, gridView2);
-            dogridview(adapter3, listCurrent3, gridView3);
-            dogridview(adapter4, listCurrent4, gridView4);
-
+            sortlist(list);
         }
         checkPaoPao();
     }
 
+    /**
+     * 刷新业务菜单
+     */
     public void refreshList() {
-        getBusinessMenus();
-        listCurrent = BusinessBaseDao.queryBusinessMenus();
-        refreshList(listCurrent);
+        if (listCurrent.size() > 0) {
+            listCurrent = BusinessBaseDao.queryBusinessMenus();
+            refreshList(listCurrent);
+        } else {
+            getBusinessMenus();
+        }
     }
 
     private void sendToHandler(String msg) {
@@ -461,173 +635,6 @@ public class BusinessFragment<Divider> extends Fragment {
 
         noticeDialog.show();
 
-    }
-
-    private void initView(View contextView) {
-        gridView1 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex1);
-        gridView2 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex2);
-        gridView3 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex3);
-        gridView4 = (MyGridView) contextView.findViewById(R.id.gridview_businessmenu_ex4);
-        visit_layout = (LinearLayout) contextView.findViewById(R.id.visit_layout);
-        other_layout = (LinearLayout) contextView.findViewById(R.id.other_layout);
-        find_layout = (LinearLayout) contextView.findViewById(R.id.find_layout);
-        bus_error = (LinearLayout) contextView.findViewById(R.id.bus_error);
-        performance_layout = (LinearLayout) contextView.findViewById(R.id.performance_layout);
-
-    }
-
-    static class MyHandler<Divider> extends Handler {
-        ArrayList<MenuContent> listCurrent;
-        BusinessFragment<Divider> fragment;
-
-        public MyHandler(BusinessFragment<Divider> fragment,
-                         ArrayList<MenuContent> listCurrent) {
-            this.fragment = fragment;
-            this.listCurrent = listCurrent;
-        }
-
-        public void handleMessage(Message msg) {
-            Bundle b = msg.getData();
-            String mmsg = b.getString("flag");
-
-            if (fragment.waitDialogRectangle != null && fragment.waitDialogRectangle.isShowing()) {
-                fragment.waitDialogRectangle.dismiss();
-            }
-
-            // 下载菜单成功
-            if (mmsg.equals("getmenusok")) {
-                listCurrent = BusinessBaseDao.queryBusinessMenus();
-                fragment.listCurrent = listCurrent;
-                fragment.refreshList(listCurrent);
-                Log.v("show", "菜单的数据:" + listCurrent.toString());
-            } else if (CHECT_XML_EXIT.equalsIgnoreCase(mmsg)) {
-
-            } else if (CHECT_XML_OK.equalsIgnoreCase(mmsg)
-                    || CHECT_XML_OLD.equalsIgnoreCase(mmsg)
-                    || DOWNLOAD_XML_OK.equalsIgnoreCase(mmsg)) {
-
-                // 不需要更新
-//                fragment.refreshList(listCurrent);
-                if (clicked_id_model == null || "".equals(clicked_id_model)) {
-                    return;
-                }
-                Intent intent = null;
-                if (clicked_id_model.substring(clicked_id_model.length() - 4)
-                        .equals("html")) {
-                    if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-//                            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-                            intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
-                            clicked_id_model.equals(Constant.dgtdothtml) ||
-                            clicked_id_model.equals(Constant.dgtdvathtml) ||
-                            clicked_id_model.equals(Constant.dgtdabnhtml)) {
-                        intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
-                    } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
-                            clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
-                            clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
-                            clicked_id_model.equals(Constant.dkpipostratehtml) ||
-                            clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else {
-                        intent = new Intent(fragment.getActivity(), BussinessHtmlActivity.class);
-                        intent.putExtra("id_model", clicked_id_model);
-                    }
-                    Log.v("show", "HTML模板名称：" + clicked_id_model);
-                } else {
-                    intent = new Intent(fragment.getActivity(), BusinessActivity.class);
-                    intent.putExtra("id_parentnode", "");
-                    intent.putExtra("var_billno", "");
-                    intent.putExtra("id_node", "");
-                    intent.putExtra("id_model", clicked_id_model);
-                    intent.putExtra("xml_version", clicked_xml_version);
-                    Log.v("show", "XML模板名称：" + clicked_id_model);
-                }
-//
-                fragment.startActivity(intent);
-//                fragment.refreshList(listCurrent);
-//                fragment.checkPaoPao();
-            } else if (DOWNLOAD_XML_ERROR.equalsIgnoreCase(mmsg)) {
-                if (clicked_id_model == null || "".equals(clicked_id_model)) {
-                    ToastUtil.ShowLong(context, "下载模板错误，请重新尝试。");
-                    return;
-                }
-                Intent intent = null;
-                if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
-                    intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-                    fragment.startActivity(intent);
-                } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
-                        clicked_id_model.equals(Constant.dgtdothtml) ||
-                        clicked_id_model.equals(Constant.dgtdvathtml) ||
-                        clicked_id_model.equals(Constant.dgtdabnhtml)) {
-                    intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
-                    fragment.startActivity(intent);
-                } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
-                        clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
-                        clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
-                        clicked_id_model.equals(Constant.dkpipostratehtml) ||
-                        clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else {
-                    ToastUtil.ShowLong(context, "下载模板错误，请重新尝试。");
-                }
-            }
-        }
     }
 
     String processBusinessCompress(String fileName) throws Exception {// 解压缩下载的同步数据

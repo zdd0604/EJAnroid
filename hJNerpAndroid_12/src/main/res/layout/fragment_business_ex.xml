@@ -69,7 +69,7 @@
                     android:id="@+id/gridview_businessmenu_ex2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#f9f9f9"
+                    android:background="@color/activity_bg"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"
@@ -180,8 +180,5 @@
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
-
     </ScrollView>
-
-
 </LinearLayout>

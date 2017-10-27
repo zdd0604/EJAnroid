@@ -15,13 +15,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -36,6 +39,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.search.core.PoiInfo;
 import com.hjnerp.activity.LoginActivity;
 import com.hjnerp.activity.MainActivity;
@@ -51,12 +58,15 @@ import com.hjnerp.util.myscom.StringUtils;
 import com.hjnerp.widget.WaitDialog;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
+import com.lzy.okgo.OkGo;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.sdyy.utils.XPermissionListener;
 import com.sdyy.utils.XPermissions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -92,6 +102,13 @@ public class ActivitySupport extends ActionBarActivity implements
     //是否授权
     public boolean isPsions = false;
 
+    private int mLocationTime = 10000;//获取地址的时间间隔
+    private LocationClient mLocationClient;
+    private ActivitySupport.MyLocationListener myLocationListener;
+    protected double mLatitude = 0.00;
+    protected double mLongitude = 0.00;
+
+
     /**
      * @author haijian 增加变量判断键盘是否收回
      */
@@ -111,12 +128,51 @@ public class ActivitySupport extends ActionBarActivity implements
         waitDialogSupport = new WaitDialog(context);
         waitDialogRectangle = new WaitDialogRectangle(context);
 
+//        getLocationInfo();
+
+    }
+
+    /**
+     * 获取Editext内容
+     *
+     * @param editText
+     * @return
+     */
+    public static String getEdVaule(EditText editText) {
+        return editText.getText().toString().trim();
+    }
+
+    /**
+     * 獲取定位
+     */
+    public void getLocationInfo() {
+        mLocationClient = new LocationClient(this);
+        myLocationListener = new ActivitySupport.MyLocationListener();
+        mLocationClient.registerLocationListener(myLocationListener);
+        LocationClientOption option = new LocationClientOption();
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        option.setCoorType("bd09ll");
+        option.setIsNeedAddress(true);
+        option.setOpenGps(true);
+        option.setScanSpan(mLocationTime);
+        mLocationClient.setLocOption(option);
+    }
+
+    private class MyLocationListener implements BDLocationListener {
+        @Override
+        public void onReceiveLocation(BDLocation bdLocation) {
+            // 地理位置信息返回结果
+            mLatitude = bdLocation.getLatitude();
+            mLongitude = bdLocation.getLongitude();
+        }
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+        if (mLocationClient != null)
+            mLocationClient.start();
     }
 
     @Override
@@ -143,6 +199,9 @@ public class ActivitySupport extends ActionBarActivity implements
             unregisterReceiver(receiver);
 
         }
+        if (mLocationClient != null && mLocationClient.isStarted()) {
+            mLocationClient.stop();
+        }
         super.onPause();
     }
 
@@ -154,12 +213,20 @@ public class ActivitySupport extends ActionBarActivity implements
             isFromBackToFront = false;
         }
 
+        if (mLocationClient != null &&mLocationClient.isStarted()) {
+            mLocationClient.stop();
+        }
     }
+
 
     @Override
     public void onDestroy() {
         eapApplication.removeActivity(this);
         super.onDestroy();
+        //根据 Tag 取消请求
+        OkGo.getInstance().cancelTag(this);
+        //取消所有请求
+        OkGo.getInstance().cancelAll();
     }
 
     @Override
@@ -214,7 +281,6 @@ public class ActivitySupport extends ActionBarActivity implements
     }
 
     public void isForcedExit(String msg) {
-
         final Dialog noticeExitDialog = new Dialog(this,
                 R.style.noticeDialogStyle);
         noticeExitDialog.setContentView(R.layout.dialog_notice_nocancel);
@@ -453,6 +519,31 @@ public class ActivitySupport extends ActionBarActivity implements
         /* 送出Notification */
         notificationManager.notify(0, myNoti);
     }
+
+
+//    /**
+//     * 发送消息通知
+//     * @param number
+//     */
+//    public void sendToOther(int number) {
+//        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        Notification notification = null;
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+//                new Intent(this, MainActivity.class), 0);
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+//        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        builder.setSound(alarmSound)
+//                .setContentTitle("您有" + number + "条未读消息")
+//                .setTicker("您有" + number + "条未读消息")
+//                .setAutoCancel(true)
+//                .setSmallIcon(R.drawable.icon2)
+//                .setDefaults(Notification.DEFAULT_LIGHTS)
+//                .setContentIntent(pendingIntent); // 关联PendingIntent
+//        notification = builder.build();
+//        nm.notify(101010, notification);
+////        editor2.putInt("isNoti", number);
+////        editor2.commit();
+//    }
 
     @Override
     public Context getContext() {
@@ -770,11 +861,12 @@ public class ActivitySupport extends ActionBarActivity implements
         return isPsions;
     }
 
-    public void toastSHORT(String content){
-        Toast.makeText(context,content,Toast.LENGTH_SHORT).show();
+    public void toastSHORT(String content) {
+        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
     }
-    public void toastLONG(String content){
-        Toast.makeText(context,content,Toast.LENGTH_LONG).show();
+
+    public void toastLONG(String content) {
+        Toast.makeText(context, content, Toast.LENGTH_LONG).show();
     }
 
     public boolean isShouldHideInput(View v, MotionEvent event) {
@@ -800,4 +892,22 @@ public class ActivitySupport extends ActionBarActivity implements
         }
         return false;
     }
+
+    //判断手机格式是否正确
+    public boolean isMobileNO(String mobiles) {
+        Pattern p = Pattern
+                .compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+        Matcher m = p.matcher(mobiles);
+        return m.matches();
+    }
+
+    //判断email格式是否正确
+    public boolean isEmail(String email) {
+        String str = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|" +
+                "(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
+        Pattern p = Pattern.compile(str);
+        Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
 }

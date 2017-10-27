@@ -8,28 +8,23 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/size_30">
 
         <TextView
             android:id="@+id/travel_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="10dp"
-            android:paddingLeft="5dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/size_10"
             android:text="行程明细1" />
 
         <TextView
             android:id="@+id/travel_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="10dp"
-            android:paddingRight="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/size_10"
             android:text="删除"
             android:textColor="#27a4e3" />
 
@@ -49,11 +44,12 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
-                android:text="起  点"
+                android:gravity="center_vertical"
+                android:text="起点"
                 android:textColor="#000000"
-                android:textSize="16sp" />
+                android:textSize="@dimen/font_size_16" />
 
             <EditText
                 android:id="@+id/travel_from"
@@ -61,8 +57,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                android:gravity="center"
-                android:textSize="14sp" />
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/size_10"
+                android:textSize="@dimen/font_size_15" />
         </LinearLayout>
 
 
@@ -89,7 +86,7 @@
             android:gravity="center"
             android:hint="请选择启程的时间"
             android:textColorHint="#aaaaaa"
-            android:textSize="14sp" />
+            android:textSize="@dimen/font_size_15" />
 
     </LinearLayout>
 
@@ -111,11 +108,12 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
-                android:text="终  点"
+                android:gravity="center_vertical"
+                android:text="终点"
                 android:textColor="#000000"
-                android:textSize="16sp" />
+                android:textSize="@dimen/font_size_16" />
 
             <EditText
                 android:id="@+id/travel_to"
@@ -123,8 +121,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                android:gravity="center"
-                android:textSize="14sp" />
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/size_10"
+                android:textSize="@dimen/font_size_15" />
         </LinearLayout>
 
 
@@ -151,7 +150,7 @@
             android:gravity="center"
             android:hint="请选择到达的时间"
             android:textColorHint="#aaaaaa"
-            android:textSize="14sp" />
+            android:textSize="@dimen/font_size_15" />
 
     </LinearLayout>
 
@@ -168,20 +167,22 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
             android:text="费用项目"
             android:textColor="#000000"
-            android:textSize="16sp" />
+            android:textSize="@dimen/font_size_16" />
 
         <Spinner
             android:id="@+id/travel_pay_work"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            android:gravity="center"
-            android:textSize="14sp" />
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/size_44"
+            android:textSize="@dimen/font_size_15" />
 
         <View
             android:layout_width="1dp"
@@ -190,22 +191,25 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
             android:text="费用金额"
             android:textColor="#000000"
-            android:textSize="16sp" />
+            android:textSize="@dimen/font_size_16" />
 
         <EditText
             android:id="@+id/travel_pay_fee"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
             android:digits="0123456789."
+            android:gravity="center_vertical"
             android:inputType="number"
-            android:gravity="center"
-            android:textSize="14sp" />
+            android:minHeight="@dimen/size_44"
+            android:paddingLeft="@dimen/size_10"
+            android:textSize="@dimen/font_size_15" />
     </LinearLayout>
 
     <View
@@ -215,17 +219,18 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="wrap_content"
         android:background="#ffffff"
         android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
-            android:text="备  注"
+            android:gravity="center_vertical"
+            android:text="备注"
             android:textColor="#000000"
-            android:textSize="16sp" />
+            android:textSize="@dimen/font_size_16" />
 
         <EditText
             android:id="@+id/travel_others"
@@ -233,7 +238,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
-            android:gravity="center"
-            android:textSize="14sp" />
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/size_44"
+            android:paddingLeft="@dimen/size_10"
+            android:textSize="@dimen/font_size_15" />
     </LinearLayout>
 </LinearLayout>

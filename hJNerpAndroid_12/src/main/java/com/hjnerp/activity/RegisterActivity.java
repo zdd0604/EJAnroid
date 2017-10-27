@@ -3,14 +3,16 @@ package com.hjnerp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.hjnerp.business.BusinessJsonCallBack.BRegisterCallBack;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.dao.OtherBaseDao;
 import com.hjnerp.model.BaseData;
 import com.hjnerp.util.DateUtil;
@@ -24,50 +26,75 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class RegisterActivity extends ActivitySupport {
-    ClearEditText mRegPhone;
-    ClearEditText mRegCode;
-    Button mRegBtn;
-    Toast mToast;
-    protected WaitDialogRectangle waitDialogRectangle;
-
+public class RegisterActivity extends ActionBarWidgetActivity implements View.OnClickListener {
     Handler mHandler;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.ar_reg_phone)
+    ClearEditText mRegPhone;
+    @BindView(R.id.ar_reg_code)
+    ClearEditText mRegCode;
+    @BindView(R.id.ar_reg_btn)
+    Button mRegBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        ButterKnife.bind(this);
+        init();
+    }
+
+    private void init() {
+        actionCenterTv.setText(getString(R.string.register_Title_TvActivity));
+        actionLeftTv.setOnClickListener(this);
+        actionRightTv.setVisibility(View.GONE);
+        mRegCode.addTextChangedListener(textWatcher);
+        mRegPhone.addTextChangedListener(textWatcher);
         mHandler = new Handler();
-        mRegPhone = (ClearEditText) findViewById(R.id.ar_reg_phone);
-        mRegCode = (ClearEditText) findViewById(R.id.ar_reg_code);
-        mRegBtn = (Button) findViewById(R.id.ar_reg_btn);
         mRegBtn.setOnClickListener(new RegBtnClickListener());
-        waitDialogRectangle = new WaitDialogRectangle(context);
-        getSupportActionBar().setTitle("企业注册");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.actionbar_home_indicator_blue);
         this.closeInput();
     }
 
-    void showToast(final String msg) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mToast == null) {
-                    mToast = Toast.makeText(RegisterActivity.this, msg,
-                            Toast.LENGTH_SHORT);
-                } else {
-                    mToast.setText(msg);
-                }
-                mToast.show();
-            }
-        });
-    }
 
-    void showIMF() {
+    /**
+     * 监听事件的输入
+     */
+    private TextWatcher textWatcher = new TextWatcher() {
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before,
+                                  int count) {
+            if (getEdVaule(mRegCode).length() > 0 && getEdVaule(mRegPhone).length() > 0) {
+                mRegBtn.setEnabled(true);
+            } else {
+                mRegBtn.setEnabled(false);
+            }
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                                      int after) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
+
+
+    private void showIMF() {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -77,7 +104,16 @@ public class RegisterActivity extends ActivitySupport {
         });
     }
 
-    class RegBtnClickListener implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.action_left_tv:
+                finish();
+                break;
+        }
+    }
+
+    public class RegBtnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             if (validateInternet()) {
@@ -85,13 +121,13 @@ public class RegisterActivity extends ActivitySupport {
                 String eRegCode = mRegCode.getText().toString();
                 if (TextUtils.isEmpty(eRegPhone)) {
                     mRegPhone.setShakeAnimation();
-                    showToast("手机号不能为空");
+                    showFailToast("手机号不能为空");
                     showIMF();
                     return;
                 }
                 if (TextUtils.isEmpty(eRegCode)) {
                     mRegCode.setShakeAnimation();
-                    showToast("注册码不能为空");
+                    showFailToast("注册码不能为空");
                     showIMF();
                     return;
                 }
@@ -157,16 +193,16 @@ public class RegisterActivity extends ActivitySupport {
 //                    long current = new Date().getTime();
 //                    if (current < stopReg || current == stopReg) {
 //                        OtherBaseDao.replaceRegInfo(dataList);
-//                        showToast("注册成功");
+//                        showFailToast("注册成功");
 //                        Intent intent = new Intent(getBaseContext(),
 //                                LoginActivity.class);
 //                        setResult(RESULT_OK, intent);
 //                        finish();
 //                    } else {
-//                        showToast("企业注册已过截止日期，请联系软件供应公司");
+//                        showFailToast("企业注册已过截止日期，请联系软件供应公司");
 //                    }
 //                } else {
-//                    showToast(data.message);
+//                    showFailToast(data.message);
 //                    showIMF();
 //                }
 //            } catch (IOException e) {
@@ -177,7 +213,7 @@ public class RegisterActivity extends ActivitySupport {
 //        @Override
 //        public void onException(Exception e) {
 //            waitDialogRectangle.cancel();
-//            showToast("连接远程注册服务器失败，请稍后再试...");
+//            showFailToast("连接远程注册服务器失败，请稍后再试...");
 //            showIMF();
 //        }
 //    }
@@ -211,13 +247,13 @@ public class RegisterActivity extends ActivitySupport {
                         long current = new Date().getTime();
                         if (current < stopReg || current == stopReg) {
                             OtherBaseDao.replaceRegInfo(dataList);
-                            showToast("注册成功");
+                            showFailToast("注册成功");
                             Intent intent = new Intent(getBaseContext(),
                                     LoginActivity.class);
                             setResult(RESULT_OK, intent);
                             finish();
                         } else {
-                            showToast("企业注册已过截止日期，请联系软件供应公司");
+                            showFailToast("企业注册已过截止日期，请联系软件供应公司");
                         }
                     }
 
@@ -225,7 +261,7 @@ public class RegisterActivity extends ActivitySupport {
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
                         waitDialogRectangle.cancel();
-                        showToast(e.getMessage());
+                        showFailToast(e.getMessage());
                         showIMF();
                     }
                 });

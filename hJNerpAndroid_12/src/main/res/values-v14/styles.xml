@@ -133,6 +133,7 @@
     <style name="registerTheme" parent="Theme.AppCompat.Light">
         <item name="android:homeAsUpIndicator">@drawable/actionbar_home_indicator_blue</item>
         <item name="android:actionBarStyle">@style/CustomActionBar</item>
+        <item name="android:screenOrientation">portrait</item>
     </style>
 
     <style name="CustomActionBar" parent="Base.Widget.AppCompat.ActionBar">

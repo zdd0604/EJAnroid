@@ -6,6 +6,7 @@ package com.hjnerp.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,18 @@ import android.widget.Adapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.hjnerpandroid.R;
 import com.hjnerp.fragment.ContactFragment;
 import com.hjnerp.model.DeptInfo;
 import com.hjnerp.net.ChatConstants;
 import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.util.ImageLoaderHelper;
+import com.hjnerp.util.Log;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.myscom.StringUtils;
+import com.hjnerpandroid.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,7 @@ public class ContactExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<DeptInfo> dept;// 传递过来的经过处理的总数据
     private Bitmap default_user_pic;
+    TextView deptname;
 
     public ContactExpandableListAdapter(Context context, List<DeptInfo> dept) {
         super();
@@ -57,70 +61,63 @@ public class ContactExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     // 得到大组成员的view
-    public View getGroupView(int groupPosition, boolean isExpanded,
-                             View convertView, ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         DeptInfo deptBean = dept.get(groupPosition);
+
+        Log.e("show", deptBean.toString());
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.fragment_contacter_group,null);
+            convertView = inflater.inflate(R.layout.fragment_contacter_group, null);
         }
 
-        LinearLayout ll_group = (LinearLayout) convertView
-                .findViewById(R.id.ll_group);
-        ImageView image_group = (ImageView) convertView
-                .findViewById(R.id.groupImage);
-        TextView deptname = (TextView) convertView.findViewById(R.id.groupName);
+        LinearLayout ll_group = (LinearLayout) convertView.findViewById(R.id.ll_group);
+        View view1 = convertView.findViewById(R.id.view1);
+        View view2 = convertView.findViewById(R.id.view2);
+        View view3 = convertView.findViewById(R.id.view3);
+        RelativeLayout grouprl = (RelativeLayout) convertView.findViewById(R.id.grouprl);
+        ImageView image_group = (ImageView) convertView.findViewById(R.id.groupImage);
+        deptname = (TextView) convertView.findViewById(R.id.groupName);
         TextView paopao = (TextView) convertView.findViewById(R.id.tv_newcontact_paopao);
-
         paopao.setVisibility(View.GONE);
 
-        if (groupPosition == 0) {
+        if (groupPosition == 0) {//添加联系人
             image_group.setVisibility(View.VISIBLE);
             image_group.setImageResource(R.drawable.default_fmessage);
-//			ll_group.setBackgroundColor(context.getResources().getColor(
-//					R.color.white));
+            view1.setVisibility(View.GONE);
+            view2.setVisibility(View.GONE);
+            view3.setVisibility(View.GONE);
         } else if (groupPosition == 1) {//联系人申请
             if (ContactFragment.ALL_NEW_MSG_COUNTS != 0) {
                 paopao.setVisibility(View.VISIBLE);
                 paopao.setText(String.valueOf(ContactFragment.ALL_NEW_MSG_COUNTS));
             }
-
             image_group.setVisibility(View.VISIBLE);
             image_group.setImageResource(R.drawable.userguide_nearfirends_icon);
-//			ll_group.setBackgroundColor(context.getResources().getColor(
-//					R.color.white));
-        } else if (groupPosition == 2) {
-//			if(ContactFragment.ALL_NEW_MSG_COUNTS != 0){
-////				paopao.setVisibility(View.VISIBLE);
-//				paopao.setText(String.valueOf(ContactFragment.ALL_NEW_MSG_COUNTS));
-//			}
-
+            view1.setVisibility(View.VISIBLE);
+            view2.setVisibility(View.GONE);
+            view3.setVisibility(View.GONE);
+        } else if (groupPosition == 2) {//选择群组
             image_group.setVisibility(View.VISIBLE);
             image_group.setImageResource(R.drawable.default_chatroom);
-//			ll_group.setBackgroundColor(context.getResources().getColor(
-//					R.color.white));
+            view1.setVisibility(View.VISIBLE);
+            view2.setVisibility(View.GONE);
+            view3.setVisibility(View.VISIBLE);
         } else {
-
-            image_group.setVisibility(View.GONE);
-//			ll_group.setBackgroundColor(context.getResources().getColor(
-//					R.color.contact_bkg_white));
+            grouprl.setVisibility(View.GONE);
+            deptname.setCompoundDrawables(null, null, null, null);
+            deptname.setTextSize(14);
+            view1.setVisibility(View.GONE);
+            view2.setVisibility(View.GONE);
+            view3.setVisibility(View.VISIBLE);
         }
         if (StringUtil.isNullOrEmpty(deptBean.getDeptName())) {
             deptname.setText("");
         } else {
             deptname.setText(deptBean.getDeptName());// 设置大组成员名称
         }
-
-        // ImageView image = (ImageView)
-        // convertView.findViewById(R.id.groupImage);// 是否展开大组的箭头图标
-        // if (isExpanded)// 大组展开时的箭头图标
-        // image.setBackgroundResource(R.drawable.todown);
-        // else
-        // // 大组合并时的箭头图标
-        // image.setBackgroundResource(R.drawable.toright);
-
         return convertView;
     }
+
 
     // 得到大组成员的id
     public long getGroupId(int groupPosition) {
@@ -142,7 +139,7 @@ public class ContactExpandableListAdapter extends BaseExpandableListAdapter {
         return dept.size();
     }
 
-    // 得到小组成员的view
+    // 得到小组成员的view 联系人
     public View getChildView(int groupPosition, int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
@@ -151,44 +148,50 @@ public class ContactExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             viewHolder = new ChildViewHolder();
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.fragment_contacter_child,
-                    null);
+            convertView = inflater.inflate(R.layout.fragment_contacter_child, null);
 
             viewHolder.tvchildName = (TextView) convertView
                     .findViewById(R.id.fc_ct_name);// 显示用户名
-            viewHolder.photo = (ImageView) convertView
-                    .findViewById(R.id.fc_ct_photo);//
+            viewHolder.view_top = convertView.findViewById(R.id.view_top);
+            viewHolder.photo = (ImageView) convertView.findViewById(R.id.fc_ct_photo);//
+            viewHolder.child_view_btom = convertView.findViewById(R.id.child_view_btom);//
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ChildViewHolder) convertView.getTag();
         }
 
-
-//		if (!StringUtil.isNullOrEmpty(deptBean.getChild(childPosition).getFriendimage())) {	
-//			if(TextUtils.isEmpty(deptBean.getChild(childPosition).getFriendimage()))){
         if (StringUtils.isNotBlank(deptBean.getFriendInfo(childPosition).getFriendimage())) {
             String url = ChatPacketHelper.buildImageRequestURL(deptBean
                     .getFriendInfo(childPosition).getFriendimage(), ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH);
-//			Log.e(TAG," 头像 url is   >>>>>>>>>> " + url);
-//			Log.i(TAG,deptBean
-//					.getChild(childPosition).getFriendid() + " image url is " + url);
-
             ImageLoaderHelper.displayImage(url, viewHolder.photo);
         } else {
             viewHolder.photo.setImageBitmap(default_user_pic);
-//			Log.i(TAG,deptBean
-//					.getChild(childPosition).getFriendid() + " image url is null ");
         }
-        viewHolder.tvchildName.setText(deptBean.getFriendInfo(childPosition)
-                .getFriendname());
+        if (childPosition == 0) {
+            viewHolder.view_top.setVisibility(View.GONE);
 
+        } else {
+            viewHolder.view_top.setVisibility(View.VISIBLE);
 
+        }
+
+        if (childPosition!=deptBean.getDeptFriendInfoList().size()-1){
+            viewHolder.child_view_btom.setVisibility(View.GONE);
+        }else{
+            viewHolder.child_view_btom.setVisibility(View.VISIBLE);
+        }
+
+        viewHolder.tvchildName.setText(deptBean.getFriendInfo(childPosition).getFriendname());
+        deptname.setText(deptBean.getFriendInfo(childPosition).getDeptname());
+        deptname.setBackgroundColor(context.getResources().getColor(R.color.actionbar_title_bg));
         return convertView;
     }
 
     final static class ChildViewHolder {
         TextView tvchildName;
         ImageView photo;
+        View view_top;
+        View child_view_btom;
     }
 
     // 得到小组成员id
@@ -238,5 +241,4 @@ public class ContactExpandableListAdapter extends BaseExpandableListAdapter {
         // TODO Auto-generated method stub
         return dept.get(groupPosition);
     }
-
 }
