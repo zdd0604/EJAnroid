@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,7 +15,7 @@ import com.hjnerp.dao.BusinessBaseDao;
 import com.hjnerp.model.Ctlm1345;
 import com.hjnerp.model.Ej1345;
 import com.hjnerp.model.PerformanceDatas;
-import com.hjnerp.model.businessFlag;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.widget.ClearEditText;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
@@ -239,9 +237,9 @@ public class OverBusiness extends ActionBarWidgetActivity implements View.OnClic
         OkGo.post(EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataUpdateServlet")
                 .isMultipart(true)
                 .params("datas", datas)
-                .execute(new BFlagCallBack<businessFlag>() {
+                .execute(new BFlagCallBack<BusinessFlag>() {
                     @Override
-                    public void onSuccess(businessFlag businessFlag, Call call, Response response) {
+                    public void onSuccess(BusinessFlag businessFlag, Call call, Response response) {
                         String content = businessFlag.getMessage();
                         Constant.billsNo = businessFlag.getNo();
                         if (businessFlag.getFlag().equals("Y")) {

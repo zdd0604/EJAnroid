@@ -180,7 +180,7 @@ public class IMChatService extends Service implements OnNotificationListener {
 				SoundPoolPlay.getInstance(context).playSound(1);
 				// 生成通知
 				if (ret != 0 && notiFlag) {
-					setNotiTypeMsg(R.drawable.icon2, sTitle, message.body,
+					setNotiTypeMsg(R.drawable.app_icon_logo, sTitle, message.body,
 							ChatActivity.class, message.from, message.isplay,
 							groupInfo, friendInfo);
 				}
@@ -590,7 +590,7 @@ public class IMChatService extends Service implements OnNotificationListener {
 			sendBroadcast(intent);
 			if (flag_notify) {
 				SoundPoolPlay.getInstance(context).playSound(1);
-				setNotiTypeIQ(R.drawable.icon2, sTtile, sContent, 1);
+				setNotiTypeIQ(R.drawable.app_icon_logo, sTtile, sContent, 1);
 			}
 		}
 		HJWebSocketManager.getInstance().sendIqResponses(iq.id);

@@ -1,8 +1,7 @@
 package com.hjnerp.business.BusinessJsonCallBack;
 
 import com.google.gson.Gson;
-import com.hjnerp.model.businessFlag;
-import com.hjnerp.util.Log;
+import com.hjnerp.model.BusinessFlag;
 import com.lzy.okgo.callback.AbsCallback;
 import com.lzy.okgo.request.BaseRequest;
 
@@ -29,7 +28,7 @@ public abstract class BFlagCallBack<T> extends AbsCallback<T> {
         Type type = params[0];
         Gson gson = new Gson();
         String string = response.body().string();
-        businessFlag result = gson.fromJson(string, type);
+        BusinessFlag result = gson.fromJson(string, type);
         if (result.getFlag().equals("Y")) {
             return (T) result;
         } else {

@@ -23,7 +23,7 @@ import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.model.EjWType1345;
 import com.hjnerp.model.EjWadd1345;
-import com.hjnerp.model.businessFlag;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.widget.ClearEditText;
 import com.hjnerpandroid.R;
@@ -213,7 +213,7 @@ public class BusinessDgtdrechtml extends ActionBarWidgetActivity implements View
                 flag_wadd, id_wtype, Constant.id_wproj, dec_wtime, var_wtitle,
                 var_remark, Constant.item_peoject, BusinessTimeUtils.getCurrentTime(Constant.NOWTIME),
                 Integer.valueOf(BusinessTimeUtils.getCurrentTime(Constant.kpiperiod_MM)),
-                Integer.valueOf(BusinessTimeUtils.getCurrentTime(Constant.Int_year_YYYY)),
+                Integer.valueOf(BusinessTimeUtils.getCurrentTime(Constant.TIME_YYYY)),
                 Constant.id_corr);
         getBusinessList(data);
     }
@@ -228,9 +228,9 @@ public class BusinessDgtdrechtml extends ActionBarWidgetActivity implements View
                 .isMultipart(true)
                 .params("datas", datas)
                 .cacheKey(Constant.ID_MENU)            // 设置当前请求的缓存key,建议每个不同功能的请求设置一个
-                .execute(new BFlagCallBack<businessFlag>() {
+                .execute(new BFlagCallBack<BusinessFlag>() {
                     @Override
-                    public void onSuccess(businessFlag businessFlag, Call call, Response response) {
+                    public void onSuccess(BusinessFlag businessFlag, Call call, Response response) {
                         String content = businessFlag.getMessage();
                         showFailToast(getString(R.string.toast_Message_CommitSucceed));
                         removeData();

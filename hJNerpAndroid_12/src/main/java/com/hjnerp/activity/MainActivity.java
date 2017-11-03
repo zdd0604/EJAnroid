@@ -96,7 +96,7 @@ public class MainActivity extends ActionBarWidgetActivity implements
             tv_tab_contact, main_tab_my_unread;
     private FrameLayout frameLayout_work;
     private TextView main_title_text;
-//    private ImageView main_emp_icon;
+    //    private ImageView main_emp_icon;
 //    private ImageView main_phone_icon;
 //    private ImageView main_group_icon;
     private ImageView main_search_icon;
@@ -171,7 +171,7 @@ public class MainActivity extends ActionBarWidgetActivity implements
                 .setContentTitle("您有" + number + "条未读消息")
                 .setTicker("您有" + number + "条未读消息")
                 .setAutoCancel(true)
-                .setSmallIcon(R.drawable.icon2)
+                .setSmallIcon(R.drawable.app_icon_logo)
                 .setDefaults(Notification.DEFAULT_LIGHTS)
                 .setContentIntent(pendingIntent); // 关联PendingIntent
         notification = builder.build();
@@ -259,9 +259,9 @@ public class MainActivity extends ActionBarWidgetActivity implements
         title_list.add(R.string.main_tab_business);
 
         // 通讯录
-        contactFragment = new ContactFragment();
-        mFragmentList.add(contactFragment);
-        title_list.add(R.string.main_tab_contact);
+//        contactFragment = new ContactFragment();
+//        mFragmentList.add(contactFragment);
+//        title_list.add(R.string.main_tab_contact);
 
         // 我的
         myInforMation = new MyInforMation();
@@ -273,7 +273,8 @@ public class MainActivity extends ActionBarWidgetActivity implements
         // 设置监听
         mViewPager.setOnPageChangeListener(this);
         // 设置预加载数为3
-        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(mFragmentList.size());
+        mViewPager.setCurrentItem(2);
     }
 
     private void registerWork() {
@@ -309,7 +310,8 @@ public class MainActivity extends ActionBarWidgetActivity implements
         Log.v("show", "initTabIndicator。。。。。。。。。。。。。。");
         ChangeColorIconWithTextView im = (ChangeColorIconWithTextView) findViewById(R.id.id_indicator_im);
         ChangeColorIconWithTextView buss = (ChangeColorIconWithTextView) findViewById(R.id.id_indicator_business);
-        ChangeColorIconWithTextView contact = (ChangeColorIconWithTextView) findViewById(R.id.id_indicator_contact);
+        //联系人暂时去除，用的时候解封
+//        ChangeColorIconWithTextView contact = (ChangeColorIconWithTextView) findViewById(R.id.id_indicator_contact);
         ChangeColorIconWithTextView my = (ChangeColorIconWithTextView) findViewById(R.id.id_indicator_my);
 
         mTabIndicator.add(im);
@@ -322,14 +324,14 @@ public class MainActivity extends ActionBarWidgetActivity implements
         }
 
         mTabIndicator.add(buss);
-        mTabIndicator.add(contact);
+//        mTabIndicator.add(contact);
         mTabIndicator.add(my);
 
         im.setOnClickListener(this);
         buss.setOnClickListener(this);
-        contact.setOnClickListener(this);
+//        contact.setOnClickListener(this);
         my.setOnClickListener(this);
-        im.setIconAlpha(1.0f);
+        buss.setIconAlpha(1.0f);
     }
 
 
@@ -493,10 +495,10 @@ public class MainActivity extends ActionBarWidgetActivity implements
             setMainIconVISIBLE(View.VISIBLE, View.GONE, View.GONE);
         }
 
-        //联系人
-        if ((sputil.isWorkFlow() && position == 3) || (!sputil.isWorkFlow() && position == 2)) {
-            setMainIconVISIBLE(View.GONE, View.GONE, View.GONE);
-        }
+//        //联系人
+//        if ((sputil.isWorkFlow() && position == 3) || (!sputil.isWorkFlow() && position == 2)) {
+//            setMainIconVISIBLE(View.GONE, View.GONE, View.GONE);
+//        }
 
         //我的
         if ((sputil.isWorkFlow() && position == 4) || (!sputil.isWorkFlow() && position == 3)) {
@@ -759,7 +761,7 @@ public class MainActivity extends ActionBarWidgetActivity implements
                     .setContentTitle("您有" + number + "条未读消息")
                     .setTicker("您有" + number + "条未读消息")
                     .setAutoCancel(true)
-                    .setSmallIcon(R.drawable.icon2)
+                    .setSmallIcon(R.drawable.app_icon_logo)
                     .setDefaults(Notification.DEFAULT_LIGHTS)
                     .setContentIntent(pendingIntent); // 关联PendingIntent
             notification = builder.build();
@@ -830,7 +832,6 @@ public class MainActivity extends ActionBarWidgetActivity implements
     public void onClick(View v) {
         // TODO Auto-generated method stub
         resetOtherTabs();
-
         switch (v.getId()) {
             case R.id.id_indicator_im:
                 mTabIndicator.get(0).setIconAlpha(1.0f);
@@ -850,22 +851,31 @@ public class MainActivity extends ActionBarWidgetActivity implements
                 }
 
                 break;
-            case R.id.id_indicator_contact:
+//            case R.id.id_indicator_contact:
+            //联系人暂时去除，用的时候解封
+//                if (sputil.isWorkFlow()) {
+//                    mTabIndicator.get(3).setIconAlpha(1.0f);
+//                    mViewPager.setCurrentItem(3, false);
+//                } else {
+//                    mTabIndicator.get(2).setIconAlpha(1.0f);
+//                    mViewPager.setCurrentItem(2, false);
+//                }
+//                break;
+            case R.id.id_indicator_my:
+                //联系人暂时去除，用的时候解封
+//                if (sputil.isWorkFlow()) {
+//                    mTabIndicator.get(4).setIconAlpha(1.0f);
+//                    mViewPager.setCurrentItem(4, false);
+//                } else {
+//                    mTabIndicator.get(3).setIconAlpha(1.0f);
+//                    mViewPager.setCurrentItem(3, false);
+//                }
                 if (sputil.isWorkFlow()) {
                     mTabIndicator.get(3).setIconAlpha(1.0f);
                     mViewPager.setCurrentItem(3, false);
                 } else {
                     mTabIndicator.get(2).setIconAlpha(1.0f);
                     mViewPager.setCurrentItem(2, false);
-                }
-                break;
-            case R.id.id_indicator_my:
-                if (sputil.isWorkFlow()) {
-                    mTabIndicator.get(4).setIconAlpha(1.0f);
-                    mViewPager.setCurrentItem(4, false);
-                } else {
-                    mTabIndicator.get(3).setIconAlpha(1.0f);
-                    mViewPager.setCurrentItem(3, false);
                 }
                 break;
         }

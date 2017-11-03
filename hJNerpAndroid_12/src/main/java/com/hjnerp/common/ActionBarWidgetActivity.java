@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,7 +35,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -55,6 +61,13 @@ public class ActionBarWidgetActivity extends ActivitySupport {
     protected PopupWindow popupWindow;
     private static String backJson;
     protected Gson mGson;
+    protected PopupWindow mPopupWindow;
+
+    //绩效月份选择
+    protected List<String> montStList = new ArrayList<>();
+    protected List<String> monthIntList = new ArrayList<>();
+
+    private Map<String,String> montStMap = new HashMap();
 
     private Handler abHandler = new Handler() {
         @Override
@@ -95,6 +108,32 @@ public class ActionBarWidgetActivity extends ActivitySupport {
         mGson = new Gson();
         waitDialog = new WaitDialogRectangle(mContext);
         waitDialogRectangle = new WaitDialogRectangle(mContext);
+
+        montStList.add("一月份");
+        montStList.add("二月份");
+        montStList.add("三月份");
+        montStList.add("四月份");
+        montStList.add("五月份");
+        montStList.add("六月份");
+        montStList.add("七月份");
+        montStList.add("八月份");
+        montStList.add("九月份");
+        montStList.add("十月份");
+        montStList.add("十一月份");
+        montStList.add("十二月份");
+
+        monthIntList.add("01");
+        monthIntList.add("02");
+        monthIntList.add("03");
+        monthIntList.add("04");
+        monthIntList.add("05");
+        monthIntList.add("06");
+        monthIntList.add("07");
+        monthIntList.add("08");
+        monthIntList.add("09");
+        monthIntList.add("10");
+        monthIntList.add("11");
+        monthIntList.add("12");
     }
 
 
@@ -144,7 +183,7 @@ public class ActionBarWidgetActivity extends ActivitySupport {
      * @param content
      */
     public void LogShow(String content) {
-        Log.e("MZ", content);
+        Log.e("EJ", content);
     }
 
 
@@ -159,6 +198,14 @@ public class ActionBarWidgetActivity extends ActivitySupport {
         startActivity(intent);
     }
 
+    /**
+     * @param toClass
+     * @param ac_type
+     */
+    public void intentActivity(Class toClass, int ac_type) {
+        Intent intent = new Intent(this, toClass);
+        startActivityForResult(intent, ac_type);
+    }
 
     /**
      * bundle
@@ -183,7 +230,6 @@ public class ActionBarWidgetActivity extends ActivitySupport {
         TextPaint newPaint = new TextPaint();
         return (int) newPaint.measureText(string);
     }
-
 
 
     //网络获取的方法
@@ -285,8 +331,7 @@ public class ActionBarWidgetActivity extends ActivitySupport {
         new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         int month = monthOfYear + 1;
                         if (month < 10 && dayOfMonth < 10) {
                             editText.setText(year + "-0" + month
@@ -305,7 +350,8 @@ public class ActionBarWidgetActivity extends ActivitySupport {
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show();
+                calendar.get(Calendar.DAY_OF_MONTH))
+                .show();
 //        editText.setCompoundDrawables(null, null, null, null);
     }
 
@@ -313,6 +359,19 @@ public class ActionBarWidgetActivity extends ActivitySupport {
         void processJsonValue(String value);
     }
 
+    @Override
+    public boolean hasInternetConnected() {
+        ConnectivityManager manager = (ConnectivityManager) context
+                .getSystemService(context.CONNECTIVITY_SERVICE);
+        if (manager != null) {
+            NetworkInfo network = manager.getActiveNetworkInfo();
+            if (network != null && network.isConnectedOrConnecting()) {
+                return true;
+            }
+        }
+        showFailToast(getString(R.string.toast_Message_NetWork));
+        return false;
+    }
 
     @Override
     public void onDestroy() {

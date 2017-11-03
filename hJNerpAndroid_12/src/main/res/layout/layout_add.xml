@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/add_sell_order_detail"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/size_40"
+    android:layout_marginBottom="30dp"
+    android:layout_marginTop="1dp"
+    android:background="#ffffff"
+    android:focusableInTouchMode="true"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_add_img" />
+
+    <TextView
+        android:id="@+id/layoutAddTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#27a4e3"
+        android:text="标题"
+        android:textSize="16sp" />
+
+</LinearLayout>

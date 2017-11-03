@@ -1,18 +1,19 @@
 package com.hjnerp.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hjnerp.dao.BusinessBaseDao;
 import com.hjnerp.model.MenuContent;
 import com.hjnerp.net.ChatConstants;
 import com.hjnerp.net.ChatPacketHelper;
+import com.hjnerp.util.DensityUtil;
 import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.myscom.StringUtils;
@@ -87,7 +88,6 @@ public class BusinessGridViewAdapter extends BaseAdapter {
                         .findViewById(R.id.tv_paopao_businessmenuitemgrid);// 更新红圈提醒
                 viewHolder.photo = (ImageView) convertView
                         .findViewById(R.id.imagegrid);//
-
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();

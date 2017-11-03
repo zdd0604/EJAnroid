@@ -12,33 +12,38 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/size_12">
 
-            android:orientation="vertical">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/icon_bfragment_banner" />
 
             <LinearLayout
                 android:id="@+id/visit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:background="@color/white"
-                    android:padding="2dp"
-                    android:paddingLeft="20dp"
-                    android:paddingStart="20dp"
-                    android:text="拜访业务"
+                    android:paddingBottom="@dimen/size_5"
+                    android:paddingLeft="@dimen/size_24"
+                    android:paddingTop="@dimen/size_14"
+                    android:textColor="@color/viewgroup_texrcolor"
+                    android:text="@string/bFragment_Title_ViewGroup1"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#f9f9f9"
+                    android:background="@color/viewgroup_item"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"
@@ -50,26 +55,24 @@
                 android:id="@+id/other_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:background="@color/white"
-                    android:padding="2dp"
-                    android:paddingLeft="20dp"
-                    android:paddingStart="20dp"
-                    android:text="工作业务"
+                    android:paddingBottom="@dimen/size_5"
+                    android:paddingLeft="@dimen/size_24"
+                    android:paddingTop="@dimen/size_14"
+                    android:textColor="@color/viewgroup_texrcolor"
+                    android:text="@string/bFragment_Title_ViewGroup2"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/activity_bg"
+                    android:background="@color/viewgroup_item"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"
@@ -81,26 +84,24 @@
                 android:id="@+id/find_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:background="@color/white"
-                    android:padding="2dp"
-                    android:paddingLeft="20dp"
-                    android:paddingStart="20dp"
-                    android:text="查询业务"
+                    android:paddingBottom="@dimen/size_5"
+                    android:paddingLeft="@dimen/size_24"
+                    android:paddingTop="@dimen/size_14"
+                    android:textColor="@color/viewgroup_texrcolor"
+                    android:text="@string/bFragment_Title_ViewGroup3"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#f9f9f9"
+                    android:background="@color/viewgroup_item"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"
@@ -112,26 +113,24 @@
                 android:id="@+id/performance_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="gone"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:background="@color/white"
-                    android:padding="2dp"
-                    android:paddingLeft="20dp"
-                    android:paddingStart="20dp"
-                    android:text="绩效管理"
+                    android:paddingBottom="@dimen/size_5"
+                    android:paddingLeft="@dimen/size_24"
+                    android:paddingTop="@dimen/size_14"
+                    android:textColor="@color/viewgroup_texrcolor"
+                    android:text="@string/bFragment_Title_ViewGroup4"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#f9f9f9"
+                    android:background="@color/viewgroup_item"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"

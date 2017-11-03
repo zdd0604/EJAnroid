@@ -301,10 +301,11 @@ public class WorkFragment extends FragmentSupport {
                     foot_tab_number = FOOT_TAB_NUMBER_Y;
 //                    listYN.clear();
                     listItemAdapter.notifyDataSetChanged();
-                    // new GetDataTask().execute();
-                    listview.setRefreshing();
                     leftview.setVisibility(View.GONE);
                     rightview.setVisibility(View.VISIBLE);
+                    // new GetDataTask().execute();
+                    listview.setRefreshing();
+//                    listview.setRefreshing(true);
                     break;
                 case R.id.work_button_left:
                     btnLeft.setTextColor(new Color().rgb(39, 164, 227));
@@ -316,7 +317,7 @@ public class WorkFragment extends FragmentSupport {
                     leftview.setVisibility(View.VISIBLE);
                     // new GetDataTask().execute();
                     listview.setRefreshing();
-                     listview.setRefreshing(true);
+//                     listview.setRefreshing(true);
                     break;
                 default:
                     break;
@@ -429,7 +430,7 @@ public class WorkFragment extends FragmentSupport {
 //                        listYN.get(0).getDate(), integer+"");
 //            }
 //        } else {
-        listYN.clear();
+//        listYN.clear();
         // 请求10个已处理
         if (selectedBillTypeList.size() > 0) {
             for (int i = 0; i < selectedBillTypeList.size(); i++) {

@@ -27,7 +27,7 @@ public class NotificationMessage {
             builder.setContentTitle("您有" + number + "未读消息");
             builder.setTicker("您有" + number + "未读消息");
             builder.setAutoCancel(true);
-            builder.setSmallIcon(R.drawable.icon2);
+            builder.setSmallIcon(R.drawable.app_icon_logo);
             builder.setDefaults(Notification.DEFAULT_LIGHTS);
             builder.setContentIntent(pendingIntent); // 关联PendingIntent
             notification = builder.build();

@@ -1,74 +1,128 @@
 package com.hjnerp.business.activity;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
+import com.hjnerp.business.BusinessAdapter.popupAdapter;
 import com.hjnerp.business.BusinessJsonCallBack.BFlagCallBack;
 import com.hjnerp.business.businessutils.BusinessTimeUtils;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.QiXinBaseDao;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.model.BusinessPerformanceColumn;
 import com.hjnerp.model.BusinessPerformanceData;
 import com.hjnerp.model.BusinessPerformanceInfo;
-import com.hjnerp.model.PerformanceBean;
 import com.hjnerp.model.UserInfo;
-import com.hjnerp.model.businessFlag;
-import com.hjnerp.net.HttpClientManager;
 import com.hjnerp.util.Log;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.ClearEditText;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.exception.OkGoException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
 /**
  * 绩效计划录入
+ * 新建绩效
  * zdd
  */
-public class BusinessPerformanceTypeIn extends ActivitySupport implements
+public class BusinessPerformanceTypeIn extends ActionBarWidgetActivity implements
         View.OnClickListener {
-    /**
-     * View的集合
-     */
-    List<View> performanceListView = new ArrayList<>();
-    /**
-     * 获取当前时间
-     */
-    private Calendar c = Calendar.getInstance();
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    //考核年
+    @BindView(R.id.input_int_year)
+    TextView input_int_year;
+    //考评周期
+    @BindView(R.id.name_kpiperiod_tx)
+    TextView name_kpiperiod_tx;
+    //单据号
+    @BindView(R.id.dkpipost_no)
+    TextView dkpipost_no;
+    //被评人
+    @BindView(R.id.input_id_clerk)
+    TextView input_id_clerk;
+    //添加绩效详情
+    @BindView(R.id.btn_add_kpiview)
+    LinearLayout btn_addKpiView;
+    //添加目标详情
+    @BindView(R.id.btn_add_gsview)
+    LinearLayout btn_addGsView;
+    //计划日期
+    @BindView(R.id.input_conclude_time)
+    TextView input_conclude_time;
+    //驳回意见 显示
+    @BindView(R.id.input_var_reject)
+    TextView input_var_reject;
+    //驳回意见 输入
+    @BindView(R.id.input_approval_context)
+    EditText input_approval_context;
+    //驳回按钮
+    @BindView(R.id.input_btn_disagree)
+    Button input_btn_disagree;
+    //保存按钮
+    @BindView(R.id.input_performanc_save)
+    Button input_performanc_save;
+    //布局 计划日期
+    @BindView(R.id.layout_conclude_time)
+    LinearLayout layout_conclude_time;
+    //布局 考评周期
+    @BindView(R.id.layout_name_kpiperiod)
+    LinearLayout layout_name_kpiperiod;
+    //布局 总分
+    @BindView(R.id.layout_dec_smark)
+    LinearLayout layout_dec_smark;
+    //布局 驳回意见显示框
+    @BindView(R.id.layout_var_reject)
+    LinearLayout layout_var_reject;
+    //布局 绩效详情
+    @BindView(R.id.kpiview)
+    LinearLayout lay_kpiView;
+    //布局 工作目标
+    @BindView(R.id.gsview)
+    LinearLayout lay_gsView;
+    //布局 驳回输入框
+    @BindView(R.id.layout_reject)
+    LinearLayout layout_reject;
+    //布局 被评人
+    @BindView(R.id.layout_id_clerk)
+    LinearLayout layout_id_clerk;
+    //布局 考核年
+    @BindView(R.id.layout_int_year)
+    LinearLayout layout_int_year;
+
+    private LayoutInflater inflater;
     /**
      * 行号
      */
@@ -88,8 +142,6 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
     //权重的综合
     private Double widget_sum = 0.0;
     private Double widgetkpi_sum = 0.0;
-    private RelativeLayout pf_actionbar_back;
-    private TextView tv_actionbar_title;
     private UserInfo myInfo;
     private String companyID;
     private String userID;
@@ -110,26 +162,17 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
     private static String dataplan;
     private static String idkpicate;
     private static int intyear;
-
-    private LinearLayout lay_kpiView;
-    private LinearLayout lay_gsView;
-    private Button input_performanc_save;
-    private Button input_submit_performance;
-    private TextView btn_addKpiView;
-    private TextView btn_addGsView;
-    private LayoutInflater inflater;
+    //考评周期
+    private String Id_kpiperiod;
 
     List<View> kpiListView = new ArrayList<>();
     List<View> gsListView = new ArrayList<>();
     private int kpiindexofView = 0;
     private int gsindexofView = 0;
-    private List<PerformanceBean> details;
-    private List<Integer> line_no = new ArrayList<>();
     private List<Double> kpi_Widget = new ArrayList<>();
     private List<Double> gs_Widget = new ArrayList<>();
     private String conclude_time_et;
-    private ClearEditText input_conclude_time;
-    protected WaitDialogRectangle waitDialog;
+
     private static int SUCCEED_SAVE = 0;//保存成功
     private static int SUCCEED_SEND = 1;//上传成功
     private static int SUCCEED_ERROR = 2;//上传失败
@@ -137,150 +180,202 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
     private Thread mThread;
     //确认按钮的状态
     private Boolean submit_type = false;
+    //判断类型
+    private final int KPIType = 0;
+    private final int GSTYPE = 1;
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            String message = (String) msg.obj;
+            switch (msg.what) {
+                case 0:
+                    showFailToast(message);
+                    submit_type = true;
+                    dkpipost_no.setText(Constant.billsNo);
+                    //要在提交完成后删除
+                    removeData();
+                    break;
+                case 1:
+                    showFailToast(message);
+                    submit_type = false;
+                    //要在提交完成后删除
+                    waitThread();
+                    break;
+                case 2:
+                    //上传错误
+                    showFailToast(message);
+                    waitDialog.dismiss();
+                    break;
+                case 3:
+                    //要在提交完成后删除
+                    removeData();
+                    finish();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_performance_type_in);
+        setContentView(R.layout.activity_business_performance_input);
+        ButterKnife.bind(this);
         initView();
     }
 
     private void initView() {
+        actionCenterTv.setText(getString(R.string.perf_Title_TvActivity));
+        actionRightTv.setText(getString(R.string.action_right_content_commit));
+        actionRightTv1.setText(getString(R.string.action_right_content_save));
+        actionLeftTv.setOnClickListener(this);
+        actionRightTv1.setVisibility(View.VISIBLE);
+        actionRightTv1.setOnClickListener(this);
+        actionRightTv.setOnClickListener(this);
+        input_conclude_time.setOnClickListener(this);
+        btn_addKpiView.setOnClickListener(this);
+        btn_addGsView.setOnClickListener(this);
+        name_kpiperiod_tx.setOnClickListener(this);
+        inflater = LayoutInflater.from(this);
+
+        layout_id_clerk.setVisibility(View.VISIBLE);
+        layout_name_kpiperiod.setVisibility(View.VISIBLE);
+        layout_dec_smark.setVisibility(View.GONE);
+        layout_reject.setVisibility(View.GONE);
         myInfo = QiXinBaseDao.queryCurrentUserInfo();
         if (myInfo != null) {
             userID = myInfo.userID;
             companyID = myInfo.companyID;
         }
-        waitDialog = new WaitDialogRectangle(BusinessPerformanceTypeIn.this);
-        pf_actionbar_back = (RelativeLayout) findViewById(R.id.in_actionbar_back);
-        pf_actionbar_back.setOnClickListener(this);
-        input_conclude_time = (ClearEditText) findViewById(R.id.in_conclude_time);
-        input_conclude_time.setOnClickListener(this);
-        lay_kpiView = (LinearLayout) findViewById(R.id.in_kpiview);
-
-        btn_addKpiView = (TextView) findViewById(R.id.btn_addin_kpiview);
-        btn_addKpiView.setOnClickListener(this);
-        lay_gsView = (LinearLayout) findViewById(R.id.in_gsview);
-        btn_addGsView = (TextView) findViewById(R.id.btn_addin_gsview);
-        btn_addGsView.setOnClickListener(this);
-
-        input_performanc_save = (Button) findViewById(R.id.in_performanc_save);
-        input_performanc_save.setOnClickListener(this);
-        input_submit_performance = (Button) findViewById(R.id.in_submit_performance);
-        input_submit_performance.setOnClickListener(this);
-        inflater = LayoutInflater.from(this);
-        addKpiView();
-        addKpiView();
-        addKpiView();
-        addGsView();
-        addGsView();
-        addGsView();
+        input_id_clerk.setText(myInfo.username);
+        input_int_year.setText(BusinessTimeUtils.getCurrentTime(Constant.TIME_YYYY));
+        input_conclude_time.setText(BusinessTimeUtils.getCurrentTime(Constant.TIME_yyyy_MM_dd));
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.in_conclude_time:
+            //考评周期
+            case R.id.name_kpiperiod_tx:
+                showPopupWindow(this, name_kpiperiod_tx, montStList);
+                break;
+            case R.id.input_conclude_time:
                 showCalendar(input_conclude_time);
                 break;
-            case R.id.btn_addin_kpiview:
-                addKpiView();
+            case R.id.btn_add_kpiview:
+                addLayoutView(KPIType);
                 break;
-            case R.id.btn_addin_gsview:
-                addGsView();
+            case R.id.btn_add_gsview:
+                addLayoutView(GSTYPE);
                 break;
-            case R.id.in_submit_performance:
+            case R.id.action_right_tv:
                 if (submit_type) {
                     submitDatas("S", "send", "1001");
                 } else {
-                    ToastUtil.ShowLong(this, "数据必须先保存才能送审!");
+                    showFailToast("数据必须先保存才能送审!");
                     removeData();
                     return;
                 }
                 break;
-            case R.id.in_performanc_save:
+            case R.id.action_right_tv1:
                 submitDatas("L", "save", "1002");
                 break;
-            case R.id.in_actionbar_back:
+            case R.id.action_left_tv:
                 finish();
                 break;
 
         }
     }
 
-    /**
-     * 添加kpiView
-     */
-    private void addKpiView() {
-        line_numb++;
-        final View view = inflater.inflate(R.layout.performance_item, null);
-        LinearLayout layout_bg = (LinearLayout) view.findViewById(R.id.layout_bg);
-        layout_bg.setBackground(this.getResources().getDrawable(R.drawable.kpi_bg));
-        TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
-        line_no.setText(String.valueOf(line_numb));
-        TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
-        ClearEditText line_target = (ClearEditText) view.findViewById(R.id.input_id_kpipost);
-        ClearEditText line_standard = (ClearEditText) view.findViewById(R.id.input_var_evastd);
-        EditText line_weight = (EditText) view.findViewById(R.id.input_dec_scale);
-        lay_kpiView.addView(view);
-        kpiListView.add(view);
-        line_delete.setOnClickListener(new View.OnClickListener() {
+    private void showPopupWindow(Context context, View anchorView, List<String> content) {
+        View contentView = getPopupWindowContentView(context, content);
+        mPopupWindow = new PopupWindow(contentView,
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        mPopupWindow.setBackgroundDrawable(new ColorDrawable());
+        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int xOffset = anchorView.getWidth() / 2 - contentView.getMeasuredWidth() / 2;
+        mPopupWindow.showAsDropDown(anchorView, xOffset, 0);    // 在mButton2的中间显示
+    }
+
+    private View getPopupWindowContentView(Context context, final List<String> content) {
+        // 一个自定义的布局，作为显示的内容
+        int layoutId = R.layout.popup_content_layout;   // 布局ID
+        final View contentView = LayoutInflater.from(this).inflate(layoutId, null);
+        ListView dgtdrech_list = (ListView) contentView.findViewById(R.id.dgtdrech_list);
+        popupAdapter popupAdapter = new popupAdapter(context, content);
+
+        dgtdrech_list.setAdapter(popupAdapter);
+        dgtdrech_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                deletelView(view);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                name_kpiperiod_tx.setText(content.get(position));
+                Id_kpiperiod = monthIntList.get(position);
+                LogShow(Id_kpiperiod);
+                if (mPopupWindow != null)
+                    mPopupWindow.dismiss();
             }
         });
+        return contentView;
     }
 
     /**
-     * 添加GsView
+     * 添加View
      */
-    private void addGsView() {
+    private void addLayoutView(final int viewType) {
         line_numb++;
         final View view = inflater.inflate(R.layout.performance_item, null);
-        LinearLayout layout_bg = (LinearLayout) view.findViewById(R.id.layout_bg);
-        layout_bg.setBackground(this.getResources().getDrawable(R.drawable.kpi_bg));
+        TextView prfItemLineTitle = (TextView) view.findViewById(R.id.prfItemLineTitle);
         TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
         line_no.setText(String.valueOf(line_numb));
         TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
-        ClearEditText line_target = (ClearEditText) view.findViewById(R.id.input_id_kpipost);
-        ClearEditText line_standard = (ClearEditText) view.findViewById(R.id.input_var_evastd);
-        EditText line_weight = (EditText) view.findViewById(R.id.input_dec_scale);
-        lay_gsView.addView(view);
-        gsListView.add(view);
         line_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deletelGsView(view);
+                switch (viewType) {
+                    case KPIType:
+                        deletelLayoutView(view, KPIType);
+                        break;
+                    case GSTYPE:
+                        deletelLayoutView(view, GSTYPE);
+                        break;
+                }
             }
         });
-    }
 
+        switch (viewType) {
+            case KPIType:
+                prfItemLineTitle.setText(getString(R.string.pfItem_Title_perfKPI));
+                lay_kpiView.addView(view);
+                kpiListView.add(view);
+                break;
+            case GSTYPE:
+                prfItemLineTitle.setText(getString(R.string.pfItem_Title_perfGS));
+                lay_gsView.addView(view);
+                gsListView.add(view);
+                break;
+        }
+    }
 
     /**
      * 删除View
      *
      * @param view
      */
-    private void deletelView(final View view) {
+    private void deletelLayoutView(final View view, final int viewType) {
         final Dialog noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
         noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
         TextView dialog_cancel_rl, dialog_confirm_rl;
         TextView notice = (TextView) noticeDialog
                 .findViewById(R.id.dialog_notice_tv);
-        notice.setText("是否要删除该绩效明细？");
-        dialog_cancel_rl = (TextView) noticeDialog
-                .findViewById(R.id.dialog_cancel_tv);
-        TextView dialog_cancel_tv = (TextView) noticeDialog
-                .findViewById(R.id.dialog_cancel_tv);
+        notice.setText("是否要删除该绩效明细");
+        dialog_cancel_rl = (TextView) noticeDialog.findViewById(R.id.dialog_cancel_tv);
+        TextView dialog_cancel_tv = (TextView) noticeDialog.findViewById(R.id.dialog_cancel_tv);
         dialog_cancel_tv.setText("取消");
-        dialog_confirm_rl = (TextView) noticeDialog
-                .findViewById(R.id.dialog_confirm_tv);
-        TextView dialog_confirm_tv = (TextView) noticeDialog
-                .findViewById(R.id.dialog_confirm_tv);
+        dialog_confirm_rl = (TextView) noticeDialog.findViewById(R.id.dialog_confirm_tv);
+        TextView dialog_confirm_tv = (TextView) noticeDialog.findViewById(R.id.dialog_confirm_tv);
         dialog_confirm_tv.setText("删除");
         dialog_cancel_rl.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
                 noticeDialog.dismiss();
@@ -291,112 +386,52 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             @Override
             public void onClick(View arg0) {
                 noticeDialog.dismiss();
-
-//                计算
-                kpiindexofView = kpiListView.indexOf(view);
-                lay_kpiView.removeView(view);
-                kpiListView.remove(view);
-                Log.v("show", "计算后的下标：" + kpiindexofView + ",,,,," + kpiListView.size());
-                if (kpi_Widget.size() >= kpiindexofView && kpi_Widget.size() > 0) {
-                    kpi_Widget.remove(kpiindexofView);
-                }
-
-            }
-        });
-        noticeDialog.show();
-    }
-
-    /**
-     * 删除View
-     *
-     * @param view
-     */
-    private void deletelGsView(final View view) {
-        final Dialog noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
-        noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
-        TextView dialog_cancel_rl, dialog_confirm_rl;
-        TextView notice = (TextView) noticeDialog
-                .findViewById(R.id.dialog_notice_tv);
-        notice.setText("是否要删除该绩效明细？");
-        dialog_cancel_rl = (TextView) noticeDialog
-                .findViewById(R.id.dialog_cancel_tv);
-        TextView dialog_cancel_tv = (TextView) noticeDialog
-                .findViewById(R.id.dialog_cancel_tv);
-        dialog_cancel_tv.setText("取消");
-        dialog_confirm_rl = (TextView) noticeDialog
-                .findViewById(R.id.dialog_confirm_tv);
-        TextView dialog_confirm_tv = (TextView) noticeDialog
-                .findViewById(R.id.dialog_confirm_tv);
-        dialog_confirm_tv.setText("删除");
-        dialog_cancel_rl.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                noticeDialog.dismiss();
-            }
-        });
-        dialog_confirm_rl.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                noticeDialog.dismiss();
-//                计算
-                gsindexofView = gsListView.indexOf(view);
-                lay_gsView.removeView(view);
-                gsListView.remove(view);
-                Log.v("show", "计算后的下标：" + gsindexofView + ",,,,," + kpiListView.size());
-                if (gs_Widget.size() >= gsindexofView && gs_Widget.size() > 0) {
-                    gs_Widget.remove(gsindexofView);
-                }
-
-            }
-        });
-        noticeDialog.show();
-    }
-
-    /**
-     * 显示日历
-     *
-     * @param travel_time_end
-     */
-    private void showCalendar(final EditText travel_time_end) {
-        new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        int month = monthOfYear + 1;
-                        if (month < 10 && dayOfMonth < 10) {
-                            travel_time_end.setText(year + "-0" + month
-                                    + "-0" + dayOfMonth);
-                        } else if (month < 10 && dayOfMonth >= 10) {
-                            travel_time_end.setText(year + "-0" + month
-                                    + "-" + dayOfMonth);
-                        } else if (month >= 10 && dayOfMonth < 10) {
-                            travel_time_end.setText(year + "-" + month
-                                    + "-0" + dayOfMonth);
-                        } else {
-                            travel_time_end.setText(year + "-" + month
-                                    + "-" + dayOfMonth);
+                switch (viewType) {
+                    case KPIType:
+                        //计算
+                        kpiindexofView = kpiListView.indexOf(view);
+                        lay_kpiView.removeView(view);
+                        kpiListView.remove(view);
+                        LogShow("计算后的下标：" + kpiindexofView + ",,,,," + kpiListView.size());
+                        if (kpi_Widget.size() >= kpiindexofView && kpi_Widget.size() > 0) {
+                            kpi_Widget.remove(kpiindexofView);
                         }
-                    }
+                        break;
+                    case GSTYPE:
+                        //计算
+                        gsindexofView = gsListView.indexOf(view);
+                        lay_gsView.removeView(view);
+                        gsListView.remove(view);
+                        LogShow("计算后的下标：" + gsindexofView + ",,,,," + kpiListView.size());
+                        if (gs_Widget.size() >= gsindexofView && gs_Widget.size() > 0) {
+                            gs_Widget.remove(gsindexofView);
+                        }
+                        break;
                 }
-                , c.get(Calendar.YEAR), c.get(Calendar.MONTH), c
-                .get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        noticeDialog.show();
     }
 
 
+    /**
+     * 提交数据
+     *
+     * @param flag_sts
+     * @param dealtype
+     * @param buttonid
+     */
     private void submitDatas(String flag_sts, String dealtype, String buttonid) {
         removeData();
         waitDialog.show();
         if (kpiListView.size() == 0 && gsListView.size() == 0) {
-            ToastUtil.ShowLong(this, "至少添加一条详情记录");
+            showFailToast("至少添加一条详情记录");
             waitDialog.dismiss();
             return;
         }
         conclude_time_et = input_conclude_time.getText().toString();
         if (!StringUtil.isStrTrue(conclude_time_et)) {
-            ToastUtil.ShowLong(this, "计划签订日期不能为空");
+            showFailToast("计划签订日期不能为空");
             waitDialog.dismiss();
             return;
         }
@@ -417,19 +452,19 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             EditText input_dec_scale = (EditText) view.findViewById(R.id.input_dec_scale);
 
             if (!StringUtil.isStrTrue(input_id_kpipost.getText().toString())) {
-                ToastUtil.ShowLong(this, "关键绩效  行号" + line_no.getText().toString().trim() + "  指标不能为空");
+                showFailToast("关键绩效 " + line_no.getText().toString().trim() + " 指标不能为空");
                 waitDialog.dismiss();
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_var_evastd.getText().toString())) {
-                ToastUtil.ShowLong(this, "关键绩效  行号" + line_no.getText().toString().trim() + "  评价标准不能为空");
+                showFailToast("关键绩效 " + line_no.getText().toString().trim() + " 评价标准不能为空");
                 waitDialog.dismiss();
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_dec_scale.getText().toString())) {
-                ToastUtil.ShowLong(this, "关键绩效  行号" + line_no.getText().toString().trim() + "  权重不能为空");
+                showFailToast("关键绩效 " + line_no.getText().toString().trim() + " 权重不能为空");
                 waitDialog.dismiss();
                 removeData();
                 return;
@@ -465,7 +500,7 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             businessPerformanceColumn.setId_dept(Constant.ej1345.getId_dept());
             businessPerformanceColumn.setId_evapsn("");
             businessPerformanceColumn.setId_kpicate("001");
-            businessPerformanceColumn.setId_kpiperiod(BusinessTimeUtils.getCurrentTime(Constant.kpiperiod_MM));
+            businessPerformanceColumn.setId_kpiperiod(Id_kpiperiod);
             businessPerformanceColumn.setId_kpiphase("");
             businessPerformanceColumn.setId_kpigrade("");
             businessPerformanceColumn.setId_kpipost(input_id_kpipost.getText().toString());
@@ -473,7 +508,7 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             businessPerformanceColumn.setId_post(Constant.ej1345.getId_post());
             businessPerformanceColumn.setId_supclerk(Constant.ej1345.getId_supclerk());
             businessPerformanceColumn.setId_table("");
-            businessPerformanceColumn.setInt_year(Integer.valueOf(BusinessTimeUtils.getCurrentTime(Constant.Int_year_YYYY)));
+            businessPerformanceColumn.setInt_year(Integer.valueOf(getTvVaule(input_int_year)));
             businessPerformanceColumn.setLine_no(Integer.valueOf(line_no.getText().toString()));
             businessPerformanceColumn.setOri_line_no(0);
             businessPerformanceColumn.setVar_comp("");
@@ -499,19 +534,19 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             EditText input_dec_scale = (EditText) view.findViewById(R.id.input_dec_scale);
 
             if (!StringUtil.isStrTrue(input_id_kpipost.getText().toString())) {
-                ToastUtil.ShowLong(this, "工作目标  行号" + line_no.getText().toString().trim() + "  指标不能为空");
+                showFailToast("工作目标 " + line_no.getText().toString().trim() + " 指标不能为空");
                 waitDialog.dismiss();
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_var_evastd.getText().toString())) {
-                ToastUtil.ShowLong(this, "工作目标  行号" + line_no.getText().toString().trim() + "  评价标准不能为空");
+                showFailToast("工作目标 " + line_no.getText().toString().trim() + " 评价标准不能为空");
                 waitDialog.dismiss();
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_dec_scale.getText().toString())) {
-                ToastUtil.ShowLong(this, "工作目标  行号" + line_no.getText().toString().trim() + "  权重不能为空");
+                showFailToast("工作目标 " + line_no.getText().toString().trim() + " 权重不能为空");
                 waitDialog.dismiss();
                 removeData();
                 return;
@@ -545,7 +580,7 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             businessPerformanceColumn.setId_dept(Constant.ej1345.getId_dept());
             businessPerformanceColumn.setId_evapsn("");
             businessPerformanceColumn.setId_kpicate("002");
-            businessPerformanceColumn.setId_kpiperiod(BusinessTimeUtils.getCurrentTime(Constant.kpiperiod_MM));
+            businessPerformanceColumn.setId_kpiperiod(Id_kpiperiod);
             businessPerformanceColumn.setId_kpiphase("");
             businessPerformanceColumn.setId_kpigrade("");
             businessPerformanceColumn.setId_kpipost(input_id_kpipost.getText().toString());
@@ -553,7 +588,7 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             businessPerformanceColumn.setId_post(Constant.ej1345.getId_post());
             businessPerformanceColumn.setId_supclerk(Constant.ej1345.getId_supclerk());
             businessPerformanceColumn.setId_table("");
-            businessPerformanceColumn.setInt_year(Integer.valueOf(BusinessTimeUtils.getCurrentTime(Constant.Int_year_YYYY)));
+            businessPerformanceColumn.setInt_year(Integer.valueOf(getTvVaule(input_int_year)));
             businessPerformanceColumn.setLine_no(Integer.valueOf(line_no.getText().toString()));
             businessPerformanceColumn.setOri_line_no(0);
             businessPerformanceColumn.setVar_comp("");
@@ -584,7 +619,7 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             Log.v("show", "list_WdigetKPI:" + kpi_Widget.toString() + "和是：" + widgetkpi_sum);
             if (widgetkpi_sum != 1) {
                 waitDialog.dismiss();
-                ToastUtil.ShowLong(this, "关键绩效指标(KPI)的权重不等于100%");
+                showFailToast("关键绩效指标(KPI)的权重不等于100%");
                 removeData();
                 if (infoList.size() > 0) {
                     infoList.remove(infoList.size() - 1);
@@ -607,7 +642,7 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             Log.v("show", "list_WdigetGS:" + gs_Widget.toString() + "和是：" + widget_sum);
             if (widget_sum != 1) {
                 waitDialog.dismiss();
-                ToastUtil.ShowLong(this, "工作目标(GS)的权重不等于100%");
+                showFailToast("工作目标(GS)的权重不等于100%");
                 removeData();
                 if (infoList.size() > 0) {
                     infoList.remove(infoList.size() - 1);
@@ -706,14 +741,25 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
      * 拼接数据
      */
     private void getDataString(BusinessPerformanceInfo binfo, String dealtype, String buttonid) {
-
         StringBuffer stringBuffer = new StringBuffer();
         if (StringUtil.isStrTrue(Constant.billsNo)) {
-            stringBuffer.append("{\"tableid\":\"dkpipost\",\"opr\":\"SS\",\"no\":\"" + Constant.billsNo + "\",\"userid\":\"" + userID + "\",\"comid\":\"" + companyID + "\"," +
-                    "\"menuid\":\"" + Constant.ID_MENU + "\",\"dealtype\":\"" + dealtype + "\", \"buttonid\":\"" + buttonid + "\",\"data\":[");
+            stringBuffer.append("{\"tableid\":\"dkpipost\",\"opr\":\"SS\"," +
+                    "\"no\":\"" + Constant.billsNo + "\"," +
+                    "\"userid\":\"" + userID + "\"," +
+                    "\"comid\":\"" + companyID + "\"," +
+                    "\"menuid\":\"" + Constant.ID_MENU + "\"," +
+                    "\"dealtype\":\"" + dealtype + "\", " +
+                    "\"buttonid\":\"" + buttonid + "\"," +
+                    "\"data\":[");
         } else {
-            stringBuffer.append("{\"tableid\":\"dkpipost\",\"opr\":\"SS\",\"no\":\" \",\"userid\":\"" + userID + "\",\"comid\":\"" + companyID + "\"," +
-                    "\"menuid\":\"" + Constant.ID_MENU + "\",\"dealtype\":\"" + dealtype + "\", \"buttonid\":\"" + buttonid + "\",\"data\":[");
+            stringBuffer.append("{\"tableid\":\"dkpipost\",\"opr\":\"SS\"," +
+                    "\"no\":\" \"," +
+                    "\"userid\":\"" + userID + "\"," +
+                    "\"comid\":\"" + companyID + "\"," +
+                    "\"menuid\":\"" + Constant.ID_MENU + "\"," +
+                    "\"dealtype\":\"" + dealtype + "\", " +
+                    "\"buttonid\":\"" + buttonid + "\"," +
+                    "\"data\":[");
         }
         List<BusinessPerformanceData> bdataList = binfo.getData();
         for (int i = 0; i < bdataList.size(); i++) {
@@ -722,11 +768,20 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
             for (int a = 0; a < bcolumnList.size(); a++) {
                 BusinessPerformanceColumn bcolumn = bcolumnList.get(a);
                 if (uLine_no.contains(bcolumn.getLine_no())) {
-                    stringBuffer.append("{\"table\":\"dkpipost_03\",\"where\":\" \",\"oprdetail\":\"" + "U" + "\",\"data\":[");
+                    stringBuffer.append("{\"table\":\"dkpipost_03\"," +
+                            "\"where\":\" \"," +
+                            "\"oprdetail\":\"" + "U" + "\"," +
+                            "\"data\":[");
                 } else if (nLine_no.contains(bcolumn.getLine_no())) {
-                    stringBuffer.append("{\"table\": \"dkpipost_03\",\"where\":\" \",\"oprdetail\":\"" + "N" + "\",\"data\":[");
+                    stringBuffer.append("{\"table\": \"dkpipost_03\"," +
+                            "\"where\":\" \"," +
+                            "\"oprdetail\":\"" + "N" + "\"," +
+                            "\"data\":[");
                 } else {
-                    stringBuffer.append("{\"table\": \"dkpipost_03\",\"where\":\" \",\"oprdetail\":\"" + "N" + "\",\"data\":[");
+                    stringBuffer.append("{\"table\": \"dkpipost_03\"," +
+                            "\"where\":\" \"," +
+                            "\"oprdetail\":\"" + "N" + "\"," +
+                            "\"data\":[");
                 }
                 stringBuffer.append("{\"column\":\"flag_sts\",\"value\":\"" + bcolumn.getFlag_sts() + "\",\"datatype\":\"varchar\"},");
                 stringBuffer.append("{\"column\":\"id_flow\",\"value\":\"" + bcolumn.getId_flow() + "\",\"datatype\":\"varchar\"},");
@@ -909,7 +964,6 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
         stringBuffer.append("]}");
         String str = stringBuffer.toString();
         getBusinessList(str, dealtype);
-        android.util.Log.v("show", "。。。。。。。。。" + str);
     }
 
     /**
@@ -922,9 +976,10 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
         OkGo.post(EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataUpdateServlet")
                 .isMultipart(true)
                 .params("datas", datas)
-                .execute(new BFlagCallBack<businessFlag>() {
+                .execute(new BFlagCallBack<BusinessFlag>() {
                     @Override
-                    public void onSuccess(businessFlag businessFlag, Call call, Response response) {
+                    public void onSuccess(BusinessFlag businessFlag, Call call, Response response) {
+                        LogShow(businessFlag.toString());
                         String content = businessFlag.getMessage();
                         Constant.billsNo = businessFlag.getNo();
                         if (businessFlag.getFlag().equals("Y")) {
@@ -942,107 +997,12 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
                         if (e instanceof OkGoException) {
-                            ToastUtil.ShowLong(BusinessPerformanceTypeIn.this, "服务器异常");
+                            showFailToast("服务器异常");
                             setMessage(SUCCEED_ERROR, "服务器错误");
                         }
                     }
                 });
     }
-
-
-    public static final HttpPost postWorkflow(String datas) {
-        try {
-//            HttpPost httpPost = new HttpPost(
-//                    EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataQueryServlet");
-            HttpPost httpPost = new HttpPost("http://172.16.12.243:8085/hjmerp/servlet/DataUpdateServlet");
-            // httpPost.addHeader("Accept-Encoding",
-            // "gzip; q=1.0, identity; q=0.5, *; q=0");
-            ArrayList<BasicNameValuePair> params = new ArrayList<>();
-            params.add(new BasicNameValuePair("datas", datas));
-            android.util.Log.v("show", "工作流：" + "http://172.16.12.243:8085/hjmerp/servlet/DataUpdateServlet" + params.toString());
-            httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-            UrlEncodedFormEntity rt = new UrlEncodedFormEntity(params, HTTP.UTF_8);
-            return httpPost;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    // TODO 获取工单类型
-    private void getBillsType(String datas, final String dealtype) {
-
-        HttpPost post = postWorkflow(datas);
-        if (post == null)
-            return;
-
-        HttpClientManager.addTask(new HttpClientManager.HttpResponseHandler() {
-            @Override
-            public void onResponse(HttpResponse resp) {
-                try {
-                    if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                        return;
-                    }
-                    String msg = HttpClientManager.toStringContent(resp);
-                    Log.v("show", "后台返回的数据：" + msg);
-                    Gson gson = new Gson();
-                    businessFlag message = gson.fromJson(msg, businessFlag.class);
-                    String content = message.getMessage();
-                    if (message.getFlag().equals("Y")) {
-                        Constant.billsNo = message.getNo();
-                        Constant.billsNo = message.getNo();
-                        if (dealtype.equals(Constant.SAVE_DEALTYPE)) {
-                            setMessage(SUCCEED_SAVE, content);
-                        } else {
-                            setMessage(SUCCEED_SEND, content);
-                        }
-                    } else {
-                        setMessage(SUCCEED_ERROR, content);
-                    }
-                } catch (IOException e) {
-                    onException(e);
-
-                }
-            }
-
-            @Override
-            public void onException(Exception e) {
-                e.printStackTrace();
-            }
-        }, post);
-    }
-
-
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            String message = (String) msg.obj;
-            switch (msg.what) {
-                case 0:
-                    ToastUtil.ShowLong(BusinessPerformanceTypeIn.this, message);
-                    submit_type = true;
-                    //要在提交完成后删除
-                    removeData();
-                    break;
-                case 1:
-                    ToastUtil.ShowLong(BusinessPerformanceTypeIn.this, message);
-                    submit_type = false;
-                    //要在提交完成后删除
-                    waitThread();
-                    break;
-                case 2:
-                    //上传错误
-                    break;
-                case 3:
-                    //要在提交完成后删除
-                    removeData();
-                    finish();
-                    break;
-            }
-        }
-    };
 
     private void setMessage(int type, Object msg) {
         Message message = new Message();
@@ -1055,12 +1015,10 @@ public class BusinessPerformanceTypeIn extends ActivitySupport implements
         mThread = new Thread() {
             @Override
             public void run() {
-
                 try {
                     sleep(2000);
                     handler.sendEmptyMessage(SUCCEED_THREAD);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

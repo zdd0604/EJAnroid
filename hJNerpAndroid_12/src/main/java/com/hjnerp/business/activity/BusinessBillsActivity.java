@@ -7,23 +7,21 @@ import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.hjnerp.adapter.BusinessBillsAdapter;
 import com.hjnerp.business.BusinessJsonCallBack.BJsonCallBack;
 import com.hjnerp.business.businessutils.DateUtil;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.model.BusinessBillsMessages;
 import com.hjnerp.model.PerformanceDatas;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
-import com.lzy.okgo.cache.CacheMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,13 +29,24 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class BusinessBillsActivity extends ActivitySupport implements View.OnClickListener {
-    protected WaitDialogRectangle waitDialogRectangle;
-    private PullToRefreshListView pull_refresh_bills;
-    private BusinessBillsAdapter billsAdapter;
+public class BusinessBillsActivity extends ActionBarWidgetActivity implements View.OnClickListener {
+    //布局
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.pull_refresh_bills)
+    PullToRefreshListView pull_refresh_bills;
+    BusinessBillsAdapter billsAdapter;
     private int index;
     private List<PerformanceDatas> datas = new ArrayList<>();
     private final int HTTP_SUCCESS = 0;//数据请求成功
@@ -53,8 +62,8 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
                     break;
                 case 1:
                     String content = (String) msg.obj;
-                    ToastUtil.ShowLong(BusinessBillsActivity.this, content);
-                    waitDialogRectangle.dismiss();
+                    showFailToast(content);
+                    waitDialog.dismiss();
                     pull_refresh_bills.onRefreshComplete();
                     break;
                 case 2:
@@ -68,37 +77,44 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActionBar = getSupportActionBar();
         setContentView(R.layout.activity_business_bills);
-        mActionBar.setDisplayHomeAsUpEnabled(true);
+        ButterKnife.bind(this);
+        actionRightTv.setVisibility(View.GONE);
+        actionLeftTv.setOnClickListener(this);
+
         if (Constant.ID_MENU.equals("002055")) {
-            mActionBar.setTitle("绩效计划审核");
+            actionCenterTv.setText("绩效计划审核");
         }
         if (Constant.ID_MENU.equals("002060")) {
-            mActionBar.setTitle("绩效计划确认");
+            actionCenterTv.setText("绩效计划确认");
         }
         if (Constant.ID_MENU.equals("002070")) {
-            mActionBar.setTitle("绩效完成情况自述");
+            actionCenterTv.setText("绩效完成情况自述");
         }
         if (Constant.ID_MENU.equals("002075")) {
-            mActionBar.setTitle("绩效完成情况评价");
+            actionCenterTv.setText("绩效完成情况评价");
         }
 
         if (Constant.ID_MENU.equals("002080")) {
-            mActionBar.setTitle("绩效评价结果确认");
+            actionCenterTv.setText("绩效评价结果确认");
         }
-        waitDialogRectangle = new WaitDialogRectangle(this);
-        waitDialogRectangle.show();
+
         initView();
     }
 
     private void initView() {
-        pull_refresh_bills = (PullToRefreshListView) findViewById(R.id.pull_refresh_bills);
         // pull_refresh_bills.setMode(Mode.BOTH);//上下拉刷新
         pull_refresh_bills.setMode(PullToRefreshBase.Mode.PULL_FROM_START);// 仅下拉刷新
+        billsAdapter = new BusinessBillsAdapter(this, datas);
+        pull_refresh_bills.setAdapter(billsAdapter);
+        billsAdapter.notifyDataSetChanged();
 
-        addListViewData();
-
+        // 如果有网络加载网络数据，并在加载成功后删除之前保留的本地数据，没有网络加载本地数据
+        if (hasInternetConnected()) {
+            if (StringUtil.isStrTrue(Constant.ID_MENU)) {
+                getBusinessList(Constant.ID_MENU, Constant.ej1345.getId_user());
+            }
+        }
         // //上下拉刷新
         pull_refresh_bills.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
 
@@ -115,25 +131,12 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
 
     }
 
-    /**
-     * 从网络加载数据
-     */
-    private void addListViewData() {
-        // 如果有网络加载网络数据，并在加载成功后删除之前保留的本地数据，没有网络加载本地数据
-        if (this.hasInternetConnected()) {
-            if (StringUtil.isStrTrue(Constant.ID_MENU)) {
-                getBusinessList(Constant.ID_MENU, Constant.ej1345.getId_user());
-            }
-        } else {
-            sendMessage(HTTP_LOSER, "请检查网络");
-        }
-    }
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
+            case R.id.action_left_tv:
+                finish();
+                break;
         }
     }
 
@@ -144,6 +147,7 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
      * @param iduser
      */
     private void getBusinessList(String idmenu, String iduser) {
+        waitDialog.show();
         OkGo.post(EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataQueryServlet")
                 .params("idmenu", idmenu)
                 .params("iduser", iduser)
@@ -151,7 +155,11 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
                     @Override
                     public void onSuccess(BusinessBillsMessages businessBillsMessages, Call call, Response response) {
                         datas = businessBillsMessages.getDatas();
-                        handler.sendEmptyMessage(HTTP_SUCCESS);
+                        if (datas.size()>0){
+                            handler.sendEmptyMessage(HTTP_SUCCESS);
+                        }else{
+                            sendMessage(HTTP_LOSER, "数据获取失败");
+                        }
                     }
 
                     @Override
@@ -178,9 +186,6 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
         });
         for (PerformanceDatas pd : datas) {
             if (pd.getMain() != null && pd.getDetails() != null) {
-                billsAdapter = new BusinessBillsAdapter(this, datas);
-                pull_refresh_bills.setAdapter(billsAdapter);
-                billsAdapter.notifyDataSetChanged();
                 pull_refresh_bills.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -189,8 +194,8 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
                         startActivityForResult(intent, 11);
                     }
                 });
-                waitDialogRectangle.dismiss();
-                pull_refresh_bills.onRefreshComplete();
+                refreshList();
+                waitDialog.dismiss();
             } else {
                 sendMessage(HTTP_LOSER, "数据为空");
             }
@@ -225,7 +230,6 @@ public class BusinessBillsActivity extends ActivitySupport implements View.OnCli
      */
     private void refreshList() {
         billsAdapter.refreshList(datas);
-        // listItemAdapter.notifyDataSetChanged();
         pull_refresh_bills.onRefreshComplete();
     }
 

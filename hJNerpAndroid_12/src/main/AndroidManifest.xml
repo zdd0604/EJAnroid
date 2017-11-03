@@ -53,7 +53,7 @@
         android:name="com.hjnerp.common.EapApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/icon2"
+        android:icon="@drawable/app_icon_logo"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:logo="@drawable/com_logo"
@@ -307,26 +307,8 @@
                     </intent-filter>
                 </receiver>
         -->
-
-        <activity
-            android:name="com.hjnerp.business.activity.BusinessPerformanceTypeIn"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.HjNoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name="com.hjnerp.business.activity.BusinessBillsActivity"
-            android:theme="@style/registerTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name="com.hjnerp.business.activity.BusinessPerformanceArrayList"
-            android:screenOrientation="portrait" />
         <activity
             android:name="com.hjnerp.business.activity.BusinessPerformanceInput"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.HjNoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name="com.hjnerp.business.activity.BusinessPerformanceAudit"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.HjNoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
@@ -346,11 +328,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity
-            android:name="com.hjnerp.activity.HJCallPhoneActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.HjNoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <!-- 个人头像界面 -->
         <activity
@@ -361,6 +338,13 @@
         <!-- 关于和佳 -->
         <activity
             android:name="com.hjnerp.activity.HJAboutInfoActivity"
+            android:theme="@style/Theme.HjNoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!-- 联系我们 -->
+        <activity
+            android:name="com.hjnerp.activity.HJCallPhoneActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.HjNoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
@@ -426,5 +410,33 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.HjNoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!--绩效计划录入列表界面-->
+        <activity
+            android:name="com.hjnerp.business.activity.BusinessPerformanceArrayList"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.HjNoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!--绩效计划录入表界面-->
+        <activity
+            android:name="com.hjnerp.business.activity.BusinessPerformanceTypeIn"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.HjNoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!--绩效计划录入表界面 列表进入页面审批页面-->
+        <activity
+            android:name="com.hjnerp.business.activity.BusinessPerformanceAudit"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.HjNoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!--绩效计划审核、确认、自述..列表界面-->
+        <activity
+            android:name="com.hjnerp.business.activity.BusinessBillsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.HjNoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
     </application>
 </manifest>

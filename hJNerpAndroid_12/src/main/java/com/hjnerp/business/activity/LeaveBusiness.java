@@ -1,7 +1,6 @@
 package com.hjnerp.business.activity;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,14 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.hjnerp.business.BusinessJsonCallBack.BFlagCallBack;
 import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
@@ -27,14 +22,13 @@ import com.hjnerp.model.Ctlm1345;
 import com.hjnerp.model.Ej1345;
 import com.hjnerp.model.LeaveType;
 import com.hjnerp.model.PerformanceDatas;
-import com.hjnerp.model.businessFlag;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.net.HttpClientManager;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.ToastUtil;
 import com.hjnerp.util.ZipUtils;
 import com.hjnerp.util.myscom.FileUtils;
 import com.hjnerp.widget.ClearEditText;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lidroid.xutils.util.LogUtils;
 import com.lzy.okgo.OkGo;
@@ -53,7 +47,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -498,9 +491,9 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
         OkGo.post(EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataUpdateServlet")
                 .isMultipart(true)
                 .params("datas", datas)
-                .execute(new BFlagCallBack<businessFlag>() {
+                .execute(new BFlagCallBack<BusinessFlag>() {
                     @Override
-                    public void onSuccess(businessFlag businessFlag, Call call, Response response) {
+                    public void onSuccess(BusinessFlag businessFlag, Call call, Response response) {
                         String content = businessFlag.getMessage();
                         Constant.billsNo = businessFlag.getNo();
                         if (businessFlag.getFlag().equals("Y")) {

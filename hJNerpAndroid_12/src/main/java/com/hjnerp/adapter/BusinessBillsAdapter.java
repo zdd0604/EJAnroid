@@ -21,11 +21,13 @@ import java.util.List;
 
 public class BusinessBillsAdapter extends BaseAdapter {
     private Context context;
-    private List<PerformanceDatas> datas;
+    private List<PerformanceDatas> datas = new ArrayList<>();
     List<Integer> list = new ArrayList<>();
 
     public BusinessBillsAdapter(Context context, List<PerformanceDatas> datas) {
         this.context = context;
+        if (datas == null)
+            datas = new ArrayList<>();
         this.datas = datas;
     }
 
@@ -44,8 +46,10 @@ public class BusinessBillsAdapter extends BaseAdapter {
         return position;
     }
 
-    public void refreshList(List<PerformanceDatas> list) {
-        this.datas = list;
+    public void refreshList(List<PerformanceDatas> dataList) {
+        if (dataList == null)
+            dataList = new ArrayList<>();
+        this.datas = dataList;
         this.notifyDataSetChanged();
     }
 
@@ -67,14 +71,12 @@ public class BusinessBillsAdapter extends BaseAdapter {
             viewHolder.bs_name_user.setText(info.getName_clerk());
         }else {
             viewHolder.bs_name_user.setText(info.getName_user());
-
         }
 
         String time = info.getDate_opr().substring(0, 10);
         viewHolder.bs_date_opr.setText(time);
         if (StringUtil.isStrTrue(info.getVar_rejust())) {
             list.add(position);
-
         }else if (datas.get(position).getDetails()!=null){
             if(StringUtil.isStrTrue(datas.get(position).getDetails().get(0).getVar_rejust())){
                 list.add(position);

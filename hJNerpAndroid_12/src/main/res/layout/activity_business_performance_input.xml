@@ -1,315 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_business_performance_input"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.hjnerp.business.activity.BusinessPerformanceInput">
+    android:background="@color/actionbar_title_bg1"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <include
+        android:id="@+id/binput_action"
+        layout="@layout/actionbar_layout" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical">
+        android:layout_height="@dimen/size_0"
+        android:layout_below="@id/binput_action"
+        android:layout_weight="1"
+        android:scrollbars="none">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/abc_action_bar_default_height"
-            android:background="#f7f7f7"
-            android:orientation="horizontal">
-
-            <RelativeLayout
-                android:id="@+id/input_actionbar_back"
-                android:layout_width="60dip"
-                android:layout_height="fill_parent"
-                android:background="@drawable/activity_child_item_bkg"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="@dimen/abc_dropdownitem_icon_width"
-                    android:layout_height="@dimen/abc_dropdownitem_icon_width"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerInParent="true"
-                    android:layout_centerVertical="true"
-                    android:adjustViewBounds="true"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:paddingBottom="@dimen/abc_action_bar_icon_vertical_padding"
-                    android:paddingLeft="@dimen/abc_action_bar_icon_vertical_padding"
-                    android:paddingRight="@dimen/abc_action_bar_icon_vertical_padding"
-                    android:paddingTop="@dimen/abc_action_bar_icon_vertical_padding"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/actionbar_home_indicator_blue"
-
-                    />
-            </RelativeLayout>
-
-            <TextView
-                android:id="@+id/tv_actionbar_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="3dp"
-                android:layout_toRightOf="@+id/input_actionbar_back"
-                android:text="绩效计划录入"
-                android:textColor="#303030"
-                android:textSize="@dimen/abc_action_bar_title_text_size" />
+        <LinearLayout
+            style="@style/Item_LinearLayout_VerticalStyle"
+            android:background="@null">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:id="@+id/layout_id_clerk"
+                style="@style/Item_LinearLayout_HorizontalStyle">
 
-                <Button
-                    android:id="@+id/input_performanc_save_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32.0dip"
-                    android:layout_marginRight="10dp"
-                    android:background="@drawable/chat_send_btn"
-                    android:gravity="center"
-                    android:minWidth="@dimen/ChattingFootSendMinWidth"
-                    android:text="保存"
-                    android:textColor="@color/white"
-                    android:textSize="14.0dip"
-                    android:visibility="gone" />
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/pfItem_Title_perfIdClerk" />
 
-                <Button
-                    android:id="@+id/input_submit_performance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32.0dip"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="5dp"
-                    android:background="@drawable/chat_send_btn"
-                    android:gravity="center"
-                    android:minWidth="@dimen/ChattingFootSendMinWidth"
-                    android:text="送审"
-                    android:textColor="@color/white"
-                    android:textSize="14.0dip" />
-
+                <TextView
+                    android:id="@+id/input_id_clerk"
+                    style="@style/Item_LinearLayout_TvRightTitleStyle" />
             </LinearLayout>
-        </RelativeLayout>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="#EFEFF4"
-            android:scrollbars="none">
 
             <LinearLayout
+                android:id="@+id/layout_int_year"
+                style="@style/Item_LinearLayout_HorizontalStyle">
+
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/pfItem_Title_perfIntYear" />
+
+                <TextView
+                    android:id="@+id/input_int_year"
+                    style="@style/Item_LinearLayout_TvRightTitleStyle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_name_kpiperiod"
+                style="@style/Item_LinearLayout_HorizontalStyle">
+
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/pfItem_Title_perfNameKpiperiod" />
+
+                <TextView
+                    android:id="@+id/name_kpiperiod_tx"
+                    style="@style/Item_LinearLayout_TvRightTitleImgStyle2"
+                    android:hint="@string/pfItem_Hint_perfNameKpiperiod"  />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_conclude_time"
+                style="@style/Item_LinearLayout_HorizontalStyle">
+
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/pfItem_Title_ConcludeTime" />
+
+                <TextView
+                    android:id="@+id/input_conclude_time"
+                    style="@style/Item_LinearLayout_TvRightTitleImgStyle2"
+                    android:hint="@string/pfItem_Hint_ConcludeTime" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/Item_LinearLayout_HorizontalStyle">
+
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/pfItem_Title_oriNo" />
+
+                <TextView
+                    android:id="@+id/dkpipost_no"
+                    style="@style/Item_LinearLayout_TvRightTitleStyle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_dec_smark"
+                style="@style/Item_LinearLayout_HorizontalStyle"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                    android:text="@string/pfItem_Title_perfDecSmark" />
+
+                <TextView
+                    android:id="@+id/dec_smark_tx"
+                    style="@style/Item_LinearLayout_TvRightTitleStyle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_var_reject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/size_8"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/title_blue_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                <View style="@style/Item_View_DividerStyle" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/title_id_clerk"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="被评人"
-                            android:textColor="@color/title_color" />
-
-                        <TextView
-                            android:id="@+id/input_id_clerk"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="张某某"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/layout_conclude_time"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="计划签订日期"
-                            android:textColor="#27a4e3" />
-
-                        <com.hjnerp.widget.ClearEditText
-                            android:id="@+id/input_conclude_time"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:focusable="false"
-                            android:gravity="center"
-                            android:hint="请选择日期"
-                            android:textColor="@color/black"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
+                <LinearLayout style="@style/Item_LinearLayout_HorizontalStyle">
 
                     <TextView
-                        android:id="@+id/name_kpiperiod_tx"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="考评周期"
-                        android:textColor="@color/black"
-                        android:visibility="gone" />
-
-                    <LinearLayout
-                        android:id="@+id/layout_dec_smark"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="gone">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="总分：" />
-
-                        <TextView
-                            android:id="@+id/dec_smark_tx"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textColor="@color/black" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_var_reject"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/kpi_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="驳回意见"
-                        android:textSize="16sp" />
+                        style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                        android:text="@string/travel_Title_RejustNameOver"
+                        android:textColor="@color/red" />
 
                     <TextView
                         android:id="@+id/input_var_reject"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textColor="@color/black" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/kpi_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/title_blue_bg"
-                        android:gravity="center"
-                        android:text="  关键绩效指标(KPI)  "
-                        android:textColor="#157fc6"
-                        android:textSize="17sp" />
-
-                    <LinearLayout
-                        android:id="@+id/kpiview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-
-                    <TextView
-                        android:id="@+id/btn_add_kpiview"
-                        android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:background="@drawable/gs_bg"
-                        android:gravity="center"
-                        android:text="+添加绩效详情"
-                        android:textColor="#fff" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="60dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/gs_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/title_blue_bg"
-                        android:gravity="center"
-                        android:text="  工作目标(GS)  "
-                        android:textColor="#157fc6"
-                        android:textSize="17sp" />
-
-                    <LinearLayout
-                        android:id="@+id/gsview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-
-                    <TextView
-                        android:id="@+id/btn_add_gsview"
-                        android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:background="@drawable/gs_bg"
-                        android:gravity="center"
-                        android:text="+添加目标详情"
-                        android:textColor="#ffff" />
+                        style="@style/Item_LinearLayout_TvRightTitleStyle" />
                 </LinearLayout>
             </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/kpi_title"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:background="@drawable/title_blue_bg"
+                android:gravity="center"
+                android:text="  关键绩效指标(KPI)  "
+                android:textColor="#157fc6"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
+            <View style="@style/Item_View_DividerStyle" />
+
+            <LinearLayout
+                android:id="@+id/kpiview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/btn_add_kpiview"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_40"
+                android:background="#ffffff"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_add_img" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="增加关键绩效"
+                    android:textColor="#27a4e3"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/gs_title"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:background="@drawable/title_blue_bg"
+                android:gravity="center"
+                android:text="  工作目标(GS)  "
+                android:textColor="#157fc6"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
+
+            <View style="@style/Item_View_DividerStyle" />
+
+            <LinearLayout
+                android:id="@+id/gsview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/btn_add_gsview"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_40"
+                android:layout_marginTop="1dp"
+                android:background="#ffffff"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_add_img" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="增加工作目标"
+                    android:textColor="#27a4e3"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/layout_reject"
@@ -369,4 +276,4 @@
                 android:textSize="18sp" />
         </RelativeLayout>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

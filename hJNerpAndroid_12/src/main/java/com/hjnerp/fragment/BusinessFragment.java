@@ -48,6 +48,7 @@ import com.hjnerp.net.HttpClientManager.HttpResponseHandler;
 import com.hjnerp.util.Command;
 import com.hjnerp.util.Log;
 import com.hjnerp.util.ToastUtil;
+import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 
@@ -70,7 +71,6 @@ import java.util.zip.ZipInputStream;
 public class BusinessFragment<Divider> extends Fragment {
     private static final String TAG = BusinessFragment.class.getSimpleName();
 
-    //	private ExpandableListView listView;
     private MyGridView gridView1;
     private MyGridView gridView2;
     private MyGridView gridView3;
@@ -99,7 +99,6 @@ public class BusinessFragment<Divider> extends Fragment {
     private static Context context;
     private Thread mThread;
     public static boolean isPoPoVisible;
-    private static Intent intent2;
     public static BusinessFragment businessFragment = null;
     private WaitDialogRectangle waitDialogRectangle;
     private LinearLayout visit_layout;
@@ -107,8 +106,10 @@ public class BusinessFragment<Divider> extends Fragment {
     private LinearLayout other_layout;
     private LinearLayout find_layout;
     private LinearLayout performance_layout;
+    private static Intent intent = null;
+    private BusinessGridViewAdapter adapter;
 
-    private static class MyHandler<Divider> extends Handler {
+    private class MyHandler<Divider> extends Handler {
         ArrayList<MenuContent> listCurrent;
         BusinessFragment<Divider> fragment;
 
@@ -138,9 +139,11 @@ public class BusinessFragment<Divider> extends Fragment {
                 fragment.listCurrent = listCurrent;
                 fragment.refreshList(listCurrent);
                 Log.v("show", "菜单的数据:" + listCurrent.toString());
-            } else if (CHECT_XML_EXIT.equalsIgnoreCase(flag)) {
+            }
+            else if (CHECT_XML_EXIT.equalsIgnoreCase(flag)) {
 
-            } else if (CHECT_XML_OK.equalsIgnoreCase(flag)
+            }
+            else if (CHECT_XML_OK.equalsIgnoreCase(flag)
                     || CHECT_XML_OLD.equalsIgnoreCase(flag)
                     || DOWNLOAD_XML_OK.equalsIgnoreCase(flag)) {
 
@@ -149,54 +152,9 @@ public class BusinessFragment<Divider> extends Fragment {
                 if (clicked_id_model == null || "".equals(clicked_id_model)) {
                     return;
                 }
-                Intent intent = null;
                 if (clicked_id_model.substring(clicked_id_model.length() - 4)
                         .equals("html")) {
-                    if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-//                            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-                            intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
-                            clicked_id_model.equals(Constant.dgtdothtml) ||
-                            clicked_id_model.equals(Constant.dgtdvathtml) ||
-                            clicked_id_model.equals(Constant.dgtdabnhtml)) {
-                        intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
-                    } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
-                            clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
-                            clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
-                            clicked_id_model.equals(Constant.dkpipostratehtml) ||
-                            clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
-                        if (BusinessQueryDao.getUserInfo(context)) {
-                            intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
-                        } else {
-                            intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        }
-                    } else {
-                        intent = new Intent(fragment.getActivity(), BussinessHtmlActivity.class);
-                        intent.putExtra("id_model", clicked_id_model);
-                    }
-                    Log.v("show", "HTML模板名称：" + clicked_id_model);
+                    fragmentIntent(fragment);
                 } else {
                     intent = new Intent(fragment.getActivity(), BusinessActivity.class);
                     intent.putExtra("id_parentnode", "");
@@ -205,95 +163,40 @@ public class BusinessFragment<Divider> extends Fragment {
                     intent.putExtra("id_model", clicked_id_model);
                     intent.putExtra("xml_version", clicked_xml_version);
                     Log.v("show", "XML模板名称：" + clicked_id_model);
+                    fragment.startActivity(intent);
                 }
-                fragment.startActivity(intent);
-            } else if (DOWNLOAD_XML_ERROR.equalsIgnoreCase(flag)) {
+            }
+            else if (DOWNLOAD_XML_ERROR.equalsIgnoreCase(flag)) {
                 if (clicked_id_model == null || "".equals(clicked_id_model)) {
                     ToastUtil.ShowLong(context, "下载模板错误，请重新尝试。");
                     return;
                 }
-                Intent intent = null;
-                if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
-                    intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-                    fragment.startActivity(intent);
-                } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
-                        clicked_id_model.equals(Constant.dgtdothtml) ||
-                        clicked_id_model.equals(Constant.dgtdvathtml) ||
-                        clicked_id_model.equals(Constant.dgtdabnhtml)) {
-                    intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
-                    fragment.startActivity(intent);
-                } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
-                        clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
-                        clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
-                        clicked_id_model.equals(Constant.dkpipostratehtml) ||
-                        clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
-                    if (BusinessQueryDao.getUserInfo(context)) {
-                        intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
-                        fragment.startActivity(intent);
-                    } else {
-                        intent = new Intent(fragment.getActivity(), SetActivity.class);
-                        fragment.startActivity(intent);
-                    }
-                } else {
-                    ToastUtil.ShowLong(context, "下载模板错误，请重新尝试。");
-                }
+                fragmentFailIntent(fragment);
             }
-
         }
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        View contextView = inflater.inflate(R.layout.fragment_business_ex,
-                container, false);
+        View contextView = inflater.inflate(R.layout.fragment_business_ex, container, false);
         context = getActivity();
         businessFragment = this;
 
         // 从服务器获取显示菜单
-//		listView = (ExpandableListView) contextView
-//				.findViewById(R.id.listview_businessmenu_ex);
-
-        initView(contextView);
-
         listCurrent = BusinessBaseDao.queryBusinessMenus();
-
-//        sortlist(listCurrent);
-//        dogridview(adapter1, listCurrent1, gridView1);
-//        dogridview(adapter2, listCurrent2, gridView2);
-//        dogridview(adapter3, listCurrent3, gridView3);
         myHandler = new MyHandler<Divider>(this, listCurrent);
-
+        initView(contextView);
         return contextView;
     }
 
+    /**
+     * 加载布局
+     *
+     * @param contextView
+     */
     private void initView(View contextView) {
         listCurrent1 = new ArrayList<>();
         listCurrent2 = new ArrayList<>();
@@ -312,14 +215,112 @@ public class BusinessFragment<Divider> extends Fragment {
 
         getBusinessMenus();
     }
+    /**
+     * 跳转界面
+     *
+     * @param fragment
+     */
+    private void fragmentIntent(Fragment fragment) {
+        if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+//               intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+                intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
+                clicked_id_model.equals(Constant.dgtdothtml) ||
+                clicked_id_model.equals(Constant.dgtdvathtml) ||
+                clicked_id_model.equals(Constant.dgtdabnhtml)) {
+            intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
+        } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
+                clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
+                clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
+                clicked_id_model.equals(Constant.dkpipostratehtml) ||
+                clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else {
+            intent = new Intent(fragment.getActivity(), BussinessHtmlActivity.class);
+            intent.putExtra("id_model", clicked_id_model);
+        }
+        fragment.startActivity(intent);
+        Log.v("show", "HTML模板名称：" + clicked_id_model);
+    }
 
+    /**
+     * 判断模板是否存在
+     *
+     * @param fragment
+     */
+    private static void fragmentFailIntent(Fragment fragment) {
+        if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
+            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+        } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
+                clicked_id_model.equals(Constant.dgtdothtml) ||
+                clicked_id_model.equals(Constant.dgtdvathtml) ||
+                clicked_id_model.equals(Constant.dgtdabnhtml)) {
+            intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
+        } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+        } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
+                clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
+                clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
+                clicked_id_model.equals(Constant.dkpipostratehtml) ||
+                clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
+            if (BusinessQueryDao.getUserInfo(context)) {
+                intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
+            } else {
+                intent = new Intent(fragment.getActivity(), SetActivity.class);
+            }
+            fragment.startActivity(intent);
+        } else {
+            new MyToast(context, "下载模板错误，请重新尝试。");
+        }
+    }
 
-    private void dogridview(BusinessGridViewAdapter adapter, final ArrayList<MenuContent> listCurrent, GridView gridView) {
+    private void dogridview(final ArrayList<MenuContent> listCurrent, GridView gridView) {
         adapter = new BusinessGridViewAdapter(getActivity(), listCurrent);
         adapter.notifyDataSetChanged();
         gridView.setAdapter(adapter);
         final BusinessGridViewAdapter finalAdapter = adapter;
-
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -361,12 +362,12 @@ public class BusinessFragment<Divider> extends Fragment {
      * @param listCurrent
      */
     private void sortlist(ArrayList<MenuContent> listCurrent) {
-        if (listCurrent.size() == 0) {
-            bus_error.setVisibility(View.VISIBLE);
-        } else {
-            bus_error.setVisibility(View.GONE);
 
-        }
+        listCurrent1 = new ArrayList<>();
+        listCurrent2 = new ArrayList<>();
+        listCurrent3 = new ArrayList<>();
+        listCurrent4 = new ArrayList<>();
+
         for (int i = 0; i < listCurrent.size(); i++) {
             if (listCurrent.get(i).getVarParm1().equalsIgnoreCase("001")) {
                 listCurrent1.add(listCurrent.get(i));
@@ -403,10 +404,10 @@ public class BusinessFragment<Divider> extends Fragment {
         addlist(listCurrent3);
         addlist(listCurrent4);
 
-        dogridview(adapter1, listCurrent1, gridView1);
-        dogridview(adapter2, listCurrent2, gridView2);
-        dogridview(adapter3, listCurrent3, gridView3);
-        dogridview(adapter4, listCurrent4, gridView4);
+        dogridview(listCurrent1, gridView1);
+        dogridview(listCurrent2, gridView2);
+        dogridview(listCurrent3, gridView3);
+        dogridview(listCurrent4, gridView4);
     }
 
     private void addlist(ArrayList<MenuContent> listCurrent) {
@@ -429,8 +430,7 @@ public class BusinessFragment<Divider> extends Fragment {
         try {
             post = HttpClientBuilder
                     .createParam(Constant.BUSINESS_SERVICE_ADDRESS)
-                    .addKeyValue(Constant.BM_ACTION_TYPE,
-                            Constant.BMTYPE_BUSINESS_MENU).getHttpPost();
+                    .addKeyValue(Constant.BM_ACTION_TYPE, Constant.BMTYPE_BUSINESS_MENU).getHttpPost();
         } catch (UnsupportedEncodingException e1) {
             Log.e(e1);
         }
@@ -440,11 +440,9 @@ public class BusinessFragment<Divider> extends Fragment {
             public void onResponse(HttpResponse resp) {
                 try {
                     String msg = HttpClientManager.toStringContent(resp);
-
                     Gson gson = new Gson();
                     final BusinessMenuResp businessMenuResp = gson.fromJson(msg, BusinessMenuResp.class);
-                    Log.d("businessresp",
-                            businessMenuResp.data.items.toString());
+                    Log.d("businessresp", businessMenuResp.data.items.toString());
                     if ("result".equalsIgnoreCase(businessMenuResp.type)) {
                         if (businessMenuResp.data != null) {
                             SQLiteWorker.getSharedInstance().postDML(
@@ -476,54 +474,32 @@ public class BusinessFragment<Divider> extends Fragment {
                 e.printStackTrace();
             }
         }, post);
-    }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        /*
-         * @author haijian 检查是否显示泡泡
-		 */
-//        checkPaoPao();
-        refreshList();
-    }
-
-    @Override
-    public void onPause() {
-//        refreshList(listCurrent);
-        if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-            waitDialogRectangle.dismiss();
-        }
-        super.onPause();
-    }
-
-
-    //刷新菜单
-    private void refreshList(ArrayList<MenuContent> list) {
-//        sortlist(list);
-        if (adapter1 == null || adapter2 == null || adapter3 == null || adapter4 == null) {
-            listCurrent1 = new ArrayList<>();
-            listCurrent2 = new ArrayList<>();
-            listCurrent3 = new ArrayList<>();
-            listCurrent4 = new ArrayList<>();
-            sortlist(list);
-        }
-        checkPaoPao();
+        android.util.Log.e("show", post.toString());
     }
 
     /**
      * 刷新业务菜单
      */
     public void refreshList() {
+        listCurrent = BusinessBaseDao.queryBusinessMenus();
         if (listCurrent.size() > 0) {
-            listCurrent = BusinessBaseDao.queryBusinessMenus();
             refreshList(listCurrent);
         } else {
             getBusinessMenus();
         }
     }
+    //刷新菜单
+    private void refreshList(ArrayList<MenuContent> list) {
+        if (list.size() > 0) {
+            bus_error.setVisibility(View.GONE);
+        } else {
+            bus_error.setVisibility(View.VISIBLE);
+        }
 
+        sortlist(list);
+        checkPaoPao();
+    }
     private void sendToHandler(String msg) {
         Message Msg = new Message();
         Bundle b = new Bundle();
@@ -597,13 +573,6 @@ public class BusinessFragment<Divider> extends Fragment {
 //        return flag;
 //    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        checkPaoPao();
-        refreshList(listCurrent);
-    }
-
     //    @Override
 //    public void ons() {
 //        super.onDestroy();
@@ -637,7 +606,7 @@ public class BusinessFragment<Divider> extends Fragment {
 
     }
 
-    String processBusinessCompress(String fileName) throws Exception {// 解压缩下载的同步数据
+    private String processBusinessCompress(String fileName) throws Exception {// 解压缩下载的同步数据
         File file = new File(getActivity().getExternalCacheDir(), fileName);
         FileInputStream fis = new FileInputStream(file);
         ZipInputStream zis = new ZipInputStream(fis);
@@ -656,7 +625,7 @@ public class BusinessFragment<Divider> extends Fragment {
         return json;
     }
 
-    void procCompressJson(String json) {// 处理压缩包中的文本为json
+    private void procCompressJson(String json) {// 处理压缩包中的文本为json
         Gson gson = new Gson();
         List<BusinessTableCreateModel> btcms = gson.fromJson(json,
                 new TypeToken<List<BusinessTableCreateModel>>() {
@@ -683,7 +652,7 @@ public class BusinessFragment<Divider> extends Fragment {
         }
     }
 
-    void procCompressJson2(String json) {// 处理压缩包中的文本为json
+    private void procCompressJson2(String json) {// 处理压缩包中的文本为json
         Gson gson = new Gson();
         NBusinessTableCreateModel model = gson.fromJson(json,
                 NBusinessTableCreateModel.class);
@@ -735,21 +704,28 @@ public class BusinessFragment<Divider> extends Fragment {
         mThread.start();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
 
-//    public static boolean getUserInfo() {
-//        Constant.ctlm1345List = BusinessBaseDao.getCTLM1345ByIdTable("user");
-//        if (Constant.ctlm1345List.size() > 0) {
-//            for (int i = 0; i < Constant.ctlm1345List.size(); i++) {
-//                String json = Constant.ctlm1345List.get(i).getVar_value();
-//                Constant.ej1345 = new Gson().fromJson(json, new TypeToken<Ej1345>() {
-//                }.getType());
-//            }
-//            Constant.MYUSERINFO = QiXinBaseDao.queryCurrentUserInfo();
-//            return true;
-//        } else {
-//            ToastUtil.ShowLong(context, "请先下载基础数据");
-//            return false;
-//        }
-//    }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        /*
+         * @author haijian 检查是否显示泡泡
+		 */
+        checkPaoPao();
+        refreshList();
+    }
+
+    @Override
+    public void onPause() {
+        if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+            waitDialogRectangle.dismiss();
+        }
+        super.onPause();
+    }
 
 }

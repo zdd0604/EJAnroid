@@ -193,7 +193,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:background">@color/white</item>
+        <item name="android:background">@color/ActivityBgColor</item>
     </style>
     <!--水平 宽度与父控件一样高度自适应 -->
     <style name="Item_LinearLayout_HorizontalDefaultStyle">
@@ -213,7 +213,7 @@
     <style name="Item_LinearLayout_VerticalStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/activity_bg</item>
+        <item name="android:background">@color/ActivityBgColor</item>
         <item name="android:orientation">vertical</item>
     </style>
     <!-- 水平布局 高度40 -->
@@ -252,19 +252,21 @@
         <item name="android:layout_marginTop">@dimen/size_1</item>
         <item name="android:orientation">horizontal</item>
     </style>
+
+
     <!-- actionbar的相对布局 -->
     <style name="Item_RelativeLayout_ActionBarStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/size_44</item>
         <item name="android:background">@color/actionbar_title_bg</item>
     </style>
-    <!-- Item的相对布局高度为40 -->
+    <!-- I的相对布局高度为40 -->
     <style name="Item_RelativeLayout_ListItemStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/size_40</item>
         <item name="android:background">@drawable/app_out_btn_style</item>
     </style>
-    <!-- Item的相对布局高度为45 -->
+    <!-- 的相对布局高度为45 -->
     <style name="Item_RelativeLayout_ContacterItemStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/size_45</item>
@@ -276,6 +278,15 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@color/white</item>
     </style>
+
+    <!-- 相对布局默认-->
+    <style name="Item_RelativeLayout_DefaultStyleHeight30">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_30</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+
     <!-- actionbar的相对布局左边标题-->
     <style name="Item_TextView_ActionBarLeftStyle">
         <item name="android:layout_width">wrap_content</item>
@@ -319,6 +330,8 @@
         <item name="android:textSize">@dimen/font_size_17</item>
         <item name="android:text">@string/action_right_right1_title</item>
     </style>
+
+
     <!-- actionbar 分割线  -->
     <style name="Item_TextView_ActionBarViewDividerStyle">
         <item name="android:layout_width">match_parent</item>
@@ -349,6 +362,20 @@
         <item name="android:layout_height">@dimen/size_1</item>
         <item name="android:background">@color/actionbar_bg</item>
     </style>
+    <!-- Item分割线  -->
+    <style name="Item_View_DividerHeight1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_1</item>
+        <item name="android:background">@color/item_halving_bg</item>
+    </style>
+    <!-- Item分割线  -->
+    <style name="Item_View_DividerHeight2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_.5</item>
+        <item name="android:background">@color/ViewBg</item>
+    </style>
+
+
     <!-- 工作日志左侧标题  -->
     <style name="Item_LinearLayout_TVLeftTieleStyle">
         <item name="android:layout_width">@dimen/size_0</item>
@@ -359,7 +386,6 @@
         <item name="android:layout_marginLeft">@dimen/size_10</item>
         <item name="android:layout_weight">1</item>
     </style>
-
 
     <!-- 左边标题默认 -->
     <style name="Item_LeftTextView_Weight1">
@@ -384,7 +410,6 @@
         <item name="android:layout_weight">4</item>
     </style>
 
-
     <!-- 右侧TextView框 没有照片-->
     <style name="Item_LinearLayout_TvRightTitleStyle">
         <item name="android:layout_width">@dimen/size_0</item>
@@ -397,7 +422,6 @@
         <item name="android:layout_weight">3</item>
     </style>
 
-
     <!-- 工作日志右侧输入框标题 -->
     <style name="Item_LinearLayout_EdRightTitleStyle">
         <item name="android:layout_width">@dimen/size_0</item>
@@ -409,7 +433,6 @@
         <item name="android:paddingRight">@dimen/size_10</item>
         <item name="android:layout_weight">1</item>
     </style>
-
 
     <!-- 右侧TextView框 -->
     <style name="Item_LinearLayout_TvRightContacterStyle">
@@ -461,6 +484,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">@dimen/size_10</item>
     </style>
+
     <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的-->
     <style name="Item_Contacter_TvImgStyle">
         <item name="android:layout_width">match_parent</item>
@@ -470,6 +494,7 @@
         <item name="android:drawableRight">@drawable/icon_right_orientation</item>
         <item name="android:gravity">center_vertical</item>
     </style>
+
     <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的-->
     <style name="Item_Group_TvImgStyle">
         <item name="android:layout_width">match_parent</item>
@@ -483,6 +508,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">@dimen/size_10</item>
     </style>
+
     <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的-->
     <style name="Item_Contacater_TvStyle">
         <item name="android:layout_width">match_parent</item>
@@ -496,6 +522,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">@dimen/size_10</item>
     </style>
+
     <!-- 右侧TextView跳转页面的图片框 向右的箭头左边也有图标的，无margintop-->
     <style name="Item_LinearLayout_TvImgStyle_no_one">
         <item name="android:layout_width">match_parent</item>
@@ -509,6 +536,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">@dimen/size_10</item>
     </style>
+
     <!-- 右侧TextView跳转页面的图片框 向右的箭头,不需要paddingLeft-->
     <style name="Item_LinearLayout_TvRightTitleImgStyle2">
         <item name="android:layout_width">@dimen/size_0</item>
@@ -837,6 +865,25 @@
         <item name="android:drawableRight">@drawable/icon_right_orientation</item>
     </style>
 
+    <!-- 相对布局 item 行号 居左对齐 边距 10dp -->
+    <style name="Item_RLayoutTv_LeftTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <!-- 相对布局 item 行号 居左对齐 边距 10dp -->
+    <style name="Item_RLayoutTv_RightTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginRight">@dimen/size_10</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/actionbar_title_tcolor</item>
+    </style>
+
     <!--弹窗动画-->
     <style name="PopupWindow">
         <item name="android:windowEnterAnimation">@anim/window_in</item>
@@ -846,7 +893,8 @@
     <!--工作日志弹框-->
     <style name="menu_item_text_style">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/size_30</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/size_10</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:background">@drawable/login_select_bg</item>

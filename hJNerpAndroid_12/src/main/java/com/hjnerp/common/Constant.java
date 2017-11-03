@@ -4,7 +4,6 @@ import android.os.Environment;
 
 import com.hjnerp.model.Ctlm1345;
 import com.hjnerp.model.Ctlm7161;
-import com.hjnerp.model.Ctlm7502Json;
 import com.hjnerp.model.DdisplocatBean;
 import com.hjnerp.model.Ej1345;
 import com.hjnerp.model.EjWadd1345;
@@ -12,6 +11,7 @@ import com.hjnerp.model.HJAboutBean;
 import com.hjnerp.model.PerformanceDatas;
 import com.hjnerp.model.UserInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Constant {
@@ -184,7 +184,7 @@ public class Constant {
     public static final String NOWTIME2 = " HH:mm:ss";
     public static final String TIME_yyyy_MM_dd = "yyyy-MM-dd";
     public static final String TIME_yyyy_MM_dd_HH_mm_ss = "yyyy-MM-dd HH:mm:ss";
-
+    public static final String TIME_YYYY = "yyyy";
     /*广播，通知imfrgmeng更新ui*/
     public static final String ACTION_HAVENEWMSG_REFLASHUI = "action_havenewmsg_reflashui";
     /*群已被解散*/
@@ -324,7 +324,7 @@ public class Constant {
     public static final String SGIN_TODAY = "yyyy" + "年" + "MM" + "月" + "dd" + "日";
     public static final String SGIN_TIME = "HH:mm";
     public static final String kpiperiod_MM = "MM";
-    public static final String Int_year_YYYY = "yyyy";
+
 
 
     public static Ej1345 ej1345;

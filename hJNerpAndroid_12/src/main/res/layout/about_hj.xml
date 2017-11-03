@@ -22,7 +22,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="@dimen/size_25"
-            android:src="@drawable/icon2"
+            android:src="@drawable/app_icon_logo"
             app:riv_corner_radius="@dimen/size_5"
             app:riv_oval="false" />
 

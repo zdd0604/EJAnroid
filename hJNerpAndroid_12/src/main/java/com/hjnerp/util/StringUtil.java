@@ -348,13 +348,13 @@ public class StringUtil {
      *
      * @param strContent
      *            你要判断的字符串
-     * @return
-     * 				非空返回true
+     * @return 非空返回true
      */
     public static boolean isStrTrue(String strContent) {
         if (strContent != null && !"".equals(strContent)
                 && !TextUtils.isEmpty(strContent)
-                && !"".equals(strContent.trim())) {
+                && !"".equals(strContent.trim())
+                && strContent.length() > 0) {
             return true;
         }
         return false;

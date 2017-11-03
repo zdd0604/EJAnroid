@@ -19,7 +19,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="18dp"
-            android:background="@drawable/icon2" />
+            android:background="@drawable/app_icon_logo" />
 
         <TextView
             android:id="@+id/newmsg_tv"

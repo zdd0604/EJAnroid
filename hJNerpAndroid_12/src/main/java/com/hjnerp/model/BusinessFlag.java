@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Admin on 2016/12/27.
  */
 
-public class businessFlag implements Serializable {
+public class BusinessFlag implements Serializable {
 
     private static final long serialVersionUID = 6349078604702824627L;
     /**

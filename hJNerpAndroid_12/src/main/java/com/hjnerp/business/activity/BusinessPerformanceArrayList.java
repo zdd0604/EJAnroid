@@ -6,8 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -15,14 +15,12 @@ import com.hjnerp.activity.MainActivity;
 import com.hjnerp.adapter.BusinessBillsAdapter;
 import com.hjnerp.business.BusinessJsonCallBack.BJsonCallBack;
 import com.hjnerp.business.businessutils.DateUtil;
-import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.model.BusinessBillsMessages;
 import com.hjnerp.model.PerformanceDatas;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
 
@@ -32,16 +30,24 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class BusinessPerformanceArrayList extends ActivitySupport implements View.OnClickListener {
-    private WaitDialogRectangle waitDialog;
-    private PullToRefreshListView pull_refresh_billlist;
-    private Button addperformanc_array;
+public class BusinessPerformanceArrayList extends ActionBarWidgetActivity implements View.OnClickListener {
+    //布局
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.pull_refresh_billlist)
+    PullToRefreshListView pull_refresh_billlist;
     private List<PerformanceDatas> datas = new ArrayList<>();
-    private final int HTTP_SUCCESS = 0;//数据请求成功
-    private final int HTTP_LOSER = 1;//数据请求成功
     private BusinessBillsAdapter billsAdapter;
     private int index;
 
@@ -50,16 +56,16 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 0:
+                case Constant.HANDLERTYPE_0:
                     setViewData();
                     break;
-                case 1:
+                case Constant.HANDLERTYPE_1:
                     String content = (String) msg.obj;
-                    ToastUtil.ShowLong(BusinessPerformanceArrayList.this, content);
+                    showFailToast(content);
                     waitDialog.dismiss();
                     pull_refresh_billlist.onRefreshComplete();
                     break;
-                case 2:
+                case Constant.HANDLERTYPE_2:
                     datas.remove(index);
                     refreshList();
                     break;
@@ -67,52 +73,39 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
         }
     };
 
-    /**
-     * 刷新listview中的数据
-     */
-    private void refreshList() {
-        billsAdapter.refreshList(datas);
-        // listItemAdapter.notifyDataSetChanged();
-        pull_refresh_billlist.onRefreshComplete();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActionBar = getSupportActionBar();
         setContentView(R.layout.activity_business_performance_array_list);
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setTitle("绩效计划录入");
+        ButterKnife.bind(this);
         initView();
-        waitDialog = new WaitDialogRectangle(this);
-        waitDialog.show();
     }
 
     private void initView() {
-        pull_refresh_billlist = (PullToRefreshListView) findViewById(R.id.pull_refresh_billlist);
+        actionCenterTv.setText(getString(R.string.perf_Title_TvActivity));
+        actionRightTv.setText(getString(R.string.action_right_content_add));
+        actionLeftTv.setOnClickListener(this);
+        actionRightTv.setOnClickListener(this);
+        billsAdapter = new BusinessBillsAdapter(this, datas);
+        pull_refresh_billlist.setAdapter(billsAdapter);
+        billsAdapter.notifyDataSetChanged();
         // pull_refresh_bills.setMode(Mode.BOTH);//上下拉刷新
         pull_refresh_billlist.setMode(PullToRefreshBase.Mode.PULL_FROM_START);// 仅下拉刷新
-
-        addperformanc_array = (Button) findViewById(R.id.addperformanc_array);
-        addperformanc_array.setOnClickListener(this);
-
-        addListViewData();
-
         // //上下拉刷新
         pull_refresh_billlist.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
-
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                getBusinessList(Constant.ID_MENU, Constant.ej1345.getId_user());
+                addListViewData();
             }
-
 
             @Override
             public void onPullUpToRefresh(
                     PullToRefreshBase<ListView> refreshView) {
             }
-
         });
+
+        //请求网络
+        addListViewData();
     }
 
     private void setViewData() {
@@ -126,29 +119,32 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
                     return 1;
                 }
                 return -1;
-
             }
         });
         for (PerformanceDatas pd : datas) {
-            if (pd.getMain() != null && pd.getDetails() != null) {
-                billsAdapter = new BusinessBillsAdapter(this, datas);
-                pull_refresh_billlist.setAdapter(billsAdapter);
-                billsAdapter.notifyDataSetChanged();
+            if (pd.getMain() != null) {
                 pull_refresh_billlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Constant.performanceDatas = getPerformanceDatas(position - 1);
                         Constant.JUDGE_TYPE = false;
-                        Intent intent = new Intent(BusinessPerformanceArrayList.this, BusinessPerformanceInput.class);
-                        startActivityForResult(intent, 11);
+                        intentActivity(BusinessPerformanceInput.class, 11);
                     }
                 });
+                refreshList();
                 waitDialog.dismiss();
-                pull_refresh_billlist.onRefreshComplete();
             } else {
-                sendMessage(HTTP_LOSER, "数据为空");
+                sendMessage(Constant.HANDLERTYPE_1, getString(R.string.toast_Message_DataNull));
             }
         }
+    }
+
+    /**
+     * 刷新listview中的数据
+     */
+    private void refreshList() {
+        billsAdapter.refreshList(datas);
+        pull_refresh_billlist.onRefreshComplete();
     }
 
     // 获得WorkInfo
@@ -169,8 +165,6 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
         if (requestCode == 11 && resultCode == 22) {
             handler.sendEmptyMessage(2);
             MainActivity.WORK_COUNT = MainActivity.WORK_COUNT - 1;
-        } else if (requestCode == 11 && resultCode == 33) {
-            handler.sendEmptyMessage(2);
         }
     }
 
@@ -179,28 +173,28 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
      */
     private void addListViewData() {
         // 如果有网络加载网络数据，并在加载成功后删除之前保留的本地数据，没有网络加载本地数据
-        if (this.hasInternetConnected()) {
-            if (StringUtil.isStrTrue(Constant.ID_MENU)) {
-                getBusinessList(Constant.ID_MENU, Constant.ej1345.getId_user());
-            }
-        } else {
-            sendMessage(HTTP_LOSER, "请检查网络");
+        if (!hasInternetConnected()) {
+            //结束刷新动画
+            pull_refresh_billlist.onRefreshComplete();
+            return;
+        }
+
+        if (StringUtil.isStrTrue(Constant.ID_MENU)) {
+            getBusinessList(Constant.ID_MENU, Constant.ej1345.getId_user());
         }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.addperformanc_array:
+            case R.id.action_right_tv:
                 intentActivity(BusinessPerformanceTypeIn.class);
                 Constant.JUDGE_TYPE = true;
                 break;
+            case R.id.action_left_tv:
+                finish();
+                break;
         }
-    }
-
-    private void intentActivity(Class c) {
-        Intent itent = new Intent(BusinessPerformanceArrayList.this, c);
-        startActivity(itent);
     }
 
     /**
@@ -210,6 +204,7 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
      * @param iduser
      */
     private void getBusinessList(String idmenu, String iduser) {
+        waitDialog.show();
         OkGo.post(EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataQueryServlet")
                 .params("idmenu", idmenu)
                 .params("iduser", iduser)
@@ -217,15 +212,14 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
                     @Override
                     public void onSuccess(BusinessBillsMessages businessBillsMessages, Call call, Response response) {
                         datas = businessBillsMessages.getDatas();
-                        handler.sendEmptyMessage(HTTP_SUCCESS);
+                        handler.sendEmptyMessage(Constant.HANDLERTYPE_0);
                     }
 
                     @Override
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
-                        sendMessage(HTTP_LOSER, "数据获取失败");
+                        sendMessage(Constant.HANDLERTYPE_1, getString(R.string.toast_Message_GetDataFail));
                     }
-
                 });
     }
 
@@ -235,5 +229,4 @@ public class BusinessPerformanceArrayList extends ActivitySupport implements Vie
         message.obj = content;
         handler.sendMessage(message);
     }
-
 }

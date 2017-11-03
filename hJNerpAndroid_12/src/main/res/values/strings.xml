@@ -87,22 +87,20 @@
     <string name="about_hjcopyright">获得荣誉</string>
     <string name="about_hjinfor">联系我们</string>
 
-    <string name="main_tab_im">消息</string>
+    <string name="main_tab_im">公告</string>
     <string name="main_tab_contact">联系人</string>
     <string name="main_tab_business">业务</string>
     <string name="main_tab_workflow">审批</string>
     <string name="main_tab_my">我的</string>
 
     <!-- 签到页面设置  -->
+    <string name="buess_Title_CenterTitle">考勤打卡</string>
     <string name="sgin_photouoload">签到拍照</string>
     <string name="sgin_in">签到</string>
     <string name="sgin_out">签退</string>
 
     <string name="menu_save_performance">保存数据</string>
     <string name="menu_feedback">意见反馈</string>
-
-    <!-- 考勤 -->
-    <string name="buess_Title_CenterTitle">考勤打卡</string>
 
     <!-- actionbar -->
     <string name="action_left_content_back">返回</string>
@@ -111,6 +109,7 @@
     <string name="action_right_content_add">新增</string>
     <string name="action_right_content_commit">提交</string>
     <string name="action_right_content_sure">确定</string>
+    <string name="action_right_content_reject">驳回</string>
     <string name="action_right_content_SelectAll">全选</string>
     <string name="action_right_content_title">大标题</string>
     <string name="action_right_right_title">右标题</string>
@@ -222,10 +221,6 @@
     <string name="toast_Hint_flagWadd">请选择工作地点</string>
 
 
-    <!-- toast提示语 -->
-    <string name="toast_Message_CommitSucceed">提交成功</string>
-    <string name="toast_Message_CommitFail">提交失败</string>
-
     <!-- 休假申请 -->
     <string name="travel_Title_TvActivity">休假申请单</string>
     <string name="travel_Title_RejustName">驳回意见</string>
@@ -268,5 +263,40 @@
     <string name="detail_Title_AbnormalName">员工</string>
     <string name="detail_Title_AbnormalPart">部门</string>
     <string name="detail_Title_AbnormalAddDetail">添加明细</string>
+
+    <!-- toast提示语 -->
+    <string name="toast_Message_NetWork">请检查网络</string>
+    <string name="toast_Message_CommitSucceed">提交成功</string>
+    <string name="toast_Message_CommitFail">提交失败</string>
+    <string name="toast_Message_GetDataFail">数据获取失败</string>
+    <string name="toast_Message_DataNull">数据为空</string>
+
+    <!-- 计划录入 -->
+    <string name="perf_Title_TvActivity">计划录入</string>
+
+
+    <!-- 计划布局字段 -->
+    <string name="pfItem_Title_ConcludeTime">计划日期</string>
+    <string name="pfItem_Hint_ConcludeTime">请选择计划日期</string>
+    <string name="pfItem_Title_perfKPI">关键绩效指标</string>
+    <string name="pfItem_Title_perfGS">工作目标</string>
+    <string name="pfItem_Title_perfDelete">删除</string>
+    <string name="pfItem_Title_perfIdKpipost">指标</string>
+    <string name="pfItem_Title_perfVarEvastd">评价标准</string>
+    <string name="pfItem_Title_perfVarComp">完成情况</string>
+    <string name="pfItem_Title_perfDecScale">权重</string>
+    <string name="pfItem_Title_perfDecMark">得分</string>
+    <string name="pfItem_Title_perfIdClerk">被评人</string>
+    <string name="pfItem_Title_perfIntYear">考核年</string>
+    <string name="pfItem_Title_perfNameKpiperiod">考评周期</string>
+    <string name="pfItem_Hint_perfNameKpiperiod">请选择考评周期</string>
+    <string name="pfItem_Title_perfDecSmark">总分</string>
+    <string name="pfItem_Title_oriNo">单据号</string>
+
+    <!-- 业务 -->
+    <string name="bFragment_Title_ViewGroup1">拜访业务</string>
+    <string name="bFragment_Title_ViewGroup2">工作业务</string>
+    <string name="bFragment_Title_ViewGroup3">查询业务</string>
+    <string name="bFragment_Title_ViewGroup4">绩效管理</string>
 
 </resources>

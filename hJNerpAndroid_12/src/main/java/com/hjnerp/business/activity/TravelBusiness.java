@@ -30,7 +30,7 @@ import com.hjnerp.model.Ej1345;
 import com.hjnerp.model.PerformanceBean;
 import com.hjnerp.model.PerformanceDatas;
 import com.hjnerp.model.UserInfo;
-import com.hjnerp.model.businessFlag;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.widget.ClearEditText;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
@@ -614,9 +614,9 @@ public class TravelBusiness extends ActionBarWidgetActivity implements View.OnCl
         OkGo.post(EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataUpdateServlet")
                 .isMultipart(true)
                 .params("datas", datas)
-                .execute(new BFlagCallBack<businessFlag>() {
+                .execute(new BFlagCallBack<BusinessFlag>() {
                     @Override
-                    public void onSuccess(businessFlag businessFlag, Call call, Response response) {
+                    public void onSuccess(BusinessFlag businessFlag, Call call, Response response) {
                         String content = businessFlag.getMessage();
                         Constant.billsNo = businessFlag.getNo();
                         if (businessFlag.getFlag().equals("Y")) {

@@ -544,8 +544,11 @@
     <color name="item_table_divider">#E4E3E5</color>
     <color name="item_viewDivider_bg">#FFDAD8D8</color>
     <color name="activity_bg">#F8F8F8</color>
+    <color name="ActivityBgColor">#F7F7F7</color>
     <color name="item_group_bg">#f2efef</color>
     <color name="acbar_view_bg">#D4D4D4</color>
+    <color name="viewgroup_item">#E8E8E8</color>
+    <color name="viewgroup_texrcolor">#88888888</color>
     <!-- 个人信息界面 -->
     <color name="item_Friend_TvContentCl">#A1A1A1</color>
     <color name="item_WorkFlow_TvContentCl">#ABABAB</color>
@@ -562,6 +565,7 @@
     <color name="item_textcolor">#27a4e3</color>
     <color name="dialog_bg_color">#9d16161b</color>
     <color name="dialog_bg_color2">#cc000000</color>
+    <color name="ViewBg">#C8C7CC</color>
 
 
 </resources>

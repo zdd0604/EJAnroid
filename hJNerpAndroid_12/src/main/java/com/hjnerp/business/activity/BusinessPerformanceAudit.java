@@ -1,15 +1,12 @@
 package com.hjnerp.business.activity;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -18,33 +15,33 @@ import android.widget.TextView;
 import com.hjnerp.business.BusinessJsonCallBack.BFlagCallBack;
 import com.hjnerp.business.businessutils.BusinessScore;
 import com.hjnerp.business.businessutils.BusinessTimeUtils;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.QiXinBaseDao;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.model.BusinessPerformanceColumn;
 import com.hjnerp.model.BusinessPerformanceData;
 import com.hjnerp.model.BusinessPerformanceInfo;
 import com.hjnerp.model.PerformanceBean;
 import com.hjnerp.model.PerformanceDatas;
 import com.hjnerp.model.UserInfo;
-import com.hjnerp.model.businessFlag;
 import com.hjnerp.util.Log;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.ClearEditText;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.exception.OkGoException;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -52,47 +49,98 @@ import okhttp3.Response;
 /**
  * 绩效计划审核
  */
-public class BusinessPerformanceAudit extends AppCompatActivity implements View.OnClickListener {
-    protected WaitDialogRectangle waitDialogAudit;
-    private TextView input_id_clerk;
-    private LinearLayout lay_kpiView;
-    private LinearLayout lay_gsView;
-    private TextView btn_addKpiView;
-    private TextView btn_addGsView;
+public class BusinessPerformanceAudit extends ActionBarWidgetActivity implements View.OnClickListener {
+
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    //考核年
+    @BindView(R.id.input_int_year)
+    TextView input_int_year;
+    //考评周期
+    @BindView(R.id.name_kpiperiod_tx)
+    TextView name_kpiperiod_tx;
+    //单据号
+    @BindView(R.id.dkpipost_no)
+    TextView dkpipost_no;
+    //被评人
+    @BindView(R.id.input_id_clerk)
+    TextView input_id_clerk;
+    //添加绩效详情
+    @BindView(R.id.btn_add_kpiview)
+    LinearLayout btn_addKpiView;
+    //添加目标详情
+    @BindView(R.id.btn_add_gsview)
+    LinearLayout btn_addGsView;
+    //计划日期
+    @BindView(R.id.input_conclude_time)
+    TextView input_conclude_time;
+    //驳回意见 显示
+    @BindView(R.id.input_var_reject)
+    TextView input_var_reject;
+    //kpi分类标题
+    @BindView(R.id.kpi_title)
+    TextView kpi_title;
+    //gs分类标题
+    @BindView(R.id.gs_title)
+    TextView gs_title;
+    //总分
+    @BindView(R.id.dec_smark_tx)
+    TextView dec_smark_tx;
+    //驳回意见 输入
+    @BindView(R.id.input_approval_context)
+    EditText input_approval_context;
+    //驳回按钮
+    @BindView(R.id.input_btn_disagree)
+    Button input_btn_disagree;
+    //保存按钮
+    @BindView(R.id.input_performanc_save)
+    Button input_performanc_save;
+    //布局 被评人
+    @BindView(R.id.layout_id_clerk)
+    LinearLayout layout_id_clerk;
+    //布局 计划日期
+    @BindView(R.id.layout_conclude_time)
+    LinearLayout layout_conclude_time;
+    //布局 考评周期
+    @BindView(R.id.layout_name_kpiperiod)
+    LinearLayout layout_name_kpiperiod;
+    //布局 总分
+    @BindView(R.id.layout_dec_smark)
+    LinearLayout layout_dec_smark;
+    //布局 驳回意见显示框
+    @BindView(R.id.layout_var_reject)
+    LinearLayout layout_var_reject;
+    //布局 绩效详情
+    @BindView(R.id.kpiview)
+    LinearLayout lay_kpiView;
+    //布局 工作目标
+    @BindView(R.id.gsview)
+    LinearLayout lay_gsView;
+    //布局 驳回输入框
+    @BindView(R.id.layout_reject)
+    LinearLayout layout_reject;
+    //布局 驳回意见
+    @BindView(R.id.input_approval_approval)
+    RelativeLayout input_approval_approval;
+    //布局 考核年
+    @BindView(R.id.layout_int_year)
+    LinearLayout layout_int_year;
+
+
     private LayoutInflater inflater;
-    private ClearEditText input_conclude_time;
-    private Button input_performanc_save;
-    private Button input_performanc_save_2;
-    private Button input_submit_performance;
-    private Calendar c = Calendar.getInstance();
     private String conclude_time_et;
     private String var_comp_et;
     private UserInfo myInfo;
     private String companyID;
     private String userID;
-    private TextView tv_actionbar_title;
-    private TextView kpi_title;
-    private TextView gs_title;
-    private TextView title_id_clerk;
-    private LinearLayout layout_conclude_time;
-    private LinearLayout layout_dec_smark;
-    private RelativeLayout input_approval_approval;
-    private TextView name_kpiperiod_tx;
-    private TextView dec_smark_tx;
-
-    private RelativeLayout input_actionbar_back;
-    private LinearLayout layout_inputvar_comp;
-    private LinearLayout layout_reject;
-    private EditText input_var_comp;
-    private LinearLayout layout_dec_mark;
-    private EditText input_dec_mark;
-    private LinearLayout layout_var_reject;
-    private TextView input_var_reject;
-    private EditText input_approval_context;
-    private Button input_btn_disagree;
     private PerformanceDatas pds;
-    private PerformanceDatas.
-            MainBean mainBean;
+    private PerformanceDatas.MainBean mainBean;
     //行号
     private int line_numb = 0;
 
@@ -127,7 +175,6 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
     private List<Integer> uLine_no = new ArrayList<>();
     private List<Integer> dLine_no = new ArrayList<>();
 
-
     private static String cgrgound;
     private static String idclerk;
     private static String idkpiperiod;
@@ -144,123 +191,210 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
     private static int SUCCEED_THREAD = 3;//延迟销毁
     private Boolean submit_isTrue = false;//保存按钮的状态
     private Thread mThread;
+    //判断类型
+    private final int KPIType = 0;
+    private final int GSTYPE = 1;
+
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            String message = (String) msg.obj;
+            switch (msg.what) {
+                case 0:
+                    submit_isTrue = true;
+                    showFailToast(message);
+                    //要在提交完成后删除
+                    removeData();
+                    break;
+                case 1:
+                    setResult(22);
+                    showFailToast(message);
+                    waitThread();
+                    break;
+                case 2:
+                    submit_isTrue = false;
+                    //要在提交完成后删除
+                    removeData();
+                    break;
+                case 3:
+                    submit_isTrue = false;
+                    //要在提交完成后删除
+                    removeData();
+                    finish();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_business_performance_input);
+        ButterKnife.bind(this);
         initView();
     }
 
     private void initView() {
-        waitDialogAudit = new WaitDialogRectangle(BusinessPerformanceAudit.this);
+        actionCenterTv.setText(getString(R.string.perf_Title_TvActivity));
+        actionRightTv.setText(getString(R.string.action_right_content_commit));
+        actionRightTv1.setText(getString(R.string.action_right_content_save));
+        actionLeftTv.setOnClickListener(this);
+        actionRightTv1.setVisibility(View.VISIBLE);
+        actionRightTv1.setOnClickListener(this);
+        actionRightTv.setOnClickListener(this);
+        input_conclude_time.setOnClickListener(this);
+        btn_addKpiView.setOnClickListener(this);
+        btn_addGsView.setOnClickListener(this);
+        input_performanc_save.setOnClickListener(this);
+        inflater = LayoutInflater.from(this);
+
         pds = Constant.performanceDatas;
         mainBean = pds.getMain();
-        input_actionbar_back = (RelativeLayout) findViewById(R.id.input_actionbar_back);
-        input_actionbar_back.setOnClickListener(this);
-        tv_actionbar_title = (TextView) findViewById(R.id.tv_actionbar_title);
-        kpi_title = (TextView) findViewById(R.id.kpi_title);
-        gs_title = (TextView) findViewById(R.id.gs_title);
-        input_id_clerk = (TextView) findViewById(R.id.input_id_clerk);
         input_id_clerk.setText(mainBean.getName_user());
-        input_conclude_time = (ClearEditText) findViewById(R.id.input_conclude_time);
+        name_kpiperiod_tx.setTextAppearance(this,R.style.Item_LinearLayout_TvRightTitleStyle);
+        name_kpiperiod_tx.setText(mainBean.getName_kpiperiod());
+        input_int_year.setText(mainBean.getInt_year() + "");
         String conclude_time = mainBean.getDate_plan();
         conclude_time_et = conclude_time.substring(0, 10);
         input_conclude_time.setText(conclude_time_et);
-        input_conclude_time.setOnClickListener(this);
-        lay_kpiView = (LinearLayout) findViewById(R.id.kpiview);
-        btn_addKpiView = (TextView) findViewById(R.id.btn_add_kpiview);
-        btn_addKpiView.setOnClickListener(this);
-        lay_gsView = (LinearLayout) findViewById(R.id.gsview);
-        btn_addGsView = (TextView) findViewById(R.id.btn_add_gsview);
-        btn_addGsView.setOnClickListener(this);
-        input_performanc_save = (Button) findViewById(R.id.input_performanc_save);
-        input_performanc_save.setOnClickListener(this);
-        input_performanc_save_2 = (Button) findViewById(R.id.input_performanc_save_2);
-        input_performanc_save_2.setOnClickListener(this);
-        input_submit_performance = (Button) findViewById(R.id.input_submit_performance);
-
-        title_id_clerk = (TextView) findViewById(R.id.title_id_clerk);
-        name_kpiperiod_tx = (TextView) findViewById(R.id.name_kpiperiod_tx);
-        dec_smark_tx = (TextView) findViewById(R.id.dec_smark_tx);
-        layout_conclude_time = (LinearLayout) findViewById(R.id.layout_conclude_time);
-        layout_dec_smark = (LinearLayout) findViewById(R.id.layout_dec_smark);
-        input_approval_approval = (RelativeLayout) findViewById(R.id.input_approval_approval);
-        name_kpiperiod_tx.setText(mainBean.getInt_year() + "-" + mainBean.getFiscal_period());
         dec_smark_tx.setText(mainBean.getDec_emark() + "");
-        if (Constant.ID_MENU.equals("002060")) {
-            tv_actionbar_title.setText("绩效计划确认");
-            input_submit_performance.setText("确认");
-            btn_addKpiView.setVisibility(View.GONE);
-            btn_addGsView.setVisibility(View.GONE);
-            input_conclude_time.setOnClickListener(null);
-            title_id_clerk.setVisibility(View.GONE);
-            layout_conclude_time.setVisibility(View.GONE);
-            name_kpiperiod_tx.setVisibility(View.VISIBLE);
-        }
-        if (Constant.ID_MENU.equals("002055")) {
-            tv_actionbar_title.setText("绩效计划审核");
-            input_submit_performance.setText("审核");
-            btn_addKpiView.setVisibility(View.GONE);
-            btn_addGsView.setVisibility(View.GONE);
-            input_conclude_time.setOnClickListener(null);
-            title_id_clerk.setVisibility(View.GONE);
-            layout_conclude_time.setVisibility(View.GONE);
-            name_kpiperiod_tx.setVisibility(View.VISIBLE);
-        }
-        if (Constant.ID_MENU.equals("002070")) {
-            tv_actionbar_title.setText("绩效完成情况自述");
-            input_submit_performance.setText("确认");
-            var_comp_istrue = true;
-            btn_addKpiView.setVisibility(View.GONE);
-            btn_addGsView.setVisibility(View.GONE);
-            input_conclude_time.setOnClickListener(null);
+        dkpipost_no.setText(mainBean.getDkpipost_no());
 
-            title_id_clerk.setVisibility(View.GONE);
-            layout_conclude_time.setVisibility(View.GONE);
-            name_kpiperiod_tx.setVisibility(View.VISIBLE);
-            input_approval_approval.setVisibility(View.GONE);
-            input_performanc_save_2.setVisibility(View.VISIBLE);
+        setTitleName();
+    }
+
+    /**
+     * 添加View
+     */
+    private void addLayoutView(final int viewType) {
+        line_numb++;
+        final View view = inflater.inflate(R.layout.performance_item, null);
+        TextView prfItemLineTitle = (TextView) view.findViewById(R.id.prfItemLineTitle);
+        TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
+        line_no.setText(String.valueOf(line_numb));
+        TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
+        line_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (viewType) {
+                    case KPIType:
+                        deletelLayoutView(view, KPIType);
+                        break;
+                    case GSTYPE:
+                        deletelLayoutView(view, GSTYPE);
+                        break;
+                }
+            }
+        });
+
+        switch (viewType) {
+            case KPIType:
+                prfItemLineTitle.setText(getString(R.string.pfItem_Title_perfKPI));
+                lay_kpiView.addView(view);
+                kpiListView.add(view);
+                break;
+            case GSTYPE:
+                prfItemLineTitle.setText(getString(R.string.pfItem_Title_perfGS));
+                lay_gsView.addView(view);
+                gsListView.add(view);
+                break;
+        }
+    }
+
+    /**
+     * 删除View
+     *
+     * @param view
+     */
+    private void deletelLayoutView(final View view, final int viewType) {
+        final Dialog noticeDialog = new Dialog(this, R.style.noticeDialogStyle);
+        noticeDialog.setContentView(R.layout.dialog_notice_withcancel);
+        TextView dialog_cancel_rl, dialog_confirm_rl;
+        TextView notice = (TextView) noticeDialog
+                .findViewById(R.id.dialog_notice_tv);
+        notice.setText("是否要删除该绩效明细");
+        dialog_cancel_rl = (TextView) noticeDialog.findViewById(R.id.dialog_cancel_tv);
+        TextView dialog_cancel_tv = (TextView) noticeDialog.findViewById(R.id.dialog_cancel_tv);
+        dialog_cancel_tv.setText("取消");
+        dialog_confirm_rl = (TextView) noticeDialog.findViewById(R.id.dialog_confirm_tv);
+        TextView dialog_confirm_tv = (TextView) noticeDialog.findViewById(R.id.dialog_confirm_tv);
+        dialog_confirm_tv.setText("删除");
+        dialog_cancel_rl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                noticeDialog.dismiss();
+            }
+        });
+        dialog_confirm_rl.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                noticeDialog.dismiss();
+                switch (viewType) {
+                    case KPIType:
+                        //计算
+                        kpiindexofView = kpiListView.indexOf(view);
+                        lay_kpiView.removeView(view);
+                        kpiListView.remove(view);
+                        LogShow("计算后的下标：" + kpiindexofView + ",,,,," + kpiListView.size());
+                        if (kpi_Widget.size() >= kpiindexofView && kpi_Widget.size() > 0) {
+                            kpi_Widget.remove(kpiindexofView);
+                        }
+                        break;
+                    case GSTYPE:
+                        //计算
+                        gsindexofView = gsListView.indexOf(view);
+                        lay_gsView.removeView(view);
+                        gsListView.remove(view);
+                        LogShow("计算后的下标：" + gsindexofView + ",,,,," + kpiListView.size());
+                        if (gs_Widget.size() >= gsindexofView && gs_Widget.size() > 0) {
+                            gs_Widget.remove(gsindexofView);
+                        }
+                        break;
+                }
+            }
+        });
+        noticeDialog.show();
+    }
+
+    /**
+     * 设置标题名称以及按钮名称
+     */
+    private void setTitleName() {
+
+        if (Constant.ID_MENU.equals("002055")) {
+            setLayoutVisibility("绩效计划审核", "审核", false, View.GONE, View.GONE,
+                    null, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.GONE);
+        }
+
+        if (Constant.ID_MENU.equals("002060")) {
+            setLayoutVisibility("绩效计划确认", "确认", false, View.GONE, View.GONE,
+                    null, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.GONE);
+        }
+
+        if (Constant.ID_MENU.equals("002070")) {
+            setLayoutVisibility("绩效完成情况自述", "确认", true, View.GONE, View.GONE,
+                    null, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.GONE);
         }
 
         if (Constant.ID_MENU.equals("002075")) {
-            tv_actionbar_title.setText("绩效完成情况评价");
-            input_submit_performance.setText("确认");
-            var_comp_istrue = true;
-            btn_addKpiView.setVisibility(View.GONE);
-            btn_addGsView.setVisibility(View.GONE);
-            input_conclude_time.setOnClickListener(null);
-            title_id_clerk.setVisibility(View.GONE);
-            layout_conclude_time.setVisibility(View.GONE);
-            name_kpiperiod_tx.setVisibility(View.VISIBLE);
-            layout_dec_smark.setVisibility(View.VISIBLE);
+            setLayoutVisibility("绩效完成情况评价", "确认", true, View.GONE, View.GONE,
+                    null, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE);
         }
+
         if (Constant.ID_MENU.equals("002080")) {
-            tv_actionbar_title.setText("绩效评价结果确认");
-            input_submit_performance.setText("确认");
-            var_comp_istrue = true;
-            btn_addKpiView.setVisibility(View.GONE);
-            btn_addGsView.setVisibility(View.GONE);
-            input_conclude_time.setOnClickListener(null);
-            title_id_clerk.setVisibility(View.GONE);
-            layout_conclude_time.setVisibility(View.GONE);
-            name_kpiperiod_tx.setVisibility(View.VISIBLE);
-            layout_dec_smark.setVisibility(View.VISIBLE);
+            setLayoutVisibility("绩效评价结果确认", "确认", true, View.GONE, View.GONE,
+                    null, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE, View.VISIBLE);
         }
 
-
-        input_submit_performance.setOnClickListener(this);
-        inflater = LayoutInflater.from(this);
-
-        layout_reject = (LinearLayout) findViewById(R.id.layout_reject);
-        layout_var_reject = (LinearLayout) findViewById(R.id.layout_var_reject);
-        Log.v("show", Constant.ID_MENU);
-        if (Constant.ID_MENU.equals("002055") || Constant.ID_MENU.equals("002060") ||
-                Constant.ID_MENU.equals("002070") || Constant.ID_MENU.equals("002075") ||
+        if (Constant.ID_MENU.equals("002055") ||
+                Constant.ID_MENU.equals("002060") ||
+                Constant.ID_MENU.equals("002070") ||
+                Constant.ID_MENU.equals("002075") ||
                 Constant.ID_MENU.equals("002080")) {
             reject_isture = true;
-            input_approval_context = (EditText) findViewById(R.id.input_approval_context);
-            input_btn_disagree = (Button) findViewById(R.id.input_btn_disagree);
             input_btn_disagree.setOnClickListener(this);
             layout_reject.setVisibility(View.VISIBLE);
         } else {
@@ -272,13 +406,38 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
             input_var_reject = (TextView) findViewById(R.id.input_var_reject);
             input_var_reject.setText(mainBean.getVar_rejust());
         }
-        kpiType();
 
-        myInfo = QiXinBaseDao.queryCurrentUserInfo();
-        if (myInfo != null) {
-            userID = myInfo.userID;
-            companyID = myInfo.companyID;
-        }
+        kpiType();
+    }
+
+    /**
+     * @param centerTv             中间标题
+     * @param rightTv              右边按钮标题
+     * @param var_comp             是否得到自述信息
+     * @param btnAddKPI            kpi添加按钮
+     * @param btnADDGS             gs添加按钮
+     * @param conclude_time        计划日期的点击事件
+     * @param conclude_time_layout 计划日期布局是否显示
+     * @param id_clerk_layout      被评人是否显示
+     * @param kpiperiod            考评周期是否显示
+     * @param approval             驳回意见是否显示
+     * @param dec_smark            总分显示
+     */
+    private void setLayoutVisibility(String centerTv, String rightTv, boolean var_comp, int btnAddKPI,
+                                     int btnADDGS, View.OnClickListener conclude_time,
+                                     int conclude_time_layout, int id_clerk_layout, int kpiperiod,
+                                     int approval, int dec_smark) {
+        actionCenterTv.setText(centerTv);
+        actionRightTv.setText(rightTv);
+        var_comp_istrue = var_comp;
+        btn_addKpiView.setVisibility(btnAddKPI);
+        btn_addGsView.setVisibility(btnADDGS);
+        input_conclude_time.setOnClickListener(conclude_time);
+        layout_conclude_time.setVisibility(conclude_time_layout);
+        layout_id_clerk.setVisibility(id_clerk_layout);
+        layout_name_kpiperiod.setVisibility(kpiperiod);
+        input_approval_approval.setVisibility(approval);
+        layout_dec_smark.setVisibility(dec_smark);
     }
 
 
@@ -298,26 +457,148 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
                 gsBean.add(per);
             }
         }
-        if (kpiBean.size() > 0) {
-            setKpiView();
-        } else if (Constant.ID_MENU.equals("002060") || Constant.ID_MENU.equals("002055")
-                || Constant.ID_MENU.equals("002070") || Constant.ID_MENU.equals("002075")
-                || Constant.ID_MENU.equals("002080")) {
-            kpi_title.setVisibility(View.GONE);
-        }
+        if (kpiBean.size() > 0)
+            setLayouViewDatas(kpiBean, KPIType);
 
-        if (gsBean.size() > 0) {
-            setGsView();
-        } else if (Constant.ID_MENU.equals("002060") || Constant.ID_MENU.equals("002055")
-                || Constant.ID_MENU.equals("002070") || Constant.ID_MENU.equals("002080")
-                || Constant.ID_MENU.equals("002075")) {
-            gs_title.setVisibility(View.GONE);
-        }
+        if (gsBean.size() > 0)
+            setLayouViewDatas(gsBean, GSTYPE);
+
         Collections.sort(line_no);
         line_numb = line_no.get(line_no.size() - 1);
+
+        myInfo = QiXinBaseDao.queryCurrentUserInfo();
+        if (myInfo != null) {
+            userID = myInfo.userID;
+            companyID = myInfo.companyID;
+        }
+
+        //保存第一次加载的数据
         addArryListData();
     }
 
+
+    /**
+     * 设置界面数据
+     *
+     * @param datas    kpi或者GS的数据集合
+     * @param viewType 判断是KPI还是GS
+     */
+    private void setLayouViewDatas(List<PerformanceBean> datas, final int viewType) {
+        for (int i = 0; i < datas.size(); i++) {
+            final View view = inflater.inflate(R.layout.performance_item, null);
+            TextView prfItemLineTitle = (TextView) view.findViewById(R.id.prfItemLineTitle);
+            TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
+            TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
+            ClearEditText line_target = (ClearEditText) view.findViewById(R.id.input_id_kpipost);
+            ClearEditText line_standard = (ClearEditText) view.findViewById(R.id.input_var_evastd);
+            ClearEditText line_weight = (ClearEditText) view.findViewById(R.id.input_dec_scale);
+            //布局 完成情况
+            LinearLayout layout_inputvar_comp = (LinearLayout) view.findViewById(R.id.layout_inputvar_comp);
+            //完成情况输入框
+            EditText input_var_comp = (EditText) view.findViewById(R.id.input_var_comp);
+            //得分
+            LinearLayout layout_dec_mark = (LinearLayout) view.findViewById(R.id.layout_dec_mark);
+            //得分
+            EditText input_dec_mark = (EditText) view.findViewById(R.id.input_dec_mark);
+            //设置小数点后两位
+            setEditextPoint(input_dec_mark);
+
+            PerformanceBean pBean = datas.get(i);
+            line_no.setText(pBean.getLine_no());
+            if (Constant.ID_MENU.equals("002075") ||
+                    Constant.ID_MENU.equals("002080") ||
+                    Constant.ID_MENU.equals("002070")) {
+                if (StringUtil.isStrTrue(pBean.getVar_comp())) {
+                    input_var_comp.setText(pBean.getVar_comp());
+                    input_var_comp.setSelection(pBean.getVar_comp().length());
+                }
+            }
+
+            input_dec_mark.setText(pBean.getDec_mark());
+            if (pBean.getDec_mark().length() > 0)
+                input_dec_mark.setSelection(pBean.getDec_mark().length());
+            line_target.setText(pBean.getId_kpipost());
+            if (pBean.getId_kpipost().length() > 0)
+                line_target.setSelection(pBean.getId_kpipost().length());
+            line_standard.setText(pBean.getVar_evastd());
+            if (pBean.getVar_evastd().length() > 0)
+                line_standard.setSelection(pBean.getVar_evastd().length());
+            Double scale = Math.round(Double.valueOf(pBean.getDec_scale()) * 10000) / 100.0;
+            line_weight.setText(scale + "");
+            line_weight.setSelection(String.valueOf(scale).length());
+
+            if (Constant.ID_MENU.equals("002060")) {
+                line_target.setFocusable(false);
+                line_standard.setFocusable(false);
+                line_weight.setFocusable(false);
+                line_delete.setVisibility(View.GONE);
+            }
+            if (Constant.ID_MENU.equals("002055")) {
+                line_delete.setVisibility(View.GONE);
+            }
+            if (Constant.ID_MENU.equals("002070")) {
+                line_target.setFocusable(false);
+                line_standard.setFocusable(false);
+                line_weight.setFocusable(false);
+                line_delete.setVisibility(View.GONE);
+                layout_inputvar_comp.setVisibility(View.VISIBLE);
+            }
+
+            if (Constant.ID_MENU.equals("002075")) {
+                line_target.setFocusable(false);
+                line_standard.setFocusable(false);
+                line_weight.setFocusable(false);
+                line_delete.setVisibility(View.GONE);
+                layout_inputvar_comp.setVisibility(View.VISIBLE);
+                layout_dec_mark.setVisibility(View.VISIBLE);
+                input_dec_mark.setVisibility(View.VISIBLE);
+            }
+
+            if (Constant.ID_MENU.equals("002080")) {
+                line_target.setFocusable(false);
+                line_standard.setFocusable(false);
+                line_weight.setFocusable(false);
+                input_var_comp.setFocusable(false);
+                input_dec_mark.setFocusable(false);
+                line_delete.setVisibility(View.GONE);
+                layout_inputvar_comp.setVisibility(View.VISIBLE);
+                layout_dec_mark.setVisibility(View.VISIBLE);
+                input_dec_mark.setVisibility(View.VISIBLE);
+            }
+            switch (viewType) {
+                case KPIType:
+                    prfItemLineTitle.setText(getString(R.string.pfItem_Title_perfKPI));
+                    lay_kpiView.addView(view);
+                    kpiListView.add(view);
+                    break;
+                case GSTYPE:
+                    prfItemLineTitle.setText(getString(R.string.pfItem_Title_perfGS));
+                    lay_gsView.addView(view);
+                    gsListView.add(view);
+                    break;
+            }
+
+
+            line_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (viewType) {
+                        case KPIType:
+                            deletelLayoutView(view, viewType);
+                            break;
+                        case GSTYPE:
+                            deletelLayoutView(view, viewType);
+                            break;
+                    }
+                }
+            });
+        }
+    }
+
+
+    /**
+     * 添加第一加载的数据方便后面进行比较
+     */
     private void addArryListData() {
         conclude_time_et = input_conclude_time.getText().toString();
         BusinessPerformanceInfo businessInfo = new BusinessPerformanceInfo();
@@ -385,22 +666,22 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.input_actionbar_back:
+            case R.id.action_left_tv:
                 finish();
                 break;
             case R.id.btn_add_kpiview:
-                addKpiView();
+                addLayoutView(KPIType);
                 break;
             case R.id.btn_add_gsview:
-                addGsView();
+                addLayoutView(GSTYPE);
                 break;
             case R.id.input_performanc_save:
                 submitDatas(mainBean.getFlag_sts(), "save", "1002", mainBean.getId_recorder());
                 break;
-            case R.id.input_performanc_save_2:
+            case R.id.action_right_tv1:
                 submitDatas(mainBean.getFlag_sts(), "save", "1002", mainBean.getId_recorder());
                 break;
-            case R.id.input_submit_performance:
+            case R.id.action_right_tv:
 //                if (submit_isTrue) {
                 if (Constant.ID_MENU.equals("002055")) {
                     submitDatas(mainBean.getFlag_sts(), "audit", "1004", mainBean.getId_recorder());
@@ -451,7 +732,7 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
 
     private void submitDatas(String flag_sts, String dealtype, String buttonid, String id_recorder) {
         removeData();
-        waitDialogAudit.show();
+        waitDialog.show();
         if (kpiListView.size() == 0 && gsListView.size() == 0) {
             ToastUtil.ShowLong(this, "至少添加一条详情记录");
             removeData();
@@ -480,17 +761,17 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
             EditText input_dec_mark = (EditText) view.findViewById(R.id.input_dec_mark);
             EditText input_var_comp = (EditText) view.findViewById(R.id.input_var_comp);
             if (!StringUtil.isStrTrue(input_id_kpipost.getText().toString())) {
-                ToastUtil.ShowLong(this, "关键绩效  行号" + line_no.getText().toString().trim() + "  指标不能为空");
+                ToastUtil.ShowLong(this, "关键绩效 " + line_no.getText().toString().trim() + " 指标不能为空");
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_var_evastd.getText().toString())) {
-                ToastUtil.ShowLong(this, "关键绩效  行号" + line_no.getText().toString().trim() + "  评价标准不能为空");
+                ToastUtil.ShowLong(this, "关键绩效 " + line_no.getText().toString().trim() + " 评价标准不能为空");
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_dec_scale.getText().toString())) {
-                ToastUtil.ShowLong(this, "关键绩效  行号" + line_no.getText().toString().trim() + "  权重不能为空");
+                ToastUtil.ShowLong(this, "关键绩效 " + line_no.getText().toString().trim() + " 权重不能为空");
                 removeData();
                 return;
             }
@@ -527,9 +808,9 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
             Double scale = Double.valueOf(input_dec_scale.getText().toString()) / 100;
             businessPerformanceColumn.setDec_scale(scale);
             kpi_Widget.add(scale);
-            if (kpiListView.size()>0&&gsListView.size()>0) {
+            if (kpiListView.size() > 0 && gsListView.size() > 0) {
                 smarkKpi.add(BusinessScore.smark1(scale, decmark));
-            }else{
+            } else {
                 smarkKpi.add(BusinessScore.smark2(scale, decmark));
             }
             businessPerformanceColumn.setId_audit("");
@@ -576,17 +857,17 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
             EditText input_var_comp = (EditText) view.findViewById(R.id.input_var_comp);
 
             if (!StringUtil.isStrTrue(input_id_kpipost.getText().toString())) {
-                ToastUtil.ShowLong(this, "工作目标  行号" + line_no.getText().toString().trim() + "  指标不能为空");
+                ToastUtil.ShowLong(this, "工作目标 " + line_no.getText().toString().trim() + " 指标不能为空");
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_var_evastd.getText().toString())) {
-                ToastUtil.ShowLong(this, "工作目标  行号" + line_no.getText().toString().trim() + "  评价标准不能为空");
+                ToastUtil.ShowLong(this, "工作目标 " + line_no.getText().toString().trim() + " 评价标准不能为空");
                 removeData();
                 return;
             }
             if (!StringUtil.isStrTrue(input_dec_scale.getText().toString())) {
-                ToastUtil.ShowLong(this, "工作目标  行号" + line_no.getText().toString().trim() + "  权重不能为空");
+                ToastUtil.ShowLong(this, "工作目标 " + line_no.getText().toString().trim() + " 权重不能为空");
                 removeData();
                 return;
             }
@@ -621,9 +902,9 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
             Double scale = Double.valueOf(input_dec_scale.getText().toString()) / 100;
             businessPerformanceColumn.setDec_scale(scale);
             gs_Widget.add(scale);
-            if (kpiListView.size()>0&&gsListView.size()>0) {
+            if (kpiListView.size() > 0 && gsListView.size() > 0) {
                 smarkGs.add(BusinessScore.smark1(scale, decmark));
-            }else{
+            } else {
                 smarkGs.add(BusinessScore.smark2(scale, decmark));
             }
             businessPerformanceColumn.setId_audit("");
@@ -788,294 +1069,6 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
     }
 
     /**
-     * 清除数据
-     */
-    private void removeData() {
-        waitDialogAudit.dismiss();
-        gs_Widget.clear();
-        kpi_Widget.clear();
-        widget_sum = 0.0;
-        widgetkpi_sum = 0.0;
-        conclude_time_et = "";
-
-        oldLine_no.clear();
-        newLine_no.clear();
-        oldList.clear();
-
-        infoHashSet.clear();
-        uLine_no.clear();
-        nLine_no.clear();
-        dLine_no.clear();
-
-        smarksKpi = 0.0;
-        smarksGs = 0.0;
-        smarkKpi.clear();
-        smarkGs.clear();
-
-    }
-
-    /**
-     * 添加kpiView
-     */
-    private void addKpiView() {
-        line_numb++;
-        final View view = inflater.inflate(R.layout.performance_item, null);
-        TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
-        line_no.setText(String.valueOf(line_numb));
-        TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
-        ClearEditText line_target = (ClearEditText) view.findViewById(R.id.input_id_kpipost);
-        ClearEditText line_standard = (ClearEditText) view.findViewById(R.id.input_var_evastd);
-        EditText line_weight = (EditText) view.findViewById(R.id.input_dec_scale);
-        lay_kpiView.addView(view);
-        kpiListView.add(view);
-        line_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deletelView(view);
-
-            }
-        });
-    }
-
-    /**
-     * 添加GsView
-     */
-    private void addGsView() {
-        line_numb++;
-        final View view = inflater.inflate(R.layout.performance_item, null);
-        TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
-        line_no.setText(String.valueOf(line_numb));
-        TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
-        ClearEditText line_target = (ClearEditText) view.findViewById(R.id.input_id_kpipost);
-        ClearEditText line_standard = (ClearEditText) view.findViewById(R.id.input_var_evastd);
-        EditText line_weight = (EditText) view.findViewById(R.id.input_dec_scale);
-        lay_gsView.addView(view);
-        gsListView.add(view);
-        line_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deletelGsView(view);
-            }
-        });
-    }
-
-
-    private void setKpiView() {
-        for (int i = 0; i < kpiBean.size(); i++) {
-            PerformanceBean pBean = kpiBean.get(i);
-            final View view = inflater.inflate(R.layout.performance_item, null);
-            TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
-            line_no.setText(pBean.getLine_no());
-            layout_inputvar_comp = (LinearLayout) view.findViewById(R.id.layout_inputvar_comp);
-            input_var_comp = (EditText) view.findViewById(R.id.input_var_comp);
-
-            if (Constant.ID_MENU.equals("002075") || Constant.ID_MENU.equals("002080") || Constant.ID_MENU.equals("002070")) {
-                if (StringUtil.isStrTrue(pBean.getVar_comp())) {
-                    input_var_comp.setText(pBean.getVar_comp());
-                    input_var_comp.setSelection(pBean.getVar_comp().length());
-                }
-            }
-            layout_dec_mark = (LinearLayout) view.findViewById(R.id.layout_dec_mark);
-            input_dec_mark = (EditText) view.findViewById(R.id.input_dec_mark);
-            input_dec_mark.setText(pBean.getDec_mark());
-
-
-            if (pBean.getDec_mark().length() > 0)
-                input_dec_mark.setSelection(pBean.getDec_mark().length());
-
-            TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
-            ClearEditText line_target = (ClearEditText) view.findViewById(R.id.input_id_kpipost);
-            line_target.setText(pBean.getId_kpipost());
-            if (pBean.getId_kpipost().length() > 0)
-                line_target.setSelection(pBean.getId_kpipost().length());
-
-            ClearEditText line_standard = (ClearEditText) view.findViewById(R.id.input_var_evastd);
-            line_standard.setText(pBean.getVar_evastd());
-            if (pBean.getVar_evastd().length() > 0)
-                line_standard.setSelection(pBean.getVar_evastd().length());
-
-            EditText line_weight = (EditText) view.findViewById(R.id.input_dec_scale);
-            Double scale = (double) (Math.round(Double.valueOf(pBean.getDec_scale()) * 10000) / 100.0);
-            line_weight.setText(scale + "");
-            line_weight.setSelection(String.valueOf(scale).length());
-
-            TextView kpipost_red = (TextView) view.findViewById(R.id.kpipost_red);
-            TextView var_evastd_red = (TextView) view.findViewById(R.id.var_evastd_red);
-            TextView var_comp_red = (TextView) view.findViewById(R.id.var_comp_red);
-            TextView dec_mark_red = (TextView) view.findViewById(R.id.dec_mark_red);
-
-            if (Constant.ID_MENU.equals("002060")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-            }
-            if (Constant.ID_MENU.equals("002055")) {
-                line_delete.setVisibility(View.GONE);
-            }
-            if (Constant.ID_MENU.equals("002070")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-                layout_inputvar_comp.setVisibility(View.VISIBLE);
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-//                layout_dec_mark.setVisibility(View.VISIBLE);
-//                input_dec_mark.setVisibility(View.VISIBLE);
-            }
-
-            if (Constant.ID_MENU.equals("002075")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-                layout_inputvar_comp.setVisibility(View.VISIBLE);
-                layout_dec_mark.setVisibility(View.VISIBLE);
-                input_dec_mark.setVisibility(View.VISIBLE);
-
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-            }
-
-            if (Constant.ID_MENU.equals("002080")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                input_var_comp.setFocusable(false);
-                input_dec_mark.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-                layout_inputvar_comp.setVisibility(View.VISIBLE);
-                layout_dec_mark.setVisibility(View.VISIBLE);
-                input_dec_mark.setVisibility(View.VISIBLE);
-
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-                var_comp_red.setVisibility(View.GONE);
-                dec_mark_red.setVisibility(View.GONE);
-            }
-            lay_kpiView.addView(view);
-            kpiListView.add(view);
-            line_delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deletelView(view);
-                }
-            });
-        }
-    }
-
-
-    private void setGsView() {
-        for (int i = 0; i < gsBean.size(); i++) {
-            PerformanceBean pBean = gsBean.get(i);
-            final View view = inflater.inflate(R.layout.performance_item, null);
-            TextView line_no = (TextView) view.findViewById(R.id.input_line_id);
-            line_no.setText(pBean.getLine_no());
-            TextView line_delete = (TextView) view.findViewById(R.id.input_line_delete);
-            ClearEditText line_target = (ClearEditText) view.findViewById(R.id.input_id_kpipost);
-            line_target.setText(pBean.getId_kpipost());
-            if (pBean.getId_kpipost().length() > 0)
-                line_target.setSelection(pBean.getId_kpipost().length());
-
-            layout_dec_mark = (LinearLayout) view.findViewById(R.id.layout_dec_mark);
-            input_dec_mark = (EditText) view.findViewById(R.id.input_dec_mark);
-            input_dec_mark.setText(pBean.getDec_mark());
-
-            if (pBean.getDec_mark().length() > 0)
-                input_dec_mark.setSelection(pBean.getDec_mark().length());
-
-            layout_inputvar_comp = (LinearLayout) view.findViewById(R.id.layout_inputvar_comp);
-            input_var_comp = (EditText) view.findViewById(R.id.input_var_comp);
-
-            if (Constant.ID_MENU.equals("002075") || Constant.ID_MENU.equals("002080") || Constant.ID_MENU.equals("002070")) {
-                if (StringUtil.isStrTrue(pBean.getVar_comp())) {
-                    input_var_comp.setText(pBean.getVar_comp());
-                    input_var_comp.setSelection(pBean.getVar_comp().length());
-                }
-            }
-            ClearEditText line_standard = (ClearEditText) view.findViewById(R.id.input_var_evastd);
-            line_standard.setText(pBean.getVar_evastd());
-            if (pBean.getVar_evastd().length() > 0)
-                line_standard.setSelection(pBean.getVar_evastd().length());
-
-
-            EditText line_weight = (EditText) view.findViewById(R.id.input_dec_scale);
-            Double scale = (double) (Math.round(Double.valueOf(pBean.getDec_scale()) * 10000) / 100.0);
-            line_weight.setText(scale + "");
-            line_weight.setSelection(String.valueOf(scale).length());
-
-
-            TextView kpipost_red = (TextView) view.findViewById(R.id.kpipost_red);
-            TextView var_evastd_red = (TextView) view.findViewById(R.id.var_evastd_red);
-            TextView var_comp_red = (TextView) view.findViewById(R.id.var_comp_red);
-            TextView dec_mark_red = (TextView) view.findViewById(R.id.dec_mark_red);
-
-
-            if (Constant.ID_MENU.equals("002060")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-            }
-            if (Constant.ID_MENU.equals("002055")) {
-                line_delete.setVisibility(View.GONE);
-            }
-            if (Constant.ID_MENU.equals("002070")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-                layout_inputvar_comp.setVisibility(View.VISIBLE);
-
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-            }
-            if (Constant.ID_MENU.equals("002075")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-                layout_inputvar_comp.setVisibility(View.VISIBLE);
-                layout_dec_mark.setVisibility(View.VISIBLE);
-                input_dec_mark.setVisibility(View.VISIBLE);
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-            }
-
-            if (Constant.ID_MENU.equals("002080")) {
-                line_target.setFocusable(false);
-                line_standard.setFocusable(false);
-                line_weight.setFocusable(false);
-                input_var_comp.setFocusable(false);
-                input_dec_mark.setFocusable(false);
-                line_delete.setVisibility(View.GONE);
-                layout_inputvar_comp.setVisibility(View.VISIBLE);
-                layout_dec_mark.setVisibility(View.VISIBLE);
-                input_dec_mark.setVisibility(View.VISIBLE);
-                kpipost_red.setVisibility(View.GONE);
-                var_evastd_red.setVisibility(View.GONE);
-                var_comp_red.setVisibility(View.GONE);
-                dec_mark_red.setVisibility(View.GONE);
-            }
-            lay_gsView.addView(view);
-            gsListView.add(view);
-            line_delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deletelGsView(view);
-                }
-            });
-        }
-    }
-
-
-    /**
      * 删除View
      *
      * @param view
@@ -1173,7 +1166,7 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         regect = "";
         Constant.billsNo = "";
@@ -1389,39 +1382,6 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
         getBusinessList(str, dealtype);
     }
 
-
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            String message = (String) msg.obj;
-            switch (msg.what) {
-                case 0:
-                    submit_isTrue = true;
-                    ToastUtil.ShowLong(BusinessPerformanceAudit.this, message);
-                    //要在提交完成后删除
-                    removeData();
-                    break;
-                case 1:
-                    setResult(22);
-                    ToastUtil.ShowLong(BusinessPerformanceAudit.this, message);
-                    waitThread();
-                    break;
-                case 2:
-                    submit_isTrue = false;
-                    //要在提交完成后删除
-                    removeData();
-                    break;
-                case 3:
-                    submit_isTrue = false;
-                    //要在提交完成后删除
-                    removeData();
-                    finish();
-                    break;
-            }
-        }
-    };
-
     private void waitThread() {
         mThread = new Thread() {
             @Override
@@ -1458,9 +1418,9 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
                 .params("datas", datas)
 //                .cacheKey(Constant.ID_MENU)            // 设置当前请求的缓存key,建议每个不同功能的请求设置一个
 //                .cacheMode(CacheMode.IF_NONE_CACHE_REQUEST)    // 缓存模式，详细请看缓存介绍
-                .execute(new BFlagCallBack<businessFlag>() {
+                .execute(new BFlagCallBack<BusinessFlag>() {
                     @Override
-                    public void onSuccess(businessFlag businessFlag, Call call, Response response) {
+                    public void onSuccess(BusinessFlag businessFlag, Call call, Response response) {
                         String content = businessFlag.getMessage();
                         if (dealtype.equals(Constant.SAVE_DEALTYPE)) {
                             Constant.billsNo = businessFlag.getNo();
@@ -1489,33 +1449,29 @@ public class BusinessPerformanceAudit extends AppCompatActivity implements View.
     }
 
     /**
-     * 显示日历
-     *
-     * @param travel_time_end
+     * 清除数据
      */
-    private void showCalendar(final EditText travel_time_end) {
-        new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        int month = monthOfYear + 1;
-                        if (month < 10 && dayOfMonth < 10) {
-                            travel_time_end.setText(year + "-0" + month
-                                    + "-0" + dayOfMonth);
-                        } else if (month < 10 && dayOfMonth >= 10) {
-                            travel_time_end.setText(year + "-0" + month
-                                    + "-" + dayOfMonth);
-                        } else if (month >= 10 && dayOfMonth < 10) {
-                            travel_time_end.setText(year + "-" + month
-                                    + "-0" + dayOfMonth);
-                        } else {
-                            travel_time_end.setText(year + "-" + month
-                                    + "-" + dayOfMonth);
-                        }
-                    }
-                }
-                , c.get(Calendar.YEAR), c.get(Calendar.MONTH), c
-                .get(Calendar.DAY_OF_MONTH)).show();
+    private void removeData() {
+        waitDialog.dismiss();
+        gs_Widget.clear();
+        kpi_Widget.clear();
+        widget_sum = 0.0;
+        widgetkpi_sum = 0.0;
+        conclude_time_et = "";
+
+        oldLine_no.clear();
+        newLine_no.clear();
+        oldList.clear();
+
+        infoHashSet.clear();
+        uLine_no.clear();
+        nLine_no.clear();
+        dLine_no.clear();
+
+        smarksKpi = 0.0;
+        smarksGs = 0.0;
+        smarkKpi.clear();
+        smarkGs.clear();
+
     }
 }

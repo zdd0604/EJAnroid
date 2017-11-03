@@ -33,7 +33,7 @@ import com.hjnerp.model.UserInfo;
 import com.hjnerp.model.WorkflowApproveInfo;
 import com.hjnerp.model.WorkflowDetailInfo;
 import com.hjnerp.model.WorkflowListInfo;
-import com.hjnerp.model.businessFlag;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.net.ChatConstants;
 import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.util.ImageLoaderHelper;
@@ -430,9 +430,9 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
         OkGo.post(EapApplication.URL_SERVER_HOST_HTTP + "/servlet/DataUpdateServlet")
                 .isMultipart(true)
                 .params("datas", datas)
-                .execute(new BFlagCallBack<businessFlag>() {
+                .execute(new BFlagCallBack<BusinessFlag>() {
                     @Override
-                    public void onSuccess(businessFlag businessFlag, Call call, Response response) {
+                    public void onSuccess(BusinessFlag businessFlag, Call call, Response response) {
 //                        String content = businessFlag.getMessage();
 //                        Constant.billsNo = businessFlag.getNo();
                         if (businessFlag.getFlag().equals("Y")) {

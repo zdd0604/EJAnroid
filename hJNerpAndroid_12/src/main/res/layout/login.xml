@@ -28,7 +28,7 @@
         android:layout_marginTop="40dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/icon2"
+        android:src="@drawable/app_icon_logo"
         android:visibility="visible"
         app:riv_border_color="#333333"
         app:riv_corner_radius="@dimen/size_5"
