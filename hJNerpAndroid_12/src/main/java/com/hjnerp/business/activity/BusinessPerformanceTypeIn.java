@@ -290,12 +290,12 @@ public class BusinessPerformanceTypeIn extends ActionBarWidgetActivity implement
 
     private void showPopupWindow(Context context, View anchorView, List<String> content) {
         View contentView = getPopupWindowContentView(context, content);
-        mPopupWindow = new PopupWindow(contentView,
+        popupWindow = new PopupWindow(contentView,
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        mPopupWindow.setBackgroundDrawable(new ColorDrawable());
+        popupWindow.setBackgroundDrawable(new ColorDrawable());
         contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int xOffset = anchorView.getWidth() / 2 - contentView.getMeasuredWidth() / 2;
-        mPopupWindow.showAsDropDown(anchorView, xOffset, 0);    // 在mButton2的中间显示
+        popupWindow.showAsDropDown(anchorView, xOffset, 0);    // 在mButton2的中间显示
     }
 
     private View getPopupWindowContentView(Context context, final List<String> content) {
@@ -312,8 +312,8 @@ public class BusinessPerformanceTypeIn extends ActionBarWidgetActivity implement
                 name_kpiperiod_tx.setText(content.get(position));
                 Id_kpiperiod = monthIntList.get(position);
                 LogShow(Id_kpiperiod);
-                if (mPopupWindow != null)
-                    mPopupWindow.dismiss();
+                if (popupWindow != null)
+                    popupWindow.dismiss();
             }
         });
         return contentView;

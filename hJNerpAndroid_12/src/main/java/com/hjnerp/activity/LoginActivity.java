@@ -19,13 +19,9 @@ import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.hjnerp.common.ActionBarWidgetActivity;
-import com.hjnerp.common.ActivitySupport;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.BaseDao;
 import com.hjnerp.dao.OtherBaseDao;
@@ -40,9 +36,7 @@ import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.util.DateUtil;
 import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.util.myscom.StringUtils;
-import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.SelectPopupWindow;
 import com.hjnerp.widget.SelectText;
 import com.hjnerpandroid.R;
@@ -65,7 +59,6 @@ import okhttp3.Response;
  */
 
 public class LoginActivity extends ActionBarWidgetActivity {
-
     private EditText edt_username, edt_pwd;
     private SelectText edt_company;
     private Button btn_login = null;
@@ -105,8 +98,7 @@ public class LoginActivity extends ActionBarWidgetActivity {
         mHandler = new Handler();
         // 应用程序崩溃报告 开发测时可以关掉
 //        TestinAgent.init(context, "3bc83bfdc90d487405c53d2f9ed011ae", "");
-        if (!sputil.isForceExit()
-                || StringUtils.isBlank(sputil.getMySessionId())) {
+        if (!sputil.isForceExit() || StringUtils.isBlank(sputil.getMySessionId())) {
             init();
         } else {
             setContentView(R.layout.splash);
@@ -132,35 +124,6 @@ public class LoginActivity extends ActionBarWidgetActivity {
         }
     }
 
-    private void prepareComData() {
-        listConfig = OtherBaseDao.queryAllRegInfos();
-        IDComConfig idconfig = OtherBaseDao.queryReginfo(sputil.getComid());
-        if (idconfig != null) {
-            edt_company.setText(idconfig.getName_com());
-        }
-        edt_company.setPopup(new SelectPopupWindow(LoginActivity.this,
-                listConfig, new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                sputil.setComid(listConfig.get(position).getId_com());
-                edt_company.setText(listConfig.get(position).getName_com());
-                edt_company.getPopup().dismiss();
-            }
-        }));
-        // }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // 校验SD卡
-        checkMemoryCard();
-        // 检测网络和版本
-        validateInternet();
-        // registerReceiver();
-
-    }
 
     /**
      * 初始化.
@@ -213,6 +176,27 @@ public class LoginActivity extends ActionBarWidgetActivity {
 
         closeInput();
     }
+
+
+    private void prepareComData() {
+        listConfig = OtherBaseDao.queryAllRegInfos();
+        IDComConfig idconfig = OtherBaseDao.queryReginfo(sputil.getComid());
+        if (idconfig != null) {
+            edt_company.setText(idconfig.getName_com());
+        }
+        edt_company.setPopup(new SelectPopupWindow(LoginActivity.this,
+                listConfig, new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                sputil.setComid(listConfig.get(position).getId_com());
+                edt_company.setText(listConfig.get(position).getName_com());
+                edt_company.getPopup().dismiss();
+            }
+        }));
+        // }
+    }
+
 
     private OnClickListener onClickListener = new OnClickListener() {
 
@@ -390,10 +374,9 @@ public class LoginActivity extends ActionBarWidgetActivity {
     private void handleData() {
         UserInfo mInfo = QiXinBaseDao.queryCurrentUserInfo();
         if (mInfo != null && username.equalsIgnoreCase(mInfo.userID.trim())) {
-            // Log.i(TAG,"不删除数据*****************8");
+            LogShow("不删除数据*****************8");
         } else {
-            // Log.i(TAG,"删除数据******************");
-
+            LogShow("删除数据******************");
             QiXinBaseDao.updateUserInfo(sputil.getMyUserId(),
                     Tables.UserTable.COL_VAR_SESSION, "");
             // 清楚除用户表以外的db数据
@@ -463,153 +446,64 @@ public class LoginActivity extends ActionBarWidgetActivity {
 
     /**
      * 时间验证
-     *  查询软件是否过期
+     * 查询软件是否过期
+     *
      * @author haijian
      */
     private void regist() {
-//        ArrayList<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
-//        parameters.add(new BasicNameValuePair("phoneId", sputil.getRegistId()));
-//        parameters
-//                .add(new BasicNameValuePair("valiadId", sputil.getRegistNub()));
-//        parameters.add(new BasicNameValuePair("actionType", "mobileInit"));
-//        HttpPost request = new
-//                HttpPost("http://register.hejia.cn:8090/nerp/hjMobile");
-////        Log.i("regist", "phoneId：" + sputil.getRegistId()+"valiadId：" + sputil.getRegistNub());
-////		HttpPost request = new HttpPost(
-////				"http://172.16.12.26:8095/nerp/hjMobile");
-//        try {
-//            request.setEntity(new UrlEncodedFormEntity(parameters));
-//        } catch (UnsupportedEncodingException e) {
-//            Log.e(null, "", e);
-//        }
-//        HttpClientManager.open();
-//        HttpClientManager.addTask(new RegisterResponseHandler(), request);
         OkGo.post("http://register.hejia.cn:8090/nerp/hjMobile")
                 .params("phoneId", sputil.getRegistId())
                 .params("valiadId", sputil.getRegistNub())
-                .params("actionType", "mobileInit").execute(new StringCallback() {
-            @Override
-            public void onSuccess(String s, Call call, Response response) {
-                Log.d("okgo", "s:" + s + ",response:" + response);
-                Gson gson = new Gson();
-                BaseData data = gson.fromJson(s, BaseData.class);
-                if (data.isSuccess()) {
-                    /**
-                     * 检查当前时间是什么状态 正常 警告 停止
-                     */
-                    List<Map<String, Object>> dataList = data.getDataList();
-                    // 获取停止使用时间
-                    String dateStopUse = dataList.get(0).get("dateStopUse")
-                            .toString();
-                    String dateWarning = dataList.get(0).get("dateWarning")
-                            .toString();
-                    long stopReg = DateUtil.StrToDate(dateStopUse).getTime();
-                    long warn = DateUtil.StrToDate(dateWarning).getTime();
-                    long current = new Date().getTime();
-                    if (current > stopReg) {
-                        showFailToast("当前软件已过期，请联系软件提供商！");
+                .params("actionType", "mobileInit")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        LogShow("s:" + s + ",response:" + response);
+                        BaseData data = mGson.fromJson(s, BaseData.class);
+                        if (data.isSuccess()) {
+                            //检查当前时间是什么状态 正常 警告 停止
+                            List<Map<String, Object>> dataList = data.getDataList();
+                            // 获取停止使用时间
+                            String dateStopUse = dataList.get(0).get("dateStopUse")
+                                    .toString();
+                            String dateWarning = dataList.get(0).get("dateWarning")
+                                    .toString();
+                            long stopReg = DateUtil.StrToDate(dateStopUse).getTime();
+                            long warn = DateUtil.StrToDate(dateWarning).getTime();
+                            long current = new Date().getTime();
+                            if (current > stopReg) {
+                                showFailToast("当前软件已过期，请联系软件提供商！");
+                                if (type == 0) {
+                                    handlInit();
+                                }
+                            } else {
+                                if (current > warn) {
+                                    showFailToast("当前软件即将过期，请及时联系软件提供商！");
+                                }
+                                // 正常登陆
+                                if (type == 0) {
+                                    // 自动登陆
+                                    handlAutoLogin();
+                                } else {
+                                    handlLogin();
+                                }
+                            }
+                        } else {
+                            if (type == 0) {
+                                handlInit();
+                            }
+                            showFailToast(data.message);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Call call, Response response, Exception e) {
                         if (type == 0) {
                             handlInit();
                         }
-                    } else {
-                        if (current > warn) {
-                            showFailToast("当前软件即将过期，请及时联系软件提供商！");
-                        }
-
-                        // 正常登陆
-                        if (type == 0) {
-                            // 自动登陆
-                            handlAutoLogin();
-                        } else {
-                            handlLogin();
-                        }
                     }
-
-                } else {
-                    if (type == 0) {
-                        handlInit();
-                    }
-                    showFailToast(data.message);
-                }
-            }
-
-            @Override
-            public void onError(Call call, Response response, Exception e) {
-                if (type == 0) {
-                    handlInit();
-                }
-
-            }
-        });
+                });
     }
-
-//    class RegisterResponseHandler extends HttpClientManager.HttpResponseHandler {
-//        @Override
-//        public void onResponse(HttpResponse resp) {
-//            try {
-//                // eRegPhone));
-//                // parameters.add(new BasicNameValuePair("valiadId", eRegCode)
-//                dialogCancel();
-//                String json = HttpClientManager.toStringContent(resp);
-//                Gson gson = new Gson();
-//                BaseData data = gson.fromJson(json, BaseData.class);
-//                if (data.isSuccess()) {
-//                    /**
-//                     * 检查当前时间是什么状态 正常 警告 停止
-//                     */
-//                    List<Map<String, Object>> dataList = data.getDataList();
-//                    // 获取停止使用时间
-//                    String dateStopUse = dataList.get(0).get("dateStopUse")
-//                            .toString();
-//                    String dateWarning = dataList.get(0).get("dateWarning")
-//                            .toString();
-//                    long stopReg = DateUtil.StrToDate(dateStopUse).getTime();
-//                    long warn = DateUtil.StrToDate(dateWarning).getTime();
-//                    long current = new Date().getTime();
-//                    if (current > stopReg) {
-//                        showToast("当前软件已过期，请联系软件提供商！");
-//                        if (type == 0) {
-//                            handlInit();
-//                        }
-//                    } else {
-//                        if (current > warn) {
-//                            showToast("当前软件即将过期，请及时联系软件提供商！");
-//                        }
-//                        // 正常登陆
-//
-//                        if (type == 0) {
-//                            // 自动登陆
-//                            handlAutoLogin();
-//                        } else {
-//                            handlLogin();
-//                        }
-//                    }
-//
-//                } else {
-//                    if (type == 0) {
-//                        handlInit();
-//                    }
-//                    showToast(data.message);
-//                }
-//            } catch (IOException e) {
-//                onException(e);
-//                if (type == 0) {
-//                    handlInit();
-//                }
-//            }
-//        }
-//
-//
-//        @Override
-//        public void onException(Exception e) {
-//            // 连接服务器失败
-////			showToast("服务器没有反馈");
-////			dialogCancel();
-//            if (type == 0) {
-//                handlInit();
-//            }
-//        }
-//    }
 
     private void handlInit() {
         mHandler.post(new Runnable() {
@@ -644,7 +538,6 @@ public class LoginActivity extends ActionBarWidgetActivity {
                 LoginTask loginTask = new LoginTask(
                         LoginActivity.this, loginConfig, sputil);
                 loginTask.execute();
-
             }
         });
 
@@ -667,4 +560,16 @@ public class LoginActivity extends ActionBarWidgetActivity {
         sputil.setComid(loginConfig.getComid());
         sputil.setForceExit(false);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 校验SD卡
+        checkMemoryCard();
+        // 检测网络和版本
+        validateInternet();
+        // registerReceiver();
+
+    }
+
 }

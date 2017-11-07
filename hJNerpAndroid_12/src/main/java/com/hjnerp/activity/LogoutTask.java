@@ -13,7 +13,6 @@ import com.hjnerp.db.Tables;
 import com.hjnerp.manager.HJWebSocketManager;
 import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.net.IQ;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 
@@ -60,7 +59,6 @@ public class LogoutTask extends AsyncTask<String, Integer, Integer> {
                 context.startActivity(new Intent(context, LoginActivity.class));
                 waitDialogRectangle.dismiss();
                 ((Activity) activitySupport).finish();
-
                 break;
             case Constant.LOGIN_ERROR_ACCOUNT_PASS:// 账户或者密码错误
                 new MyToast(context, errorText);
@@ -84,7 +82,6 @@ public class LogoutTask extends AsyncTask<String, Integer, Integer> {
         errorText = "";
         IQ requestiq = HJWebSocketManager.getInstance().logout();
         ChatPacketHelper.parseErrorCode(requestiq);
-
 
         try {
             Thread.sleep(1000);

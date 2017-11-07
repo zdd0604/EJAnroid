@@ -16,6 +16,7 @@ import com.hjnerp.net.ChatConstants;
 import com.hjnerp.net.IQ;
 import com.hjnerp.util.SharePreferenceUtil;
 import com.hjnerp.util.ToastUtil;
+import com.hjnerp.widget.MyToast;
 
 public class AutoLoginTask extends AsyncTask<String, Integer, Integer> {
 	private IActivitySupport activitySupport;
@@ -55,15 +56,15 @@ public class AutoLoginTask extends AsyncTask<String, Integer, Integer> {
 			((Activity) activitySupport).finish();
 			break;
 		case Constant.LOGIN_ERROR_ACCOUNT_PASS:// 账户或者密码错误
-			ToastUtil.ShowShort(context, errorText);
+			new MyToast(context, errorText);
 			((LoginActivity) activitySupport).init();
 			break;
 		case Constant.SERVER_UNAVAILABLE:// 服务器连接失败
-			ToastUtil.ShowShort(context, errorText);
+			new MyToast(context, errorText);
 			((LoginActivity) activitySupport).init();
 			break;
 		case Constant.LOGIN_ERROR:// 未知异常
-			ToastUtil.ShowShort(context, errorText);
+			new MyToast(context, errorText);
 			((LoginActivity) activitySupport).init();
 			break;
 		case Constant.LOGIN_ANONYMOUS: 

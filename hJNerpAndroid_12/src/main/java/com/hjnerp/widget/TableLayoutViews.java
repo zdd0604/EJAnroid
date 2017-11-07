@@ -65,15 +65,16 @@ public class TableLayoutViews extends TableLayout {
 
         // 构造第一行的名称显示
         TableRow tableRow = new TableRow(getContext());
+        tableRow.setBackgroundResource(R.drawable.text_back);
         for (int i = 0, p = columnNames.size(); i < p; i++) {
             TextView textView = new TextView(getContext());
             textView.setGravity(Gravity.CENTER);
-            textView.setBackgroundResource(R.drawable.text_back);
+            textView.setBackgroundResource(R.drawable.text_back4);
             textView.setText(columnNames.get(i));
             textView.setTextSize(getContext().getResources().getInteger(
                     R.integer.font_size_15sp));
             textView.setTextColor(Color
-                    .parseColor("#FFFFFF"));
+                    .parseColor("#000000"));
             tableRow.addView(textView);
 //				textView.setBackgroundColor(getResources().getColor(R.color.hjgridheader));
         }

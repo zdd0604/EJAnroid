@@ -37,9 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -49,25 +47,30 @@ import java.util.zip.ZipInputStream;
 
 public class ActionBarWidgetActivity extends ActivitySupport {
     public static Context mContext;
+    protected Gson mGson;
     //弹框
     protected WaitDialogRectangle waitDialog;
+    protected WaitDialogRectangle waitDialogRectangle;
+
     protected String JSON_VALUE = "values";
     protected Calendar calendar = Calendar.getInstance();
-    protected WaitDialogRectangle waitDialogRectangle;
+    //旧版本的网络请求的方法
     public static NsyncDataConnector nsyncDataConnector;
     public HttpClientManager.HttpResponseHandler responseHandler = new NsyncDataHandler();
+
     //是否授权
     public boolean isPsions = false;
-    protected PopupWindow popupWindow;
+    //是否打印Log输出，可以改为false关闭部分输出
+    private boolean isLogShow = true;
+    //网络请求后台返回的数据
     private static String backJson;
-    protected Gson mGson;
-    protected PopupWindow mPopupWindow;
+    //popupwindow选择框
+    protected PopupWindow popupWindow;
 
     //绩效月份选择
     protected List<String> montStList = new ArrayList<>();
     protected List<String> monthIntList = new ArrayList<>();
 
-    private Map<String,String> montStMap = new HashMap();
 
     private Handler abHandler = new Handler() {
         @Override
@@ -158,6 +161,54 @@ public class ActionBarWidgetActivity extends ActivitySupport {
         return isPsions;
     }
 
+    /**
+     * 数据打印
+     *
+     * @param content
+     */
+    public void LogShow(String content) {
+        if (isLogShow)
+            Log.e("EJ", content);
+    }
+
+    /**
+     * bundle
+     *
+     * @param to
+     */
+    public void intentActivity(Class to) {
+        Intent intent = new Intent(mContext, to);
+        startActivity(intent);
+    }
+
+    /**
+     * @param toClass
+     * @param ac_type
+     */
+    public void intentActivity(Class toClass, int ac_type) {
+        Intent intent = new Intent(this, toClass);
+        startActivityForResult(intent, ac_type);
+    }
+
+    /**
+     * bundle
+     *
+     * @param to
+     */
+    public void intentActivity(Class to, Bundle bundle) {
+        Intent intent = new Intent(mContext, to);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    /**
+     * 提交失败提示框
+     *
+     * @param content
+     */
+    public static void showFailToast(String content) {
+        new MyToast(mContext, content);
+    }
 
     /**
      * 长toast
@@ -177,58 +228,60 @@ public class ActionBarWidgetActivity extends ActivitySupport {
         Toast.makeText(mContext, content, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 短toast
-     *
-     * @param content
-     */
-    public void LogShow(String content) {
-        Log.e("EJ", content);
-    }
-
-
-    /**
-     * bundle
-     *
-     * @param to
-     */
-    public void intentActivity(Class to, Bundle bundle) {
-        Intent intent = new Intent(mContext, to);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
-
-    /**
-     * @param toClass
-     * @param ac_type
-     */
-    public void intentActivity(Class toClass, int ac_type) {
-        Intent intent = new Intent(this, toClass);
-        startActivityForResult(intent, ac_type);
-    }
-
-    /**
-     * bundle
-     *
-     * @param to
-     */
-    public void intentActivity(Class to) {
-        Intent intent = new Intent(mContext, to);
-        startActivity(intent);
-    }
-
-    /**
-     * 提交失败提示框
-     *
-     * @param content
-     */
-    public static void showFailToast(String content) {
-        new MyToast(mContext, content);
-    }
 
     public static int getStringEidth(String string) {
         TextPaint newPaint = new TextPaint();
         return (int) newPaint.measureText(string);
+    }
+
+    /**
+     * 选择时间
+     *
+     * @param editText
+     */
+    public void showCalendar(final TextView editText) {
+        new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        int month = monthOfYear + 1;
+                        if (month < 10 && dayOfMonth < 10) {
+                            editText.setText(year + "-0" + month
+                                    + "-0" + dayOfMonth);
+                        } else if (month < 10 && dayOfMonth >= 10) {
+                            editText.setText(year + "-0" + month
+                                    + "-" + dayOfMonth);
+                        } else if (month >= 10 && dayOfMonth < 10) {
+                            editText.setText(year + "-" + month
+                                    + "-0" + dayOfMonth);
+                        } else {
+                            editText.setText(year + "-" + month
+                                    + "-" + dayOfMonth);
+                        }
+                    }
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH))
+                .show();
+    }
+
+    public interface NsyncDataConnector {
+        void processJsonValue(String value);
+    }
+
+    @Override
+    public boolean hasInternetConnected() {
+        ConnectivityManager manager = (ConnectivityManager) context
+                .getSystemService(context.CONNECTIVITY_SERVICE);
+        if (manager != null) {
+            NetworkInfo network = manager.getActiveNetworkInfo();
+            if (network != null && network.isConnectedOrConnecting()) {
+                return true;
+            }
+        }
+        showFailToast(getString(R.string.toast_Message_NetWork));
+        return false;
     }
 
 
@@ -320,57 +373,6 @@ public class ActionBarWidgetActivity extends ActivitySupport {
             }
         }
         return null;
-    }
-
-    /**
-     * 选择时间
-     *
-     * @param editText
-     */
-    public void showCalendar(final TextView editText) {
-        new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        int month = monthOfYear + 1;
-                        if (month < 10 && dayOfMonth < 10) {
-                            editText.setText(year + "-0" + month
-                                    + "-0" + dayOfMonth);
-                        } else if (month < 10 && dayOfMonth >= 10) {
-                            editText.setText(year + "-0" + month
-                                    + "-" + dayOfMonth);
-                        } else if (month >= 10 && dayOfMonth < 10) {
-                            editText.setText(year + "-" + month
-                                    + "-0" + dayOfMonth);
-                        } else {
-                            editText.setText(year + "-" + month
-                                    + "-" + dayOfMonth);
-                        }
-                    }
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH))
-                .show();
-//        editText.setCompoundDrawables(null, null, null, null);
-    }
-
-    public interface NsyncDataConnector {
-        void processJsonValue(String value);
-    }
-
-    @Override
-    public boolean hasInternetConnected() {
-        ConnectivityManager manager = (ConnectivityManager) context
-                .getSystemService(context.CONNECTIVITY_SERVICE);
-        if (manager != null) {
-            NetworkInfo network = manager.getActiveNetworkInfo();
-            if (network != null && network.isConnectedOrConnecting()) {
-                return true;
-            }
-        }
-        showFailToast(getString(R.string.toast_Message_NetWork));
-        return false;
     }
 
     @Override

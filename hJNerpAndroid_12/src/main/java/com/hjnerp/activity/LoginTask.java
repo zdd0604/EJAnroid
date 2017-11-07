@@ -20,7 +20,6 @@ import com.hjnerp.net.ChatConstants;
 import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.net.IQ;
 import com.hjnerp.util.SharePreferenceUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 

@@ -172,13 +172,14 @@
     <!-- 出差/外出单 -->
     <string name="Travel_Title_TvActivity">出差/外出单</string>
     <string name="Travel_Title_TravelName">出差人员</string>
-    <string name="Travel_Title_TravelPart">部门</string>
+    <string name="Travel_Title_TravelPart">所在部门</string>
     <string name="Travel_Title_TravelPartner">随行人员</string>
     <string name="Travel_Title_TravelTimeBegin">开始时间</string>
-    <string name="Travel_Hint_TravelTimeBegin">请选择开始出差日期</string>
+    <string name="Travel_Hint_TravelTimeBegin">请选择开始日期（必填）</string>
     <string name="Travel_Title_TravelTimeEnd">结束时间</string>
-    <string name="Travel_Hint_TravelTimeEnd">请选择结束出差日期</string>
+    <string name="Travel_Hint_TravelTimeEnd">请选择结束日期（必填）</string>
     <string name="Travel_Title_TravelReason">出差原因</string>
+    <string name="Travel_Hint_TravelReason">请填写出差原因（必填）</string>
     <string name="Travel_Title_TravelWork">项目</string>
     <string name="Travel_Hint_TravelWork">请选择出差项目</string>
     <string name="Travel_Title_TravelClient">客户</string>
@@ -199,19 +200,21 @@
     <string name="work_Tile_TaskTime">任务时间</string>
     <string name="work_Hint_TaskTime">请选择任务时间</string>
     <string name="work_Tile_WkAddress">工作地点</string>
-    <string name="work_Hint_WkAddress">请选择工作地点</string>
+    <string name="work_Hint_WkAddress">请选择工作地点（必填）</string>
     <string name="work_Tile_WkType">工作类型</string>
-    <string name="work_Hint_WkType">请选择工作类型</string>
+    <string name="work_Hint_WkType">请选择工作类型（必填）</string>
     <string name="work_Tile_PjName">工作项目</string>
-    <string name="work_Hint_PjName">请选择工作项目</string>
+    <string name="work_Hint_PjName">请选择工作项目（必填）</string>
     <string name="work_Tile_Address">地址</string>
     <string name="work_Tile_Contact">客户</string>
     <string name="work_Tile_contactduty">职务</string>
     <string name="work_Tile_WkTime">工时</string>
+    <string name="work_Hint_WkTime">请填写工时（必填）</string>
     <string name="work_Tile_MyTheme">主题</string>
+    <string name="work_Hint_MyContent_main">请填写主题(必填)</string>
     <string name="work_Tile_MyContent">内容</string>
     <string name="work_Hint_MyContent">请填写内容</string>
-    <string name="work_Hint_MyContent_main">请填写主题(必填)</string>
+
 
     <string name="toast_Hint_DateTask">请选择任务时间</string>
     <string name="toast_Hint_idWtype">请选择工作类型</string>
@@ -225,43 +228,44 @@
     <string name="travel_Title_TvActivity">休假申请单</string>
     <string name="travel_Title_RejustName">驳回意见</string>
     <string name="travel_Title_LeaveName">休假人员</string>
-    <string name="travel_Title_LeavePart">部门</string>
+    <string name="travel_Title_LeavePart">所在部门</string>
     <string name="travel_Title_LeavrTimeBegin">开始时间</string>
-    <string name="travel_Hint_LeavrTimeBegin">请选择开始休假的日期</string>
+    <string name="travel_Hint_LeavrTimeBegin">请选择开始时间（必填）</string>
     <string name="travel_Title_LeavrTimeEND">结束时间</string>
-    <string name="travel_Hint_LeavrTimeEND">请选择结束休假的日期</string>
+    <string name="travel_Hint_LeavrTimeEND">请选择结束时间（必填）</string>
     <string name="travel_Title_LeavrType">休假类型</string>
     <string name="travel_Hint_LeavrType">请选择休假类型</string>
     <string name="travel_Title_LeavrDays">可休天数</string>
     <string name="travel_Hint_LeavrTDays">剩余可休假天数</string>
     <string name="travel_Title_LeavrDay">休假天数</string>
-    <string name="travel_Hint_LeavrDay">请输入休假天数</string>
+    <string name="travel_Hint_LeavrDay">请输入休假天数（必填）</string>
     <string name="travel_Title_LeavrReason">休假原因</string>
     <string name="travel_Hint_LeavrReason">请填写休假原因</string>
 
     <!-- 加班申请 -->
     <string name="over_Title_TvActivity">加班申请单</string>
     <string name="travel_Title_RejustNameOver">驳回意见</string>
-    <string name="over_Title_OverName">员工</string>
-    <string name="over_Title_OverPart">部门</string>
-    <string name="over_Title_OverTimeGegin">日期</string>
-    <string name="over_Hint_OverTimeGegin">请选择开始时间</string>
+    <string name="over_Title_OverName">加班人员</string>
+    <string name="over_Title_OverPart">所在部门</string>
+    <string name="over_Title_OverTimeGegin">加班日期</string>
+    <string name="over_Hint_OverTimeGegin">请选择加班日期（必填）</string>
     <string name="over_Title_OverDays">加班天数</string>
-    <string name="over_Hint_OverDays">请输入加班天数</string>
-    <string name="over_Title_OverReson">加班原因及内容</string>
-    <string name="over_Hint_OverReson">请输入加班内容及原因</string>
+    <string name="over_Hint_OverDays">请输入加班天数（必填）</string>
+    <string name="over_Title_OverReson">加班原因</string>
+    <string name="over_Hint_OverReson">请输入加班内容及原因（必填）</string>
 
     <!-- 考勤异常申述 -->
     <string name="detail_Title_TvActivity">考勤异常申述</string>
+    <string name="detail_Title_AbnormalName">申诉人员</string>
+    <string name="detail_Title_AbnormalPart">所在部门</string>
     <string name="detail_Title_NormalDetail">考勤异常记录</string>
-    <string name="detail_Title_AbnormalDate">日期</string>
+    <string name="detail_Title_AbnormalDate">考勤日期</string>
     <string name="detail_Hint_AbnormalDate">请选择考勤日期</string>
-    <string name="detail_Title_AbnormalType">类型</string>
+    <string name="detail_Title_AbnormalType">考勤类型</string>
     <string name="detail_Title_AbnormalTime">打卡时间</string>
     <string name="detail_Title_AbnormalUnderstand">异常说明</string>
+    <string name="detail_Hint_AbnormalUnderstand">请填写异常说明（必填）</string>
     <string name="detail_Title_AbnormalRemark">请填写考勤说明</string>
-    <string name="detail_Title_AbnormalName">员工</string>
-    <string name="detail_Title_AbnormalPart">部门</string>
     <string name="detail_Title_AbnormalAddDetail">添加明细</string>
 
     <!-- toast提示语 -->
@@ -281,17 +285,22 @@
     <string name="pfItem_Title_perfKPI">关键绩效指标</string>
     <string name="pfItem_Title_perfGS">工作目标</string>
     <string name="pfItem_Title_perfDelete">删除</string>
-    <string name="pfItem_Title_perfIdKpipost">指标</string>
-    <string name="pfItem_Title_perfVarEvastd">评价标准</string>
-    <string name="pfItem_Title_perfVarComp">完成情况</string>
-    <string name="pfItem_Title_perfDecScale">权重</string>
-    <string name="pfItem_Title_perfDecMark">得分</string>
     <string name="pfItem_Title_perfIdClerk">被评人</string>
     <string name="pfItem_Title_perfIntYear">考核年</string>
     <string name="pfItem_Title_perfNameKpiperiod">考评周期</string>
     <string name="pfItem_Hint_perfNameKpiperiod">请选择考评周期</string>
-    <string name="pfItem_Title_perfDecSmark">总分</string>
-    <string name="pfItem_Title_oriNo">单据号</string>
+    <string name="pfItem_Title_oriNo">绩效单号</string>
+    <string name="pfItem_Title_perfIdKpipost">绩效指标</string>
+    <string name="pfItem_Hint_perfIdKpipost">请填写绩效指标（必填）</string>
+    <string name="pfItem_Title_perfVarEvastd">评价标准</string>
+    <string name="pfItem_Hint_perfVarEvastd">请填写评价标准（必填）</string>
+    <string name="pfItem_Title_perfVarComp">完成情况</string>
+    <string name="pfItem_Title_perfDecScale">绩效权重</string>
+    <string name="pfItem_Hint_perfDecScale">请填写绩效权重（必填）</string>
+    <string name="pfItem_Title_perfDecMark">绩效得分</string>
+    <string name="pfItem_Hint_perfDecMark">请填写绩效得分（必填）</string>
+    <string name="pfItem_Title_perfDecSmark">绩效总分</string>
+    <string name="pfItem_Hint_perfDecSmark">请填写绩效总分（必填）</string>
 
     <!-- 业务 -->
     <string name="bFragment_Title_ViewGroup1">拜访业务</string>

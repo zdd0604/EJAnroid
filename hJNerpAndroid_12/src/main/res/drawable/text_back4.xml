@@ -7,16 +7,15 @@
         </shape>
     </item>
     <!-- 主体背景颜色值 -->
-    <item
-        android:bottom="1dp"
-        android:left="1dp">
+    <item android:right="@dimen/size_1">
         <shape>
-            <solid android:color="#FFFFFF" />
+            <solid android:color="#E4E6E9" />
             <padding
-                android:bottom="1dp"
-                android:left="1dp"
-                android:right="1dp"
-                android:top="1dp" />
+                android:bottom="@dimen/size_5"
+                android:left="@dimen/size_5"
+                android:right="@dimen/size_5"
+                android:top="@dimen/size_5" />
         </shape>
     </item>
 </layer-list>
+
