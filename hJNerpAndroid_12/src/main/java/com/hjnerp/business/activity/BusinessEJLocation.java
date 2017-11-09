@@ -2,11 +2,12 @@ package com.hjnerp.business.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,8 +18,8 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.RadioButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.baidu.location.BDLocation;
@@ -46,12 +47,14 @@ import com.hjnerp.business.businessutils.MyOrientationListener;
 import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
+import com.hjnerp.dao.BusinessBaseDao;
 import com.hjnerp.dao.OtherBaseDao;
+import com.hjnerp.model.Ctlm1345;
+import com.hjnerp.model.Ej1345;
 import com.hjnerp.model.IDComConfig;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.ZipUtils;
 import com.hjnerp.widget.HorizontalListView;
-import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -86,19 +89,30 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     @BindView(R.id.action_left_tv)
     TextView actionLeftTv;
     @BindView(R.id.ej_location_path)
-    EditText login_ej_location;
-    @BindView(R.id.ej_sgin_title)
-    TextView ej_sgin_title;
-    @BindView(R.id.ej_sgin_timetx)
-    TextView ej_sgin_timetx;
-    @BindView(R.id.sgin_type)
-    TextView sgin_type;
+    TextView login_ej_location;
     @BindView(R.id.ej_photo_list)
     HorizontalListView ej_photo_list;
-    @BindView(R.id.ej_sign_in)
-    RadioButton ej_sign_in;
-    @BindView(R.id.ej_sign_out)
-    RadioButton ej_sign_out;
+
+    //图片添加
+    @BindView(R.id.ej_photo_add)
+    ImageView ej_photo_add;
+    //上下班View展示
+    @BindView(R.id.sgin_view_up)
+    View sgin_view_up;
+    @BindView(R.id.sgin_view_down)
+    View sgin_view_down;
+    @BindView(R.id.sgin_view_prbar)
+    ProgressBar sgin_view_prbar;
+    //上下班时间
+    @BindView(R.id.sgin_time_up)
+    TextView sgin_time_up;
+    @BindView(R.id.sgin_time_down)
+    TextView sgin_time_down;
+    //上下班打卡按钮
+    @BindView(R.id.sign_img_up)
+    ImageView sign_img_up;
+    @BindView(R.id.sign_img_down)
+    ImageView sign_img_down;
 
     //地图
     @BindView(R.id.ej_location_bdmap)
@@ -140,18 +154,23 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     //签到或者签退的状态
     private String sgin_type_Y = "Y";
     private String sgin_type_N = "N";
-    private String sgin_title_Y = "实际上班时间：";
-    private String sgin_title_N = "实际下班时间：";
     private Boolean isSgin = true; //默认上上班
     private MyOrientationListener myOrientationListener;
     private float mCurrentX;//方向
 
     //签到文件的信息
-    private String date_location = ""; //时间
+    //打卡时间
+    private String sgin_time = "";
+    //签到数据
     private String sginData = "";
+    //是否在打卡范围之内
+    private boolean isLocationTrue = false;
+    //是否已经打卡
+    private boolean isSginTime = false;
+    //经纬度集合
     private List<Double> mLoca = new ArrayList<>();
     private List<LatLng> mLatlng = new ArrayList<>();
-    private boolean iSTrue = false;
+    private List<Ctlm1345> users;
 
 
     Handler handler = new Handler() {
@@ -186,32 +205,66 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         actionCenterTv.setText(getString(R.string.buess_Title_CenterTitle));
         actionRightTv.setVisibility(View.GONE);
         actionLeftTv.setOnClickListener(this);
-        ej_sign_in.setOnClickListener(this);
-        ej_sign_out.setOnClickListener(this);
+        sign_img_up.setOnClickListener(this);
+        sign_img_down.setOnClickListener(this);
+        ej_photo_add.setOnClickListener(this);
 
         photoUUID = StringUtil.getMyUUID();
         photoPath = Constant.SGIN_SAVE_DIR + "/" + photoUUID;
         BusinessQueryDao.getSgin_Section("ctlm7161");
+
         initMapLocation();
-        setHListImage();
+
+
+//        users = BusinessBaseDao.getCTLM1345ByIdTable("user");
+//        if (users.size()==0){
+//
+//        }
+//        String userinfos = users.get(0).getVar_value();
+//        Ej1345 ej1345 = mGson.fromJson(userinfos, Ej1345.class);
+//        BusinessBaseDao.selectCtlm1108()
+//
+//        if (isSginTime)
+//            sgin_view_prbar.setProgress(50);
+
+//        setHListImage();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ej_sign_in:
-                ej_sgin_title.setText(sgin_title_Y);
+            case R.id.sign_img_up:
                 submitSginDatas(sgin_type_Y);
                 isSgin = true;
                 break;
-            case R.id.ej_sign_out:
-                ej_sgin_title.setText(sgin_title_N);
+            case R.id.sign_img_down:
                 submitSginDatas(sgin_type_N);
                 isSgin = false;
                 break;
             case R.id.action_left_tv:
                 finish();
                 break;
+            case R.id.ej_photo_add:
+                if (!isPermissions(new String[]{
+                        XPermissions.CAMERA,
+                        XPermissions.READ_CONTACTS})) {
+                    showFailToast("相机未授权");
+                    return;
+                }
+                ej1345Exist();
+                break;
+        }
+    }
+
+    /**
+     * 跳转相机
+     */
+    private void ej1345Exist() {
+        if (BusinessQueryDao.getUserInfo(context)) {
+            IntentCamera();
+        } else {
+            Intent intent = new Intent(BusinessEJLocation.this, SetActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -220,10 +273,10 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
      */
     private void submitSginDatas(String sginType) {
         waitDialog.show();
-        String photoname = setPhotoName();
-        date_location = BusinessTimeUtils.getCurrentTime(Constant.SGIN_FORMART);
-
-
+        //获取照片集合名称
+        String photoname = getPhotoName();
+        //获取打卡时间
+        sgin_time = BusinessTimeUtils.getCurrentTime(Constant.SGIN_FORMART);
         if (BusinessQueryDao.getUserInfo(context)) {
             IDComConfig idconfig = OtherBaseDao.queryReginfo(Constant.ej1345.getId_com());
             if (idconfig != null) {
@@ -234,12 +287,13 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
             startActivity(intent);
         }
 
-//        //判断定位的权限
-//        if (!isPermissions(new String[]{XPermissions.ACCESS_COARSE_LOCATION,
-//                XPermissions.ACCESS_FINE_LOCATION})) {
-//            toastSHORT("定位失败，请开启定位权限");
-//            return;
-//        }
+        //判断定位的权限
+        if (!isPermissions(new String[]{XPermissions.ACCESS_COARSE_LOCATION,
+                XPermissions.ACCESS_FINE_LOCATION})) {
+            showFailToast("定位失败，请开启定位权限");
+            remove();
+            return;
+        }
 
         if (!Constant.ctlm7161Is) {
             //7161表不存在的时候
@@ -260,23 +314,31 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
             return;
         }
 
-        if (!iSTrue) {
+        if (!isLocationTrue) {
             showFailToast("定位点不在工作区,请到工作区内重新打卡");
             remove();
             return;
         }
 
+        //设置打卡时间以及View的状态
         if (sginType.equals("Y")) {
-            BusinessTimeUtils.getIntegerTime(date_location, Constant.ctlm7161.getVar_on());
+            BusinessTimeUtils.getIntegerTime(sgin_time, Constant.ctlm7161.getVar_on());
+            sgin_time_up.setText(sgin_time);
+            sgin_view_up.setBackgroundResource(R.drawable.circle_yellow_point);
+            sgin_view_prbar.setProgress(50);
         } else {
-            BusinessTimeUtils.getIntegerTimeOut(date_location, Constant.ctlm7161.getVar_off());
+            BusinessTimeUtils.getIntegerTimeOut(sgin_time, Constant.ctlm7161.getVar_off());
+            sgin_time_down.setText(sgin_time);
+            sgin_view_down.setBackgroundResource(R.drawable.circle_yellow_point);
+            sgin_view_prbar.setProgress(100);
         }
+
         sginData = BusinessEJBuffer.getSginBuffer(Constant.MYUSERINFO.userID,
-                Constant.MYUSERINFO.companyID, date_location,
+                Constant.MYUSERINFO.companyID, sgin_time,
                 sginType, Constant.ej1345.getId_clerk(), Constant.ej1345.getId_com(),
                 Constant.ej1345.getId_user(), "", location_path, photoname);
-        ej_sgin_timetx.setText(date_location);
-        Log.v("show", sginData);
+
+        LogShow(sginData);
         zipPhotoFile();
     }
 
@@ -299,48 +361,19 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     /**
      * 添加默认的集合图片
      */
-    private void setHListImage() {
-        photoBitmapList.clear();
-//        InputStream is = getResources().openRawResource(R.drawable.chat_normal_ddisp);
-//        Bitmap mBitmap = BitmapFactory.decodeStream(is);
-        Resources r = this.getContext().getResources();
-        defaultBt = BitmapFactory.decodeResource(r, R.drawable.chat_normal_ddisp);
-        photoBitmapList.add(defaultBt);
-        businessSginImageViewAdapter = new BusinessSginImageViewAdapter(photoBitmapList, this);
-        businessSginImageViewAdapter.notifyDataSetChanged();
-        ej_photo_list.setAdapter(businessSginImageViewAdapter);
-        ej_photo_list.setOnItemClickListener(clickListener);
-    }
+//    private void setHListImage() {
+//        photoBitmapList.clear();
+////        InputStream is = getResources().openRawResource(R.drawable.chat_normal_ddisp);
+////        Bitmap mBitmap = BitmapFactory.decodeStream(is);
+//        Resources r = this.getContext().getResources();
+//        defaultBt = BitmapFactory.decodeResource(r, R.drawable.icon_sgin_list_img);
+//        photoBitmapList.add(defaultBt);
+//        businessSginImageViewAdapter = new BusinessSginImageViewAdapter(photoBitmapList, this);
+//        businessSginImageViewAdapter.notifyDataSetChanged();
+//        ej_photo_list.setAdapter(businessSginImageViewAdapter);
+//        ej_photo_list.setOnItemClickListener(clickListener);
+//    }
 
-    /**
-     * 照片的集合的点击事件
-     */
-    AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
-            if (position == photoBitmapList.size() - 1) {
-                if (!isPermissions(new String[]{
-                        XPermissions.CAMERA,
-                        XPermissions.READ_CONTACTS})) {
-                    showFailToast("相机未授权");
-                    return;
-                }
-                ej1345Exist();
-            } else {
-                ShowSginPhotoFeleteDialog(position);
-            }
-        }
-    };
-
-    private void ej1345Exist() {
-        if (BusinessQueryDao.getUserInfo(context)) {
-            IntentCamera();
-        } else {
-            Intent intent = new Intent(BusinessEJLocation.this, SetActivity.class);
-            startActivity(intent);
-        }
-    }
 
     /**
      * 跳转相机
@@ -349,7 +382,6 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         try {
             photoName = "ph" + BusinessTimeUtils.getCurrentTime(Constant.SGIN_PHOTONAME) + Constant.ej1345.getId_user();
             photoLocation = photoPath + "/" + photoName + ".jpg";
-
             BusinessFileUtils.creatFile(photoPath);
 
             photoFilePath = new File(photoLocation);
@@ -394,7 +426,7 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
 
                     Bitmap decodeBitmap = BuinessImgUtils.decodeBitmap(photoFilePath);
                     decodeBitmap.compress(Bitmap.CompressFormat.JPEG, 60, new FileOutputStream(photoFilePath));
-                    photoBitmapList.add(photoBitmapList.size() - 1, decodeBitmap);
+                    photoBitmapList.add(decodeBitmap);
                     handler.sendEmptyMessage(SET_IMAGE);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -411,14 +443,15 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         businessSginImageViewAdapter = new BusinessSginImageViewAdapter(photoBitmapList, this);
         businessSginImageViewAdapter.notifyDataSetChanged();
         ej_photo_list.setAdapter(businessSginImageViewAdapter);
-        ej_photo_list.setOnItemClickListener(clickListener);
+        ej_photo_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ShowSginPhotoFeleteDialog(position);
+                return false;
+            }
+        });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        XPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults); // 回调函数
-    }
 
     /**
      * 提示是否删除照片
@@ -443,8 +476,12 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         }).show();
     }
 
-
-    private String setPhotoName() {
+    /**
+     * 这是照片名称
+     *
+     * @return
+     */
+    private String getPhotoName() {
         try {
             if (photoNameList.size() >= 10) {
                 StringBuffer stringBuffer = new StringBuffer();
@@ -518,7 +555,12 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         });
     }
 
-
+    /**
+     * 添加地理位置信息
+     *
+     * @param Latitude
+     * @param Longtitude
+     */
     private void addLocation(String Latitude, String Longtitude) {
         if (StringUtil.isStrTrue(Latitude) && StringUtil.isStrTrue(Longtitude)) {
             mLatlng.add(new LatLng(Double.valueOf(Latitude), Double.valueOf(Longtitude)));
@@ -530,6 +572,9 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
 
     }
 
+    /**
+     * 地图接口回调
+     */
     private class MyLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
@@ -552,6 +597,9 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         }
     }
 
+    /**
+     * 设置地图
+     */
     private void setMapnfo() {
         // 设置自定义图标
         MyLocationConfiguration configuration = new MyLocationConfiguration(locationMode, true, mIconLocation);
@@ -567,24 +615,25 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
                 mLoca.add(mLocation);
             }
             Collections.sort(mLoca);
-
             if (mLoca.size() > 0) {
                 if (Double.valueOf(Constant.mDdisplocatBean.getVar_range()) >= mLoca.get(0)) {
-                    sgin_type.setBackgroundResource(R.drawable.design_green_point);
-                    iSTrue = true;
-                    Log.v("show", "在范围");
+                    login_ej_location.setText(location_path);
+                    isLocationTrue = true;
+                    LogShow("在范围");
                 } else {
-                    sgin_type.setBackgroundResource(R.drawable.design_red_point);
-                    iSTrue = false;
-                    Log.v("show", "不在范围");
+                    login_ej_location.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(
+                            R.drawable.icon_location_erro), null, null, null);
+                    login_ej_location.setText(getString(R.string.sgin_Hint_address3));
+                    login_ej_location.setTextColor(Color.parseColor("#ffa727"));
+                    isLocationTrue = false;
+                    LogShow("不在范围");
                 }
             }
         } else {
-            iSTrue = true;
-            Log.v("show", "没有经纬度");
+            isLocationTrue = true;
+            LogShow("获取经纬度失败");
         }
         mBaiduMap.animateMapStatus(msu);
-        login_ej_location.setText(location_path);
     }
 
     /**
@@ -721,6 +770,13 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         handler.sendMessage(message);
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        XPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults); // 回调函数
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -729,7 +785,6 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         if (!mLocationClient.isStarted()) {
             mLocationClient.start();
         }
-
         myOrientationListener.start();
     }
 
@@ -765,6 +820,6 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         photoName = "";
 
         addImageView();
-        setHListImage();
+//        setHListImage();
     }
 }

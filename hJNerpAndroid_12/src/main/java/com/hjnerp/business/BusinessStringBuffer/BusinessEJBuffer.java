@@ -9,7 +9,6 @@ import com.hjnerp.common.Constant;
 
 public class BusinessEJBuffer {
 
-
 //    模板中数据上传到基础表的设置，必须要有如下红色字体的设置（其中id_clerk处为基础表在和交谈了中的主键字段）
 //    var jss='{"tableid":"ctlm7162",
 // "tabletype":"B",
@@ -32,8 +31,9 @@ public class BusinessEJBuffer {
                                        String flag_sginin, String id_clerk, String id_com, String id_recorder,
                                        String var_equno, String var_location, String name_photo) {
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("{\"tableid\":\"ctlm7162\",\"opr\":\"SS\",\"no\":\"\",\"userid\":\"" + userID + "\",\"menuid\":\"" +
-                Constant.ID_MENU + "\",\"dealtype\":\"save\",\"comid\":\"" + companyID + "\",");
+        stringBuffer.append("{\"tableid\":\"ctlm7162\",\"opr\":\"SS\",\"no\":\"\"," +
+                "\"userid\":\"" + userID + "\",\"menuid\":\"" + Constant.ID_MENU + "\"," +
+                "\"dealtype\":\"save\",\"comid\":\"" + companyID + "\",");
         stringBuffer.append("\"data\":[{\"table\": \"ctlm7162\",\"oprdetail\":\"N\",\"where\":\" \",");
         stringBuffer.append("\"data\":[{\"column\":\"card_no\",\"value\":\"\",\"datatype\":\"varchar\"},");
         stringBuffer.append("{\"column\":\"date_checkin\",\"value\":\"" + date_location + "\",\"datatype\":\"datetime\"}, ");
@@ -71,8 +71,10 @@ public class BusinessEJBuffer {
                                           String date_opr, int fiscal_period, int fiscal_year,
                                           String id_corr) {
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("{\"tableid\":\"dgtdrec\",\"opr\":\"SS\",\"no\": \"\",\"menuid\":\"" + menuid + "\",\"dealtype\":\"save\",\"userid\":\"" + userID + "\",\"comid\":\"" + companyID + "\"," +
-                "\"data\":[{\"table\": \"dgtdrec_03\",\"oprdetail\":\"N\",\"where\": \"\", \"data\": [");
+        stringBuffer.append("{\"tableid\":\"dgtdrec\",\"opr\":\"SS\",\"no\": \"\"," +
+                "\"menuid\":\"" + menuid + "\",\"dealtype\":\"save\",\"userid\":\"" + userID + "\"," +
+                "\"comid\":\"" + companyID + "\"," + "\"data\":[{\"table\": \"dgtdrec_03\"," +
+                "\"oprdetail\":\"N\",\"where\": \"\", \"data\": [");
         stringBuffer.append("{\"column\":\"flag_sts\",\"value\":\"L\",\"datatype\":\"varchar\"},");
         stringBuffer.append("{\"column\":\"id_flow\",\"value\":\"FBdis\",\"datatype\":\"varchar\"},");
         stringBuffer.append("{\"column\":\"line_no\",\"value\":\"1\",\"datatype\":\"int\"},");

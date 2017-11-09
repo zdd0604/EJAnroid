@@ -553,4 +553,36 @@ public class Tables {
 		public static final String COL_VAR_WHERE = "var_where";
 	}
 
+
+	/**
+	 * Ctlm1108表, 存储本地打卡时间的表 与服务器的数据不相桶
+	 * @author 张东东
+	 * @date 20171108
+	 */
+	public static final class BusinessCtlm1108
+	{
+		public static final String getCreateSQLString() {
+			StringBuffer sb = new StringBuffer();
+			sb.append("CREATE TABLE IF NOT EXISTS ").append(NAME).append(" ");
+			sb.append("( ");
+
+			sb.append(COL_ID_CLERK).append(" NVARCHAR PRIMARY KEY , ");
+			sb.append(COL_SGIN_TIME).append(" NVARCHAR , ");
+			sb.append(COL_SGIN_TIME_UP).append(" NVARCHAR , ");
+			sb.append(COL_SGIN_TIME_down).append(" NVARCHAR ");
+
+			sb.append(") ");
+			return sb.toString();
+		}
+
+		public static final String NAME = "ctlm1108";
+		/** 类型 */
+		public static final String COL_ID_CLERK = "id_clerk";
+		/** 打卡时间*/
+		public static final String COL_SGIN_TIME = "sgin_time";
+		/** 上班时间*/
+		public static final String COL_SGIN_TIME_UP = "sgin_time_up";
+		/** 下班班时间*/
+		public static final String COL_SGIN_TIME_down = "sgin_time_down";
+	}
 }

@@ -18,14 +18,13 @@ import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.BusinessBaseDao;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.model.Ctlm1345;
 import com.hjnerp.model.Ej1345;
 import com.hjnerp.model.LeaveType;
 import com.hjnerp.model.PerformanceDatas;
-import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.net.HttpClientManager;
 import com.hjnerp.util.StringUtil;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.util.ZipUtils;
 import com.hjnerp.util.myscom.FileUtils;
 import com.hjnerp.widget.ClearEditText;
@@ -127,7 +126,7 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
         leave_time_begin.setOnClickListener(this);
         leave_time_end.setOnClickListener(this);
         if (users.size() == 0) {
-            ToastUtil.ShowShort(this, "请先下载基础数据");
+            showFailToast("请先下载基础数据");
             finish();
             return;
         }
@@ -155,7 +154,7 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
         users = new ArrayList<>();
         users = BusinessBaseDao.getCTLM1345ByIdTable("user");
         if (users.size() == 0) {
-            ToastUtil.ShowShort(this, "请先下载基础数据");
+            showFailToast("请先下载基础数据");
             finish();
             return;
         }

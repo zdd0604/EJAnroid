@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval"
+    android:useLevel="false">
+    <solid android:color="#ffa727" />
+
+    <!--shape可以绘制矩形环形以及椭圆、所以只需要用椭圆就可以完成需求、-->
+    <!--在使用的时候将控件比如textview的高宽设置成一样就是正圆、-->
+    <!--solid表示远的填充色、stroke则代表远的边框线、-->
+    <!--所以两者结合可以实现带边缘的圆、Shape 代码-->
+
+    <solid android:color="#ffa727" />
+
+    <size
+        android:width="15dp"
+        android:height="15dp" />
+</shape>

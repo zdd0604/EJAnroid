@@ -85,7 +85,7 @@
             android:focusable="false"
             android:gravity="center"
             android:hint="请选择启程的时间"
-            android:textColorHint="#aaaaaa"
+            android:textColorHint="@color/HintTitleColor"
             android:textSize="@dimen/font_size_15" />
 
     </LinearLayout>
@@ -149,7 +149,7 @@
             android:focusable="false"
             android:gravity="center"
             android:hint="请选择到达的时间"
-            android:textColorHint="#aaaaaa"
+            android:textColorHint="@color/HintTitleColor"
             android:textSize="@dimen/font_size_15" />
 
     </LinearLayout>

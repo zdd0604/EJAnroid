@@ -92,39 +92,35 @@
                 style="@style/Item_LinearLayout_EdRightTitleStyle" />
         </LinearLayout>
 
-        <LinearLayout style="@style/Item_LinearLayout_HorizontalStyle">
+        <LinearLayout
+            style="@style/Item_LinearLayout_HorizontalStyle"
+            android:layout_weight="1">
 
-            <LinearLayout
-                style="@style/Item_LinearLayout_HorizontalStyle"
-                android:layout_weight="1">
+            <TextView
+                style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                android:text="@string/pfItem_Title_perfDecScale" />
 
-                <TextView
-                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
-                    android:text="@string/pfItem_Title_perfDecScale" />
+            <com.hjnerp.widget.ClearEditText
+                android:id="@+id/input_dec_scale"
+                style="@style/Item_LinearLayout_EdRightTitleStyle"
+                android:hint="@string/pfItem_Hint_perfDecScale"
+                android:inputType="number" />
+        </LinearLayout>
 
-                <com.hjnerp.widget.ClearEditText
-                    android:id="@+id/input_dec_scale"
-                    style="@style/Item_LinearLayout_EdRightTitleStyle"
-                    android:hint="@string/pfItem_Hint_perfDecScale"
-                    android:inputType="number" />
-            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layout_dec_mark"
+            style="@style/Item_LinearLayout_HorizontalStyle"
+            android:visibility="gone">
 
-            <LinearLayout
-                android:id="@+id/layout_dec_mark"
-                style="@style/Item_LinearLayout_HorizontalStyle"
-                android:layout_weight="1"
-                android:visibility="gone">
+            <TextView
+                style="@style/Item_LinearLayout_TVLeftTieleStyle2"
+                android:text="@string/pfItem_Title_perfDecMark" />
 
-                <TextView
-                    style="@style/Item_LinearLayout_TVLeftTieleStyle2"
-                    android:text="@string/pfItem_Title_perfDecMark" />
-
-                <com.hjnerp.widget.ClearEditText
-                    android:id="@+id/input_dec_mark"
-                    style="@style/Item_LinearLayout_EdRightTitleStyle"
-                    android:hint="@string/pfItem_Hint_perfDecMark"
-                    android:inputType="numberDecimal"/>
-            </LinearLayout>
+            <com.hjnerp.widget.ClearEditText
+                android:id="@+id/input_dec_mark"
+                style="@style/Item_LinearLayout_EdRightTitleStyle"
+                android:hint="@string/pfItem_Hint_perfDecMark"
+                android:inputType="numberDecimal"/>
         </LinearLayout>
 
         <View style="@style/Item_View_DividerStyle" />

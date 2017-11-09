@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#efeff4"
+    android:background="@color/ActivityBgColor"
     android:orientation="vertical">
 
     <ScrollView
@@ -31,19 +31,18 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/size_5"
-                    android:paddingLeft="@dimen/size_24"
-                    android:paddingTop="@dimen/size_14"
-                    android:textColor="@color/viewgroup_texrcolor"
+                    android:layout_height="@dimen/size_30"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/size_10"
                     android:text="@string/bFragment_Title_ViewGroup1"
+                    android:textColor="@color/viewgroup_texrcolor"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/viewgroup_item"
+                    android:background="@color/ActivityBgColor"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"
@@ -60,19 +59,18 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/size_5"
-                    android:paddingLeft="@dimen/size_24"
-                    android:paddingTop="@dimen/size_14"
-                    android:textColor="@color/viewgroup_texrcolor"
+                    android:layout_height="@dimen/size_30"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/size_10"
                     android:text="@string/bFragment_Title_ViewGroup2"
+                    android:textColor="@color/viewgroup_texrcolor"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/viewgroup_item"
+                    android:background="@color/ActivityBgColor"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"
@@ -89,19 +87,18 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/size_5"
-                    android:paddingLeft="@dimen/size_24"
-                    android:paddingTop="@dimen/size_14"
-                    android:textColor="@color/viewgroup_texrcolor"
+                    android:layout_height="@dimen/size_30"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/size_10"
                     android:text="@string/bFragment_Title_ViewGroup3"
+                    android:textColor="@color/viewgroup_texrcolor"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/viewgroup_item"
+                    android:background="@color/ActivityBgColor"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"
@@ -113,24 +110,23 @@
                 android:id="@+id/performance_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/size_5"
-                    android:paddingLeft="@dimen/size_24"
-                    android:paddingTop="@dimen/size_14"
-                    android:textColor="@color/viewgroup_texrcolor"
+                    android:layout_height="@dimen/size_30"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/size_10"
                     android:text="@string/bFragment_Title_ViewGroup4"
+                    android:textColor="@color/viewgroup_texrcolor"
                     android:textSize="15sp" />
 
                 <com.hjnerp.fragment.MyGridView
                     android:id="@+id/gridview_businessmenu_ex4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/viewgroup_item"
+                    android:background="@color/ActivityBgColor"
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="4"

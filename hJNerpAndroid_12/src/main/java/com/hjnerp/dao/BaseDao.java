@@ -76,7 +76,8 @@ public class BaseDao
 		database.execSQL("DROP TABLE " + Tables.BusinessCtlm1346.NAME);
 		database.execSQL("DROP TABLE " + Tables.BusinessCtlm1347.NAME);
 		database.execSQL("DROP TABLE " + Tables.BusinessCtlm4203.NAME);
-		
+//		database.execSQL("DROP TABLE " + Tables.BusinessCtlm1108.NAME);
+
 		/////////////////////创建//////////////////////////
 //		database.execSQL(Tables.ConfigTable.getCreateSQLString());
 //		database.execSQL(Tables.UserTable.getCreateSQLString());
@@ -91,7 +92,8 @@ public class BaseDao
 		database.execSQL(Tables.BusinessCtlm1346.getCreatedSQLString());
 		database.execSQL(Tables.BusinessCtlm1347.getCreatedSQLString());
 		database.execSQL(Tables.BusinessCtlm4203.getCreateSQLString());
-		
+//		database.execSQL(Tables.BusinessCtlm1108.getCreateSQLString());
+
 		endDMLOffTransaction(database);
 	}
 	

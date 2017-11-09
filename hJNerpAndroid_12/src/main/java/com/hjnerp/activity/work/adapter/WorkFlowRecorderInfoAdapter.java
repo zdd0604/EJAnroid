@@ -26,6 +26,7 @@ import com.hjnerp.business.BusinessJsonCallBack.BFlagCallBack;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.BusinessBaseDao;
 import com.hjnerp.dao.QiXinBaseDao;
+import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.model.Cell;
 import com.hjnerp.model.Ctlm1345;
 import com.hjnerp.model.Ej1345;
@@ -33,13 +34,12 @@ import com.hjnerp.model.UserInfo;
 import com.hjnerp.model.WorkflowApproveInfo;
 import com.hjnerp.model.WorkflowDetailInfo;
 import com.hjnerp.model.WorkflowListInfo;
-import com.hjnerp.model.BusinessFlag;
 import com.hjnerp.net.ChatConstants;
 import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.TableCell;
-import com.hjnerp.util.ToastUtil;
+import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.TableLayoutViews;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
@@ -120,51 +120,28 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
         ViewHolder viewHolder = null;
         if (view == null) {
             viewHolder = new ViewHolder();
-            view = LayoutInflater.from(context).inflate(
-                    R.layout.workdetail_item, parent, false);
-            viewHolder.Approvalrlayout = (LinearLayout) view
-                    .findViewById(R.id.rl_approval);
-            viewHolder.picDetal = (ImageView) view
-                    .findViewById(R.id.approval_photo_iv);
-            viewHolder.picApproval = (ImageView) view
-                    .findViewById(R.id.iv_workdetail_photo);
-            viewHolder.resultApproval = (TextView) view
-                    .findViewById(R.id.tv_workdetail_result);
-            viewHolder.timeApproval = (TextView) view
-                    .findViewById(R.id.tv_workdetail_time);
-            viewHolder.nameApproval = (TextView) view
-                    .findViewById(R.id.tv_workdetail_name);
-            viewHolder.contentApproval = (TextView) view
-                    .findViewById(R.id.tv_workdetail_content);
+            view = LayoutInflater.from(context).inflate(R.layout.workdetail_item, parent, false);
+            viewHolder.Approvalrlayout = (LinearLayout) view.findViewById(R.id.rl_approval);
+            viewHolder.picDetal = (ImageView) view.findViewById(R.id.approval_photo_iv);
+            viewHolder.picApproval = (ImageView) view.findViewById(R.id.iv_workdetail_photo);
+            viewHolder.resultApproval = (TextView) view.findViewById(R.id.tv_workdetail_result);
+            viewHolder.timeApproval = (TextView) view.findViewById(R.id.tv_workdetail_time);
+            viewHolder.nameApproval = (TextView) view.findViewById(R.id.tv_workdetail_name);
+            viewHolder.contentApproval = (TextView) view.findViewById(R.id.tv_workdetail_content);
             viewHolder.picView = (ImageView) view.findViewById(R.id.tv_workdetail_ok);
-            viewHolder.Detailllayout = (LinearLayout) view
-                    .findViewById(R.id.ll_bill_detail);
-            viewHolder.detail_ll_attach = (LinearLayout) view
-                    .findViewById(R.id.ll_attach_approval);
-            viewHolder.detail_ll_detail = (LinearLayout) view
-                    .findViewById(R.id.ll_detail);
-            viewHolder.detail_hs = (HorizontalScrollView) view
-                    .findViewById(R.id.hs);
-
-            viewHolder.detail_hs2 = (HorizontalScrollView) view
-                    .findViewById(R.id.hs2);
-
-            viewHolder.detail_hs3 = (HorizontalScrollView) view
-                    .findViewById(R.id.hs3);
-
-            viewHolder.nameDetail = (TextView) view
-                    .findViewById(R.id.approval_name_tv);
-            viewHolder.timeDetail = (TextView) view
-                    .findViewById(R.id.approval_time_tv);
-            viewHolder.titleDetail = (TextView) view
-                    .findViewById(R.id.approval_title_tv);
-            viewHolder.worrk_view1 = (View) view
-                    .findViewById(R.id.worrk_view1);
-            viewHolder.worrk_view2 = (View) view
-                    .findViewById(R.id.worrk_view2);
+            viewHolder.Detailllayout = (LinearLayout) view.findViewById(R.id.ll_bill_detail);
+            viewHolder.detail_ll_attach = (LinearLayout) view.findViewById(R.id.ll_attach_approval);
+            viewHolder.detail_ll_detail = (LinearLayout) view.findViewById(R.id.ll_detail);
+            viewHolder.detail_hs = (HorizontalScrollView) view.findViewById(R.id.hs);
+            viewHolder.detail_hs2 = (HorizontalScrollView) view.findViewById(R.id.hs2);
+            viewHolder.detail_hs3 = (HorizontalScrollView) view.findViewById(R.id.hs3);
+            viewHolder.nameDetail = (TextView) view.findViewById(R.id.approval_name_tv);
+            viewHolder.timeDetail = (TextView) view.findViewById(R.id.approval_time_tv);
+            viewHolder.titleDetail = (TextView) view.findViewById(R.id.approval_title_tv);
+            viewHolder.worrk_view1 = (View) view.findViewById(R.id.worrk_view1);
+            viewHolder.worrk_view2 = (View) view.findViewById(R.id.worrk_view2);
             viewHolder.button_relative = (RelativeLayout) view.findViewById(R.id.button_relative);
-            viewHolder.save = (Button) view
-                    .findViewById(R.id.save_button);
+            viewHolder.save = (Button) view.findViewById(R.id.save_button);
 
             viewHolder.save.setOnClickListener(new OnClickListener() {
                 @Override
@@ -255,25 +232,21 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
                                     // Log.e(TAG, "form " + cell.title + ", " +
                                     // cell.value
                                     // + ", " + cell.type);
-                                    View view1 = (View) LayoutInflater.from(
-                                            context).inflate(
-                                            R.layout.textview_workflow_detail,
-                                            null);
-                                    LayoutParams params = new LayoutParams(
-                                            LayoutParams.WRAP_CONTENT,
+                                    View view1 = (View) LayoutInflater.from(context).inflate(
+                                            R.layout.textview_workflow_detail, null);
+                                    LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
                                             LayoutParams.WRAP_CONTENT);
-                                    viewHolder.detail_ll_detail.addView(view1,
-                                            params);
-                                    final TextView textView = (TextView) view1
-                                            .findViewById(R.id.tv_detail);
+                                    viewHolder.detail_ll_detail.addView(view1, params);
+                                    final TextView textView = (TextView) view1.findViewById(R.id.tv_detail);
                                     textView.setTextSize(15);
                                     if (!"".equalsIgnoreCase(cell.title)) {
-                                        if ("实际结束时间".equalsIgnoreCase(cell.title) && wfInfo.getFlagDeal().equalsIgnoreCase("N") && wfInfo.getBillType().equalsIgnoreCase("dgtdout")) {
+                                        if ("实际结束时间".equalsIgnoreCase(cell.title) &&
+                                                wfInfo.getFlagDeal().equalsIgnoreCase("N") &&
+                                                wfInfo.getBillType().equalsIgnoreCase("dgtdout")) {
                                             textView.setText(cell.title + ": " + cell.value + "    点击修改");
 //                                            savebill = false;
                                             date_fend = cell.value.toString();
                                             viewHolder.button_relative.setVisibility(View.VISIBLE);
-
                                             textView.setTextColor(Color.BLUE);
                                             textView.setOnClickListener(new OnClickListener() {
                                                 @Override
@@ -292,7 +265,6 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
                                                 var_remark = cell.value.toString();
                                             }
                                             textView.setText(cell.title + ": " + cell.value);
-
                                         }
                                     }
 
@@ -308,18 +280,15 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
                     if (mGrid.size() > 0 && !mGrid.get(0).isEmpty()) {
                         lines = mGrid.size();
                         if (tablecount == 0) {
-                            viewHolder.detail_hs.addView(new TableLayoutViews(
-                                    context, getTableItems(mGrid)));
+                            viewHolder.detail_hs.addView(new TableLayoutViews(context, getTableItems(mGrid)));
                         }
 
                         if (tablecount == 1) {
-                            viewHolder.detail_hs2.addView(new TableLayoutViews(
-                                    context, getTableItems(mGrid)));
+                            viewHolder.detail_hs2.addView(new TableLayoutViews(context, getTableItems(mGrid)));
                         }
 
                         if (tablecount == 2) {
-                            viewHolder.detail_hs3.addView(new TableLayoutViews(
-                                    context, getTableItems(mGrid)));
+                            viewHolder.detail_hs3.addView(new TableLayoutViews(context, getTableItems(mGrid)));
                         }
 
                         tablecount++;
@@ -381,7 +350,7 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
         users = new ArrayList<>();
         users = BusinessBaseDao.getCTLM1345ByIdTable("user");
         if (users.size() == 0) {
-            ToastUtil.ShowShort(context, "请先下载基础数据");
+            new MyToast(context, "请先下载基础数据");
 //            finish();
             return;
         }
@@ -392,8 +361,14 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
         String id_clerk;
         id_clerk = ej1345.getId_clerk();
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("{\"tableid\":\"dgtdout\",\"opr\":\"SS\",\"no\":\"" + bill_no + "\",\"userid\":\"" + myInfo.userID + "\",\"comid\":\"" + myInfo.companyID + "\",");
-        stringBuffer.append("\"menuid\":\"002035\",\"dealtype\":\"save\",\"data\":[");
+        stringBuffer.append("{\"tableid\":\"dgtdout\"," +
+                "\"opr\":\"SS\"," +
+                "\"no\":\"" + bill_no + "\"," +
+                "\"userid\":\"" + myInfo.userID + "\"," +
+                "\"comid\":\"" + myInfo.companyID + "\",");
+        stringBuffer.append("\"menuid\":\"002035\"," +
+                "\"dealtype\":\"save\"," +
+                "\"data\":[");
         for (int i = 0; i < lines; i++) {
             stringBuffer.append("{\"table\": \"dgtdout_03\",\"oprdetail\":\"U\",\"where\":\" \",\"data\":[");
             stringBuffer.append("{\"column\":\"flag_sts\",\"value\":\"S\",\"datatype\":\"varchar\"},");
@@ -414,8 +389,6 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
         String str = stringBuffer.toString();
         Log.d("str1", str);
         getBusinessList(str);
-
-
     }
 
     private void getBusinessList(String datas) {
@@ -436,11 +409,9 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
 //                        String content = businessFlag.getMessage();
 //                        Constant.billsNo = businessFlag.getNo();
                         if (businessFlag.getFlag().equals("Y")) {
-
-                            ToastUtil.ShowShort(context, "保存成功");
-
+                            new MyToast(context, "保存成功");
                         } else {
-                            ToastUtil.ShowShort(context, "保存失败");
+                            new MyToast(context, "保存失败");
                         }
                         if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
                             waitDialogRectangle.dismiss();
@@ -451,10 +422,9 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
                         if (e instanceof OkGoException) {
-                            ToastUtil.ShowShort(context, "网络错误");
-
+                            new MyToast(context, "网络错误");
                         } else {
-                            ToastUtil.ShowShort(context, e.getMessage());
+                            new MyToast(context, e.getMessage());
 
                         }
                         if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {

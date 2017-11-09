@@ -262,7 +262,7 @@ public class SetActivity extends ActionBarWidgetActivity implements OnClickListe
                     if (tag == 2) {
                         //检查版本
                         VersionManager vm = VersionManager.getSharedInstance();
-                        vm.checkVersionUpgrade(SetActivity.this, new VersionManager.OnUpgradeResultListener() {
+                        vm.checkVersionUpgrade(false,SetActivity.this, new VersionManager.OnUpgradeResultListener() {
                             @Override
                             public void onUpgradeResult(boolean success, String msg) {
                                 if (!success) {

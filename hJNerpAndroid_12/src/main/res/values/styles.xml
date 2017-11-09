@@ -362,6 +362,12 @@
         <item name="android:layout_height">@dimen/size_1</item>
         <item name="android:background">@color/actionbar_bg</item>
     </style>
+    <!-- actionbar 分割线  -->
+    <style name="Item_View_ViewDividerStyle">
+        <item name="android:layout_width">@dimen/size_0.5</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/actionbar_bg</item>
+    </style>
     <!-- Item分割线  -->
     <style name="Item_View_DividerHeight1">
         <item name="android:layout_width">match_parent</item>
@@ -417,6 +423,7 @@
         <item name="android:textSize">@dimen/font_size_16</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:background">@null</item>
+        <item name="android:textColorHint">@color/HintTitleColor</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">@dimen/size_10</item>
         <item name="android:layout_weight">3</item>
@@ -431,6 +438,7 @@
         <item name="android:background">@null</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">@dimen/size_10</item>
+        <item name="android:textColorHint">@color/HintTitleColor</item>
         <item name="android:layout_weight">1</item>
     </style>
 
@@ -544,6 +552,7 @@
         <item name="android:textSize">@dimen/font_size_16</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:background">@null</item>
+        <item name="android:textColorHint">@color/HintTitleColor</item>
         <item name="android:drawableRight">@drawable/icon_right_orientation</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">@dimen/size_10</item>
@@ -608,6 +617,7 @@
         <item name="android:textSize">@dimen/font_size_16</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:background">@null</item>
+        <item name="android:textColorHint">@color/HintTitleColor</item>
         <item name="android:drawableRight">@drawable/icon_sp_down_bg</item>
         <item name="android:paddingRight">@dimen/size_17</item>
         <item name="android:gravity">center_vertical</item>

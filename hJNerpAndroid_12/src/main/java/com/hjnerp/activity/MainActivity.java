@@ -55,6 +55,7 @@ import com.hjnerp.service.WebSocketService;
 import com.hjnerp.service.WorkService;
 import com.hjnerp.util.Command;
 import com.hjnerp.util.Log;
+import com.hjnerp.util.VersionManager;
 import com.hjnerp.widget.ChangeColorIconWithTextView;
 import com.hjnerpandroid.R;
 
@@ -230,6 +231,21 @@ public class MainActivity extends ActionBarWidgetActivity implements
 
         // 获取Vibrator震动服务
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
+        checkNew();
+    }
+
+    /**
+     * 检查更新版本
+     */
+    private void checkNew() {
+        VersionManager vm = VersionManager.getSharedInstance();
+        vm.checkVersionUpgrade(true, this, new VersionManager.OnUpgradeResultListener() {
+            @Override
+            public void onUpgradeResult(boolean success, String msg) {
+
+            }
+        });
     }
 
     /**

@@ -140,6 +140,9 @@ public class OverBusiness extends ActionBarWidgetActivity implements View.OnClic
             case R.id.over_time_begin:
                 showCalendar(over_time_begin);
                 break;
+            case R.id.action_left_tv:
+                finish();
+                break;
         }
     }
 

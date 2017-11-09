@@ -251,6 +251,13 @@ public class BusinessPerformanceTypeIn extends ActionBarWidgetActivity implement
         input_id_clerk.setText(myInfo.username);
         input_int_year.setText(BusinessTimeUtils.getCurrentTime(Constant.TIME_YYYY));
         input_conclude_time.setText(BusinessTimeUtils.getCurrentTime(Constant.TIME_yyyy_MM_dd));
+        //设置默认当前考评周期
+        for (int i = 0; i < monthIntList.size(); i++) {
+            if (monthIntList.get(i).equals(BusinessTimeUtils.getCurrentTime(Constant.TIME_MM))){
+                name_kpiperiod_tx.setText(montStList.get(i));
+                Id_kpiperiod = monthIntList.get(i);
+            }
+        }
     }
 
     @Override
