@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextPaint;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.DatePicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -61,7 +63,7 @@ public class ActionBarWidgetActivity extends ActivitySupport {
     //是否授权
     public boolean isPsions = false;
     //是否打印Log输出，可以改为false关闭部分输出
-    private boolean isLogShow = true;
+    private static boolean isLogShow = true;
     //网络请求后台返回的数据
     private static String backJson;
     //popupwindow选择框
@@ -141,6 +143,19 @@ public class ActionBarWidgetActivity extends ActivitySupport {
 
 
     /**
+     * 得到名字布局
+     * @param name
+     * @return
+     */
+    public static View getPotoView(Context context,String name){
+        View phView = LayoutInflater.from(context).inflate(R.layout.view_name_photo,null);
+        TextView nameImg = (TextView) phView.findViewById(R.id.view_nameph_img);
+        nameImg.setText(name);
+        return phView;
+    }
+
+
+    /**
      * 判断是否授权
      *
      * @param psions
@@ -166,7 +181,7 @@ public class ActionBarWidgetActivity extends ActivitySupport {
      *
      * @param content
      */
-    public void LogShow(String content) {
+    public static void LogShow(String content) {
         if (isLogShow)
             Log.e("EJ", content);
     }

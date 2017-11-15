@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.hjnerp.activity.MainActivity;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.WorkFlowBaseDao;
@@ -29,13 +29,17 @@ import com.hjnerp.net.ChatConstants;
 import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.net.HttpClientManager;
 import com.hjnerp.service.WebSocketService;
-import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.Log;
 import com.hjnerp.util.StringUtil;
+import com.hjnerp.util.bitmap.BitmapUtils;
 import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.itheima.roundedimageview.RoundedImageView;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.apache.cordova.LOG;
 import org.apache.http.HttpResponse;
@@ -54,7 +58,7 @@ public class WorkflowListAdapter extends BaseAdapter {
     private ArrayList<WorkflowListInfo> list = new ArrayList<WorkflowListInfo>();
     private Bitmap default_user_pic;
     private WaitDialogRectangle waitDialog;
-
+    DisplayImageOptions options;
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -185,15 +189,10 @@ public class WorkflowListAdapter extends BaseAdapter {
             viewHolder.type.setText("签");
         }
         viewHolder.time.setText(time);
-        String aName = user.getUserName().toString().trim();
+        final String aName = user.getUserName().trim();
         String aTitle = title1.toString().trim();
         if (StringUtil.isStrTrue(aTitle))
             viewHolder.name.setText(aTitle);
-//        if (TextUtils.isEmpty(aName) || TextUtils.isEmpty(aTitle)) {
-//            viewHolder.name.setText(user.getUserName() + title1);
-//        } else {
-//            viewHolder.name.setText(user.getUserName() + "的" + title1);
-//        }
 
         String content = info.getContent();
         Log.e(TAG, "原始：" + content);
@@ -201,34 +200,50 @@ public class WorkflowListAdapter extends BaseAdapter {
 //        content = content.replaceAll("##", " \n");
         content = content.replace(" ", "  ");
         content = content.replaceAll(" +:", ":");
-
         content = content.replaceAll("#N##T#", "\n"); //"#N#"代表换行
         content = content.trim();
         Log.e(TAG, "替换后  is " + content);
         viewHolder.content.setText(content);
 
-
-//        String[] a = content.split("\n");
-//        android.util.Log.d("lines", a.length + "");
-//
-//        if (a.length <= 2) {
-//            viewHolder.content.setMaxLines(a.length);
-//
-//        }
-
         // 设置头像，此头像地址取自WorkflowInfo而不是联系人表
         if (!StringUtil.isNullOrEmpty(user.getAvatar().trim())) {
-
             String url = ChatPacketHelper.buildImageRequestURL(
                     user.getAvatar(),
                     ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH);
+//            ImageLoaderHelper.displayImage(url, viewHolder.pic);
+            final ViewHolder finalViewHolder = viewHolder;
+            ImageLoader.getInstance().displayImage(url, viewHolder.pic, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
 
-            ImageLoaderHelper.displayImage(url, viewHolder.pic);
-        } else {
-            viewHolder.pic.setImageBitmap(default_user_pic);
+                }
+
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    Log.e("show","加载失败");
+                    finalViewHolder.pic.setImageBitmap(
+                            BitmapUtils.convertViewToBitmap(
+                                    ActionBarWidgetActivity.getPotoView(
+                                            context, StringUtil.doubleName(aName))));
+                }
+
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                }
+                @Override
+                public void onLoadingCancelled(String s, View view) {
+
+                }
+            });
+        }else {
+            viewHolder.pic.setImageBitmap(
+                    BitmapUtils.convertViewToBitmap(
+                            ActionBarWidgetActivity.getPotoView(
+                                    context, StringUtil.doubleName(aName))));
         }
 
-        // 加载附件名字和图标
+
+        // 加载附件字和图标
         viewHolder.ll_attach.removeAllViews();
         if (info.getAttach() != null
                 && !StringUtil.isNullOrEmpty(info.getAttach().trim())) {

@@ -41,7 +41,7 @@ public class MyFragment extends Fragment implements OnClickListener {
 	private UserInfo myinfo;
 	private TextView user_head_name;
 	private TextView user_head_content;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -56,19 +56,19 @@ public class MyFragment extends Fragment implements OnClickListener {
 		rLayout_logout = (RelativeLayout) contextView
 				.findViewById(R.id.linear_logout);
 		//
-		
+
 		myImageView = (ImageView) contextView
 				.findViewById(R.id.myphoto);
 		linear_myinfo = (LinearLayout) contextView
 				.findViewById(R.id.linear_myinfo);
-		
+
 		user_head_name = (TextView) contextView
 				.findViewById(R.id.user_head_name);
-		
+
 		user_head_content = (TextView) contextView
 				.findViewById(R.id.user_head_content);
-		
-		
+
+
 		rLayout_setpwd.setOnClickListener(this);
 		rLayout_set.setOnClickListener(this);
 		rLayout_about.setOnClickListener(this);
@@ -135,7 +135,7 @@ public class MyFragment extends Fragment implements OnClickListener {
 			break;
 		}
 	}
-	
+
 
 	@Override
 	 public void onResume() {

@@ -20,7 +20,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baoyz.actionsheet.ActionSheet;
 import com.hjnerp.activity.im.ChatActivity;
@@ -55,11 +53,14 @@ import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.net.IQ;
 import com.hjnerp.util.AttachFileProcessor;
 import com.hjnerp.util.AttachFileProcessor.OnProcessResultListener;
-import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.SharePreferenceUtil;
 import com.hjnerp.util.StringUtil;
+import com.hjnerp.util.bitmap.BitmapUtils;
 import com.hjnerpandroid.R;
 import com.itheima.roundedimageview.RoundedImageView;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.sdyy.utils.XPermissions;
 
 import java.io.BufferedOutputStream;
@@ -77,16 +78,7 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
         ActionSheet.ActionSheetListener,
         PopupWindow.OnDismissListener {
 
-    String sFriendId;
     private FriendInfo friend;
-    private Button sendBtn, callBtn;
-    private TextView firstnameEdit, nicknameEdit, orgunitEdit, mobileEdit,
-            emailhomeEdit, discEdit;
-    //    private ImageView email_edit, phone_edit;
-//    private RelativeLayout dialog_confirm_rl, dialog_cancel_rl, rl_gally, rl_camera;
-    private RelativeLayout rl_phone, rl_email;
-    private RoundedImageView photo;
-    private ImageView   qrcode;
     private FriendPopupWindow menuSet = null;
     private Dialog noticeDialog = null;
     private Dialog setNoteDialog;
@@ -97,9 +89,7 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
     public static final int REQUEST_CODE_IMAGE_CROP = 0x32;
     public static final int REQUEST_CODE_GALLY = 0x33;
     public static final int REQUEST_CODE_GALLY_CROP = 0x34;
-
     public static final int ADD_FRIEND = 0x20;
-
     public static final int SET_EMAIL = 0x10;
     public static final int SET_PHONE = 0x11;
     public static final int SET_REMARK = 0x12;
@@ -123,8 +113,88 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
     RelativeLayout user_head_layout;
     @BindView(R.id.ui_send_btn_Layout)
     LinearLayout ui_send_btn_Layout;
-    //判断是否是我自己的手机号
-    private boolean isMyPhone = false;
+    @BindView(R.id.user_head_name)
+    TextView firstnameEdit;
+    @BindView(R.id.user_head_content)
+    TextView nicknameEdit;
+    @BindView(R.id.orgunit)
+    TextView orgunitEdit;
+    @BindView(R.id.mobile)
+    TextView mobileEdit;
+    @BindView(R.id.emailhome)
+    TextView emailhomeEdit;
+    @BindView(R.id.rl_phone)
+    RelativeLayout rl_phone;
+    @BindView(R.id.rl_email)
+    RelativeLayout rl_email;
+    @BindView(R.id.user_head_avatar)
+    RoundedImageView photo;
+    @BindView(R.id.iv_qrcode)
+    ImageView qrcode;
+    @BindView(R.id.ui_send_btn)
+    Button sendBtn;
+
+    final Handler myHandler = new Handler() {
+
+        @SuppressLint("HandlerLeak")
+        public void handleMessage(Message msg) {
+            Bundle b = msg.getData();
+            String mmsg = b.getString("flag");
+            if (mmsg.equals("add_success")) {
+                Intent intent = new Intent(context, ChatActivity.class);
+                Bundle mBundle = new Bundle();
+                mBundle.putSerializable(Constant.IM_NEWS, (Serializable) friend);
+                intent.putExtras(mBundle);
+                startActivity(intent);
+                ((Activity) context).finish();
+            }
+            if ("check_friendinfo_ok".equalsIgnoreCase(mmsg)) {
+                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+                    waitDialogRectangle.dismiss();
+                }
+                initView();
+            }
+            if ("check_friendinfo_error".equalsIgnoreCase(mmsg)) {
+                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+                    waitDialogRectangle.dismiss();
+                }
+            }
+            if ("setemail_ok".equalsIgnoreCase(mmsg)) {
+                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+                    waitDialogRectangle.dismiss();
+                }
+                emailhomeEdit.setText(extra_note);
+                // 添加提示框
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeSucc));
+            }
+            if ("setphone_ok".equalsIgnoreCase(mmsg)) {
+                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+                    waitDialogRectangle.dismiss();
+                }
+                mobileEdit.setText(extra_note);
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeSucc));
+            }
+            if ("setemail_error".equalsIgnoreCase(mmsg)) {
+                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+                    waitDialogRectangle.dismiss();
+                }
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeFail));
+            }
+            if ("setphone_error".equalsIgnoreCase(mmsg)) {
+                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+                    waitDialogRectangle.dismiss();
+                }
+                showFailToast(mContext.getString(R.string.toast_Title_ChangeFail));
+            }
+            if ("session_error".equalsIgnoreCase(mmsg)) {
+                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
+                    waitDialogRectangle.dismiss();
+                }
+                isForcedExit(ChatConstants.error_string.ERROR_STRING_SESSION_INVALID);
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +234,6 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
         super.removeMeAsFriend(friendId);
         if (friendId.equals(friend.getFriendid())) {
             sendBtn.setEnabled(false);
-            callBtn.setEnabled(false);
             showNoticeDialog("对方解除了好友关系");
         }
     }
@@ -172,23 +241,12 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
     /**
      * 初始化.
      *
-     *
      * @author 李庆义
      * @update 2012-5-16 上午9:13:01
      */
     // @SuppressLint("NewApi")
     protected void initView() {
-        photo = (RoundedImageView) findViewById(R.id.user_head_avatar);
-        firstnameEdit = (TextView) findViewById(R.id.user_head_name);
-        nicknameEdit = (TextView) findViewById(R.id.user_head_content);
-        orgunitEdit = (TextView) findViewById(R.id.orgunit);
-        mobileEdit = (TextView) findViewById(R.id.mobile);
-        emailhomeEdit = (TextView) findViewById(R.id.emailhome);
-        qrcode = (ImageView) findViewById(R.id.iv_qrcode);
-        sendBtn = (Button) findViewById(R.id.ui_send_btn);
 
-        rl_email = (RelativeLayout) findViewById(R.id.rl_email);
-        rl_phone = (RelativeLayout) findViewById(R.id.rl_phone);
         rl_email.setOnClickListener(this);
         rl_phone.setOnClickListener(this);
         sendBtn.setOnClickListener(this);
@@ -198,15 +256,6 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
         setFriendView();
 
         closeInput();
-
-//        callBtn = (Button) findViewById(R.id.ui_call_btn);
-//        user_head_layout = (RelativeLayout) findViewById(R.id.user_head_layout);
-//        rl_remark = (RelativeLayout) findViewById(R.id.rl_remark);
-//        email_edit = (ImageView) findViewById(R.id.ui_edit_iv_email);
-//        phone_edit = (ImageView) findViewById(R.id.ui_edit_iv_phone);
-//        rl_remark.setOnClickListener(listener);
-//        callBtn.setOnClickListener(listener);
-
         // 二维码名片
         // try {
         // // Bitmap mQrcode = Create2DCode(friend.getFriendid());
@@ -575,40 +624,32 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
          * @author haijian
          * 获取群成员详情中的头像地址
          */
-        Log.i("info", "群成员详情头像地址：" + photoUrl);
-        if (!StringUtil.isNullOrEmpty(photoUrl)) {
-            ImageLoaderHelper.displayImage(ChatPacketHelper.buildImageRequestURL(photoUrl,
-                    ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH), photo);
-        }
+        LogShow("群成员详情头像地址：" + photoUrl);
+//        if (!StringUtil.isNullOrEmpty(photoUrl)) {
+//            LogShow("头像"+photoUrl);
+//            ImageLoaderHelper.displayImage(ChatPacketHelper.buildImageRequestURL(photoUrl,
+//                    ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH), photo);
+//        }
         firstnameEdit.setText(friend.getFriendname());
         nicknameEdit.setText(friend.getFriendid());
         orgunitEdit.setText(friend.getDeptname());
 
         emailhomeEdit.setText(friend.getFriendmail());
+        //设置头像
+        setUserPohto(photoUrl, photo, friend.getFriendname());
 
         // 是否显示相机团和发送消息按钮
         if (friend.getFriendid().equals(sputil.getMyId())) {// 我自己的详情
             sendBtn.setVisibility(View.GONE);
             ui_send_btn_Layout.setVisibility(View.GONE);
-//            callBtn.setVisibility(View.INVISIBLE);
-//            user_head_layout.setOnClickListener(cameraClickListener);
-//            phone_edit.setVisibility(View.VISIBLE);
-//            email_edit.setVisibility(View.VISIBLE);
             mobileEdit.setText(friend.getFriendmtel());
         } else {// 好友的详情
             sendBtn.setVisibility(View.VISIBLE);
             ui_send_btn_Layout.setVisibility(View.VISIBLE);
-            if (StringUtil.isNullOrEmpty(friend.getFriendmtel().trim())) {
-//                callBtn.setVisibility(View.INVISIBLE);
-                mobileEdit.setText(friend.getFriendmtel());
-            } else {
-//                callBtn.setVisibility(View.VISIBLE);
-                mobileEdit.setText(friend.getFriendmtel());
-            }
+            mobileEdit.setText(friend.getFriendmtel());
         }
 
         if (!ifIsMyFriends) {
-            // sendBtn.setEnabled(false);
             sendBtn.setText("加为好友");
         }
 
@@ -745,16 +786,15 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
 
                         String fileName = "avartar_" + UUID.randomUUID() + "_320x320.jpg";
                         File file = new File(Constant.CHAT_CACHE_DIR, fileName);
-                        BufferedOutputStream bos = new BufferedOutputStream(
-                                new FileOutputStream(file));
+                        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
                         avartar.compress(Bitmap.CompressFormat.JPEG, 100, bos);
                         bos.close();
                         AttachFileProcessor.responseAttach(fileName,
                                 new OnProcessResultListener() {
                                     @Override
-                                    public void onProcessResult(
-                                            final boolean success, final String msg/* fileID */) {
+                                    public void onProcessResult(final boolean success, final String msg) {
                                         if (success) {
+                                            LogShow("上传照片+");
                                             sendChangePhoto(msg);
                                         } else {
                                             com.hjnerp.util.Log.w(msg);
@@ -764,7 +804,6 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
                                     }
                                 });
                     } catch (Exception e) {
-                        // com.hjnerp.util.Log.e(e);
                         waitDialogRectangle.dismiss();
                         showFailToast(mContext.getString(R.string.toast_Title_PortraitFail));
                     }
@@ -774,7 +813,6 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
                 }
             }
             break;
-
             default:
                 break;
         }
@@ -817,7 +855,6 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
      * @param content
      */
     private void sendChangePhoto(final String content) {
-        LogShow(content);
         mThread = new Thread() {
             @Override
             public void run() {
@@ -837,13 +874,8 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
                                                         photo.post(new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                ImageLoaderHelper
-                                                                        .displayImage(
-                                                                                ChatPacketHelper.buildImageRequestURL(
-                                                                                        content,
-                                                                                        ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH),
-                                                                                photo);
-                                                                showFailToast(mContext.getString(R.string.dialog_Message_saveSucc));
+                                                                LogShow("上传成功");
+                                                                sendCheckUserInfo();
                                                             }
                                                         });
                                                     }
@@ -852,28 +884,27 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
 
                                                 @Override
                                                 public Object doAysncSQL() {
-                                                    String userID = sputil
-                                                            .getMyId();
-                                                    QiXinBaseDao
-                                                            .updateUserInfo(
-                                                                    userID,
-                                                                    Tables.UserTable.COL_VAR_IMGUSER,
-                                                                    content);
-                                                    QiXinBaseDao
-                                                            .updateFriendInfo(
-                                                                    userID,
-                                                                    Tables.ContactTable.COL_VAR_IMGFRIEND,
-                                                                    content);
+                                                    String userID = sputil.getMyId();
+                                                    QiXinBaseDao.updateUserInfo(
+                                                            userID,
+                                                            Tables.UserTable.COL_VAR_IMGUSER,
+                                                            content);
+                                                    QiXinBaseDao.updateFriendInfo(
+                                                            userID,
+                                                            Tables.ContactTable.COL_VAR_IMGFRIEND,
+                                                            content);
                                                     friend = QiXinBaseDao.queryFriendInfo(
-                                                            SharePreferenceUtil.getInstance(EapApplication.getApplication().getApplicationContext())
+                                                            SharePreferenceUtil.getInstance(
+                                                                    EapApplication
+                                                                            .getApplication()
+                                                                            .getApplicationContext())
                                                                     .getMyUserId());
-
-                                                    setFriendView();
+                                                    sendCheckUserInfo();
                                                     return null;
                                                 }
                                             });
                                 } else {
-                                    com.hjnerp.util.Log.w(message);
+                                    LogShow("上传失败" + message);
                                     if (waitDialogRectangle != null
                                             && waitDialogRectangle.isShowing())
                                         waitDialogRectangle.dismiss();
@@ -888,6 +919,53 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
         mThread.start();
     }
 
+    /**
+     * 设置头像
+     *
+     * @param imgUrl   照片URL
+     * @param imgView  照片加载器
+     * @param userName 用户名称
+     */
+    private void setUserPohto(String imgUrl, final ImageView imgView, final String userName) {
+        LogShow("上传头像：" + imgUrl);
+        // 设置头像
+        if (StringUtil.isStrTrue(imgUrl)) {
+            String url = ChatPacketHelper.buildImageRequestURL(imgUrl,
+                    ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH);
+            ImageLoader.getInstance().displayImage(
+                    url,
+                    imgView,
+                    new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String s, View view) {
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String s, View view, FailReason failReason) {
+                            imgView.setImageBitmap(
+                                    BitmapUtils.convertViewToBitmap(
+                                            ActionBarWidgetActivity.getPotoView(
+                                                    context, StringUtil.doubleName(userName))));
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String s, View view) {
+
+                        }
+                    });
+        } else {
+            imgView.setImageBitmap(
+                    BitmapUtils.convertViewToBitmap(
+                            ActionBarWidgetActivity.getPotoView(
+                                    context, StringUtil.doubleName(userName))));
+        }
+    }
+
+
     private void sendToMyHandler(String msg) {
         Message Msg = new Message();
         Bundle b = new Bundle();
@@ -896,67 +974,6 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
 
         myHandler.sendMessage(Msg);
     }
-
-    final Handler myHandler = new Handler() {
-
-        @SuppressLint("HandlerLeak")
-        public void handleMessage(Message msg) {
-            Bundle b = msg.getData();
-            String mmsg = b.getString("flag");
-            if (mmsg.equals("add_success")) {
-                Intent intent = new Intent(context, ChatActivity.class);
-                Bundle mBundle = new Bundle();
-                mBundle.putSerializable(Constant.IM_NEWS, (Serializable) friend);
-                intent.putExtras(mBundle);
-                startActivity(intent);
-                ((Activity) context).finish();
-            }
-            if ("check_friendinfo_ok".equalsIgnoreCase(mmsg)) {
-                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-                    waitDialogRectangle.dismiss();
-                }
-                initView();
-            }
-            if ("check_friendinfo_error".equalsIgnoreCase(mmsg)) {
-                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-                    waitDialogRectangle.dismiss();
-                }
-            }
-            if ("setemail_ok".equalsIgnoreCase(mmsg)) {
-                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-                    waitDialogRectangle.dismiss();
-                }
-                emailhomeEdit.setText(extra_note);
-                // 添加提示框
-                showFailToast(mContext.getString(R.string.toast_Title_ChangeSucc));
-            }
-            if ("setphone_ok".equalsIgnoreCase(mmsg)) {
-                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-                    waitDialogRectangle.dismiss();
-                }
-                mobileEdit.setText(extra_note);
-                showFailToast(mContext.getString(R.string.toast_Title_ChangeSucc));
-            }
-            if ("setemail_error".equalsIgnoreCase(mmsg)) {
-                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-                    waitDialogRectangle.dismiss();
-                }
-                showFailToast(mContext.getString(R.string.toast_Title_ChangeFail));
-            }
-            if ("setphone_error".equalsIgnoreCase(mmsg)) {
-                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-                    waitDialogRectangle.dismiss();
-                }
-                showFailToast(mContext.getString(R.string.toast_Title_ChangeFail));
-            }
-            if ("session_error".equalsIgnoreCase(mmsg)) {
-                if (waitDialogRectangle != null && waitDialogRectangle.isShowing()) {
-                    waitDialogRectangle.dismiss();
-                }
-                isForcedExit(ChatConstants.error_string.ERROR_STRING_SESSION_INVALID);
-            }
-        }
-    };
 
     /* 添加验证信息 */
     private void showsetNoteDialog() {
@@ -1151,13 +1168,14 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
             case R.id.user_head_layout:
 //                showSelectPicDialog();
                 if (friend.getFriendid().equals(sputil.getMyId())) // 我自己的详情
-//                    popupWindow();
                     openPopupWindow(v);
+//                    popupWindow();
                 break;
             //点击头像查看照片
             case R.id.user_head_avatar:
                 Bundle bundle = new Bundle();
                 bundle.putString("photoUrl", photoUrl);
+                bundle.putString("userName", friend.getFriendname());
                 intentActivity(ShowPortraitActivity.class, bundle);
                 break;
             case R.id.tv_pick_phone:

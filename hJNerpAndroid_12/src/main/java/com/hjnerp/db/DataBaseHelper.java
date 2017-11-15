@@ -52,8 +52,8 @@ public class DataBaseHelper extends SQLiteHelper {
 		db.execSQL(Tables.GroupRelationTable.getCreateSQLString());
 		db.execSQL(Tables.TempContactTable.getCreateSQLString());
 
-		//考勤打卡存储记录表
-//		db.execSQL(Tables.BusinessCtlm1108.getCreateSQLString());
+//		考勤打卡存储记录表
+		db.execSQL(Tables.BusinessCtlm1108.getCreateSQLString());
 
 		
 //		/**

@@ -410,10 +410,14 @@ public class BusinessBaseDao extends BaseDao {
 
     public static final List<Ctlm1345> getCTLM1345ByIdTable(String idtable) {
         StringBuffer buf = new StringBuffer();
-        buf.append("select * from ").append(Tables.BusinessCtlm1345.NAME)
-                .append(" where ").append("id_table").append(" = ")
-                .append(" '").append(idtable).append("' ");
-
+        buf.append("select * from ")
+                .append(Tables.BusinessCtlm1345.NAME)
+                .append(" where ")
+                .append("id_table")
+                .append(" = ")
+                .append(" '")
+                .append(idtable)
+                .append("' ");
         return queryCtlm1345s(buf.toString());
     }
 
@@ -1586,6 +1590,51 @@ public class BusinessBaseDao extends BaseDao {
 
 
     /**
+     * 查询
+     *
+     * @param id_clerk
+     * @param sginTime
+     */
+    public static final List<Ctlm1108> selectCtlm1108(String id_clerk,
+                                                      String sginTime) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("select * from ")
+                .append(Tables.BusinessCtlm1108.NAME)
+                .append(" where id_clerk = '" + id_clerk)
+                .append("' and sgin_time ='" + sginTime)
+                .append("' ");
+        com.hjnerp.util.Log.e("show", sb.toString());
+        return queryCtlm1108(sb.toString());
+    }
+
+    /**
+     * 查询Ctlm1108 本地签到数据库
+     *
+     * @param sql
+     * @return
+     */
+    private static final List<Ctlm1108> queryCtlm1108(String sql) {
+        List<Ctlm1108> result = new ArrayList<>();
+        SQLiteDatabase database = beginDQL();
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(sql, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Ctlm1108 ctlm = new Ctlm1108();
+                ctlm.setId_clerk(getColumnString(cursor, Ctlm1108.COL_ID_CLERK));
+                ctlm.setSgin_time(getColumnString(cursor, Ctlm1108.COL_SGIN_TIME));
+                ctlm.setSgin_time_up(getColumnString(cursor, Ctlm1108.COL_SGIN_TIME_UP));
+                ctlm.setSgin_time_down(getColumnString(cursor, Ctlm1108.COL_SGIN_TIME_down));
+                result.add(ctlm);
+            }
+        } finally {
+            endDQL(database, cursor);
+        }
+        return result;
+    }
+
+
+    /**
      * 往数据添加签到信息
      *
      * @param where
@@ -1602,86 +1651,54 @@ public class BusinessBaseDao extends BaseDao {
                     .append(") values ('")
                     .append(where[0]).append("','")
                     .append(where[1]).append("','")
-                    .append(where[2]).append("')");
+                    .append(where[2]).append("','")
+                    .append(where[3]).append("') ");
             database.execSQL(sb.toString());
         } finally {
             endDMLOffTransaction(database);
         }
     }
 
-//    /**
-//     * 查询
-//     *
-//     * @param id_clerk
-//     * @param sginTime
-//     */
-//    public static final List<Ctlm1108> selectCtlm1108(String id_clerk,
-//                                                      String sginTime) {
-//        SQLiteDatabase database = beginDMLOnTransaction();
-//        try {
-//
-//            StringBuffer sb = new StringBuffer();
-//            sb.append("select * from ")
-//                    .append(Tables.BusinessCtlm1108.NAME)
-//                    .append(" where id_clerk='" + id_clerk)
-//                    .append("' and sginTime='" + sginTime)
-//                    .append("'");
-//            return queryCtlm1108(sb.toString());
-//        } finally {
-//            endDMLOffTransaction(database);
-//        }
-//    }
-//
-//    /**
-//     * 查询Ctlm1108 本地签到数据库
-//     *
-//     * @param sql
-//     * @return
-//     */
-//    private static final List<Ctlm1108> queryCtlm1108(String sql) {
-//        List<Ctlm1108> result = new ArrayList<>();
-//        SQLiteDatabase database = beginDQL();
-//        Cursor cursor = null;
-//        try {
-//            cursor = database.rawQuery(sql, null);
-//            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-//                Ctlm1108 ctlm = new Ctlm1108();
-//                ctlm.setId_clerk(getColumnString(cursor, getColumnString(cursor, Ctlm1108.COL_ID_CLERK)));
-//                ctlm.setSgin_time(getColumnString(cursor, getColumnString(cursor, Ctlm1108.COL_SGIN_TIME)));
-//                ctlm.setSgin_time_up(getColumnString(cursor, getColumnString(cursor, Ctlm1108.COL_SGIN_TIME_UP)));
-//                ctlm.setSgin_time_down(getColumnString(cursor, getColumnString(cursor, Ctlm1108.COL_SGIN_TIME_down)));
-//                result.add(ctlm);
-//            }
-//        } finally {
-//            endDQL(database, cursor);
-//        }
-//        return result;
-//    }
-//
-//
-//    /**
-//     * 修改考勤签到的表
-//     *
-//     * @param id_clerk
-//     * @param sginTime
-//     * @param sginTimeUp
-//     * @param sginTimeDown
-//     */
-//    public static final void updateCtlm1108(String id_clerk,
-//                                            String sginTime,
-//                                            String sginTimeUp,
-//                                            String sginTimeDown) {
-//        SQLiteDatabase database = beginDMLOnTransaction();
-//        try {
-//            ContentValues values = new ContentValues();
-//            values.put(Tables.BusinessCtlm1108.COL_ID_CLERK, id_clerk);
-//            values.put(Tables.BusinessCtlm1108.COL_SGIN_TIME, sginTime);
-//            values.put(Tables.BusinessCtlm1108.COL_SGIN_TIME_UP, sginTimeUp);
-//            values.put(Tables.BusinessCtlm1108.COL_SGIN_TIME_down, sginTimeDown);
-//            database.replace(Tables.BusinessCtlm1108.NAME, null, values);
-//        } finally {
-//            endDMLOffTransaction(database);
-//        }
-//    }
+
+    /**
+     * 修改考勤签到的表
+     * @param id_clerk
+     * @param sginTime
+     * @param sginTimeUpDown
+     * @param sginType
+     */
+    public static final void updateCtlm1108(String id_clerk,
+                                            String sginTime,
+                                            String sginTimeUpDown,
+                                            String sginType) {
+        SQLiteDatabase database = beginDMLOnTransaction();
+        try {
+            StringBuffer sbuffer = new StringBuffer();
+            sbuffer.append("update ");
+            sbuffer.append(Tables.BusinessCtlm1108.NAME);
+            sbuffer.append(" set ");
+            if (sginType.equals("Y")) {
+                sbuffer.append(Tables.BusinessCtlm1108.COL_SGIN_TIME_UP);
+            } else {
+                sbuffer.append(Tables.BusinessCtlm1108.COL_SGIN_TIME_down);
+            }
+            sbuffer.append(" =' ");
+            sbuffer.append(sginTimeUpDown);
+            sbuffer.append("' ");
+            sbuffer.append(" where ");
+            sbuffer.append(Tables.BusinessCtlm1108.COL_ID_CLERK);
+            sbuffer.append(" ='");
+            sbuffer.append(id_clerk);
+            sbuffer.append("' and ");
+            sbuffer.append(Tables.BusinessCtlm1108.COL_SGIN_TIME);
+            sbuffer.append(" ='");
+            sbuffer.append(sginTime);
+            sbuffer.append("' ");
+            com.hjnerp.util.Log.e("show", sbuffer.toString());
+            database.execSQL(sbuffer.toString());
+        } finally {
+            endDMLOffTransaction(database);
+        }
+    }
 
 }

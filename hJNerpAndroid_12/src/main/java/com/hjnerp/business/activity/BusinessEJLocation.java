@@ -2,10 +2,8 @@ package com.hjnerp.business.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -49,8 +47,7 @@ import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.BusinessBaseDao;
 import com.hjnerp.dao.OtherBaseDao;
-import com.hjnerp.model.Ctlm1345;
-import com.hjnerp.model.Ej1345;
+import com.hjnerp.model.Ctlm1108;
 import com.hjnerp.model.IDComConfig;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.ZipUtils;
@@ -88,10 +85,11 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     TextView actionRightTv1;
     @BindView(R.id.action_left_tv)
     TextView actionLeftTv;
-    @BindView(R.id.ej_location_path)
-    TextView login_ej_location;
     @BindView(R.id.ej_photo_list)
     HorizontalListView ej_photo_list;
+    //地位地址
+    @BindView(R.id.ej_location_path)
+    TextView login_ej_location;
 
     //图片添加
     @BindView(R.id.ej_photo_add)
@@ -130,11 +128,6 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     private double sginLatitude = 0.00;
     private double sginLongitude = 0.00;
 
-    //handler传递标志
-    private static int location_success = 0;//定位成功
-    private static int SET_IMAGE = 1;//设置照片
-    private static int TOAST_MESSAGES = 2;//弹框信息
-
     //适配器
     private BusinessSginImageViewAdapter businessSginImageViewAdapter;
 
@@ -165,13 +158,10 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     private String sginData = "";
     //是否在打卡范围之内
     private boolean isLocationTrue = false;
-    //是否已经打卡
-    private boolean isSginTime = false;
     //经纬度集合
     private List<Double> mLoca = new ArrayList<>();
     private List<LatLng> mLatlng = new ArrayList<>();
-    private List<Ctlm1345> users;
-
+    private String todayTime;
 
     Handler handler = new Handler() {
         @Override
@@ -179,13 +169,13 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
             super.handleMessage(msg);
             String msgContent = (String) msg.obj;
             switch (msg.what) {
-                case 0:
+                case Constant.HANDLERTYPE_0:
                     setMapnfo();
                     break;
-                case 1:
+                case Constant.HANDLERTYPE_1:
                     addImageView();
                     break;
-                case 2:
+                case Constant.HANDLERTYPE_2:
                     if (StringUtil.isStrTrue(msgContent))
                         showFailToast(msgContent);
                     break;
@@ -215,19 +205,76 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
 
         initMapLocation();
 
+        judgeLocationData();
 
-//        users = BusinessBaseDao.getCTLM1345ByIdTable("user");
-//        if (users.size()==0){
-//
-//        }
-//        String userinfos = users.get(0).getVar_value();
-//        Ej1345 ej1345 = mGson.fromJson(userinfos, Ej1345.class);
-//        BusinessBaseDao.selectCtlm1108()
-//
-//        if (isSginTime)
-//            sgin_view_prbar.setProgress(50);
-
+        //设置默认添加图片
 //        setHListImage();
+    }
+
+    /**
+     * 定位及展示
+     */
+    private void initMapLocation() {
+
+        //判断定位的权限
+        if (!isPermissions(new String[]{XPermissions.ACCESS_COARSE_LOCATION,
+                XPermissions.ACCESS_FINE_LOCATION})) {
+            login_ej_location.setCompoundDrawablesWithIntrinsicBounds(
+                    getResources().getDrawable(R.drawable.icon_location_erro), null, null, null);
+            login_ej_location.setText(getString(R.string.sgin_Hint_address4));
+            login_ej_location.setTextColor(Color.parseColor("#ffa727"));
+        }
+
+        //查询地理位置信息表(默认有三个打卡地点)
+        BusinessQueryDao.getDdisplocat_location("ddisplocat_location");
+        if (Constant.mDdisplocatBean != null) {
+            addLocation(Constant.mDdisplocatBean.getVar_lati(),
+                    Constant.mDdisplocatBean.getVar_longi());
+            addLocation(Constant.mDdisplocatBean.getVar_lati1(),
+                    Constant.mDdisplocatBean.getVar_longi1());
+            addLocation(Constant.mDdisplocatBean.getVar_lati2(),
+                    Constant.mDdisplocatBean.getVar_longi2());
+        }
+
+        // 初始化图标
+        mIconLocation = BitmapDescriptorFactory.fromResource(R.drawable.position0);
+
+        mBaiduMap = ej_mapview.getMap();
+        ej_mapview.showZoomControls(false);
+        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(17.0f);// 地图放大级别
+        mBaiduMap.setMapStatus(msu);
+
+        mLocationClient = new LocationClient(this);
+        myLocationListener = new MyLocationListener();
+        mLocationClient.registerLocationListener(myLocationListener);
+        LocationClientOption option = new LocationClientOption();
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        option.setCoorType("bd09ll");
+        option.setIsNeedAddress(true);
+        option.setOpenGps(true);
+        option.setScanSpan(5000);
+        mLocationClient.setLocOption(option);
+
+        //定位成功后的回调监听方向监听
+        myOrientationListener = new MyOrientationListener(this);
+        myOrientationListener.setOnOrientationListener(new MyOrientationListener.OnOrientationListener() {
+            @Override
+            public void onOrientationChanged(float x) {
+                mCurrentX = x;
+            }
+        });
+    }
+
+    /**
+     * 添加地理位置信息
+     *
+     * @param Latitude
+     * @param Longtitude
+     */
+    private void addLocation(String Latitude, String Longtitude) {
+        if (StringUtil.isStrTrue(Latitude) && StringUtil.isStrTrue(Longtitude)) {
+            mLatlng.add(new LatLng(Double.valueOf(Latitude), Double.valueOf(Longtitude)));
+        }
     }
 
     @Override
@@ -277,6 +324,7 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         String photoname = getPhotoName();
         //获取打卡时间
         sgin_time = BusinessTimeUtils.getCurrentTime(Constant.SGIN_FORMART);
+
         if (BusinessQueryDao.getUserInfo(context)) {
             IDComConfig idconfig = OtherBaseDao.queryReginfo(Constant.ej1345.getId_com());
             if (idconfig != null) {
@@ -285,14 +333,6 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
         } else {
             Intent intent = new Intent(BusinessEJLocation.this, SetActivity.class);
             startActivity(intent);
-        }
-
-        //判断定位的权限
-        if (!isPermissions(new String[]{XPermissions.ACCESS_COARSE_LOCATION,
-                XPermissions.ACCESS_FINE_LOCATION})) {
-            showFailToast("定位失败，请开启定位权限");
-            remove();
-            return;
         }
 
         if (!Constant.ctlm7161Is) {
@@ -320,28 +360,112 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
             return;
         }
 
+        sginData = BusinessEJBuffer.getSginBuffer(
+                Constant.MYUSERINFO.userID,
+                Constant.MYUSERINFO.companyID, sgin_time,
+                sginType,
+                Constant.ej1345.getId_clerk(),
+                Constant.ej1345.getId_com(),
+                Constant.ej1345.getId_user(),
+                "",
+                location_path, photoname);
+
+
         //设置打卡时间以及View的状态
         if (sginType.equals("Y")) {
             BusinessTimeUtils.getIntegerTime(sgin_time, Constant.ctlm7161.getVar_on());
             sgin_time_up.setText(sgin_time);
             sgin_view_up.setBackgroundResource(R.drawable.circle_yellow_point);
-            sgin_view_prbar.setProgress(50);
         } else {
             BusinessTimeUtils.getIntegerTimeOut(sgin_time, Constant.ctlm7161.getVar_off());
             sgin_time_down.setText(sgin_time);
             sgin_view_down.setBackgroundResource(R.drawable.circle_yellow_point);
-            sgin_view_prbar.setProgress(100);
         }
-
-        sginData = BusinessEJBuffer.getSginBuffer(Constant.MYUSERINFO.userID,
-                Constant.MYUSERINFO.companyID, sgin_time,
-                sginType, Constant.ej1345.getId_clerk(), Constant.ej1345.getId_com(),
-                Constant.ej1345.getId_user(), "", location_path, photoname);
 
         LogShow(sginData);
         zipPhotoFile();
+
+        insertSginData(sginType);
     }
 
+
+    /**
+     * 更新签到本地数据
+     *
+     * @param sginType
+     */
+    private void insertSginData(String sginType) {
+        List<Ctlm1108> ctlm1108List = BusinessBaseDao.selectCtlm1108(Constant.ej1345.getId_clerk(), todayTime);
+        if (ctlm1108List.size() > 0) {
+            BusinessBaseDao.updateCtlm1108(Constant.ej1345.getId_clerk(), todayTime, sgin_time, sginType);
+        } else {
+            if (sginType.equals(sgin_type_Y)) {
+                BusinessBaseDao.insertCtlm1108(new String[]{
+                        Constant.ej1345.getId_clerk(),
+                        todayTime,
+                        getTvVaule(sgin_time_up),
+                        ""});
+            } else {
+                BusinessBaseDao.insertCtlm1108(new String[]{
+                        Constant.ej1345.getId_clerk(),
+                        todayTime,
+                        "",
+                        getTvVaule(sgin_time_down)});
+            }
+        }
+
+        judgeLocationData();
+    }
+
+    /**
+     * 判断考勤签到信息
+     */
+    private void judgeLocationData() {
+        todayTime = BusinessTimeUtils.getCurrentTime(Constant.TIME_yyyy_MM_dd);
+        List<Ctlm1108> ctlm1108List = BusinessBaseDao.selectCtlm1108(
+                Constant.ej1345.getId_clerk(), todayTime);
+        if (ctlm1108List.size() > 0) {
+            sgin_time_up.setText(ctlm1108List.get(0).getSgin_time_up());
+            sgin_time_down.setText(ctlm1108List.get(0).getSgin_time_down());
+            setSginView(ctlm1108List.get(0).getSgin_time_up(),
+                    ctlm1108List.get(0).getSgin_time_down());
+        } else {
+            LogShow("数据库没有数据");
+        }
+    }
+
+    /**
+     * 设置view 的状态
+     *
+     * @param sgin_time_up
+     * @param sgin_time_down
+     */
+    private void setSginView(String sgin_time_up, String sgin_time_down) {
+        int prgress = 0;
+        if (StringUtil.isStrTrue(sgin_time_up) && StringUtil.isStrTrue(sgin_time_down)) {
+            prgress = 100;
+            sgin_view_up.setBackgroundResource(R.drawable.circle_yellow_point);
+            sgin_view_down.setBackgroundResource(R.drawable.circle_yellow_point);
+        } else if (StringUtil.isStrTrue(sgin_time_up) && !StringUtil.isStrTrue(sgin_time_down)) {
+            prgress = 50;
+            sgin_view_up.setBackgroundResource(R.drawable.circle_yellow_point);
+            sgin_view_down.setBackgroundResource(R.drawable.circle_gray_point);
+        } else if (!StringUtil.isStrTrue(sgin_time_up) && StringUtil.isStrTrue(sgin_time_down)) {
+            prgress = 100;
+            sgin_view_up.setBackgroundResource(R.drawable.circle_gray_point);
+            sgin_view_down.setBackgroundResource(R.drawable.circle_yellow_point);
+        } else {
+            prgress = 0;
+            sgin_view_up.setBackgroundResource(R.drawable.circle_gray_point);
+            sgin_view_down.setBackgroundResource(R.drawable.circle_gray_point);
+        }
+        sgin_view_prbar.setProgress(prgress);
+    }
+
+
+    /**
+     * 压缩照片
+     */
     private void zipPhotoFile() {
         if (photoFileList.size() > 0) {
             zipPhotoFilePath = new File(photoPath + ".zip");
@@ -427,7 +551,7 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
                     Bitmap decodeBitmap = BuinessImgUtils.decodeBitmap(photoFilePath);
                     decodeBitmap.compress(Bitmap.CompressFormat.JPEG, 60, new FileOutputStream(photoFilePath));
                     photoBitmapList.add(decodeBitmap);
-                    handler.sendEmptyMessage(SET_IMAGE);
+                    handler.sendEmptyMessage(Constant.HANDLERTYPE_1);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -514,59 +638,6 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     }
 
 
-    /**
-     * 定位及展示
-     */
-    private void initMapLocation() {
-        //查询地理位置信息表
-        BusinessQueryDao.getDdisplocat_location("ddisplocat_location");
-        if (Constant.mDdisplocatBean != null) {
-            addLocation(Constant.mDdisplocatBean.getVar_lati(), Constant.mDdisplocatBean.getVar_longi());
-            addLocation(Constant.mDdisplocatBean.getVar_lati1(), Constant.mDdisplocatBean.getVar_longi1());
-            addLocation(Constant.mDdisplocatBean.getVar_lati2(), Constant.mDdisplocatBean.getVar_longi2());
-        }
-
-        // 初始化图标
-        mIconLocation = BitmapDescriptorFactory.fromResource(R.drawable.position0);
-
-        mBaiduMap = ej_mapview.getMap();
-        ej_mapview.showZoomControls(false);
-        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(17.0f);// 地图放大级别
-        mBaiduMap.setMapStatus(msu);
-
-        mLocationClient = new LocationClient(this);
-        myLocationListener = new MyLocationListener();
-        mLocationClient.registerLocationListener(myLocationListener);
-        LocationClientOption option = new LocationClientOption();
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
-        option.setCoorType("bd09ll");
-        option.setIsNeedAddress(true);
-        option.setOpenGps(true);
-        option.setScanSpan(5000);
-        mLocationClient.setLocOption(option);
-
-        //定位成功后的回调监听方向监听
-        myOrientationListener = new MyOrientationListener(this);
-        myOrientationListener.setOnOrientationListener(new MyOrientationListener.OnOrientationListener() {
-            @Override
-            public void onOrientationChanged(float x) {
-                mCurrentX = x;
-            }
-        });
-    }
-
-    /**
-     * 添加地理位置信息
-     *
-     * @param Latitude
-     * @param Longtitude
-     */
-    private void addLocation(String Latitude, String Longtitude) {
-        if (StringUtil.isStrTrue(Latitude) && StringUtil.isStrTrue(Longtitude)) {
-            mLatlng.add(new LatLng(Double.valueOf(Latitude), Double.valueOf(Longtitude)));
-        }
-    }
-
     @Override
     public void onOrientationChanged(float x) {
 
@@ -592,7 +663,7 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
             mBaiduMap.setMyLocationData(myLocationData);
 
             if (StringUtil.isStrTrue(location_path)) {
-                handler.sendEmptyMessage(location_success);
+                handler.sendEmptyMessage(Constant.HANDLERTYPE_0);
             }
         }
     }
@@ -601,6 +672,8 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
      * 设置地图
      */
     private void setMapnfo() {
+
+
         // 设置自定义图标
         MyLocationConfiguration configuration = new MyLocationConfiguration(locationMode, true, mIconLocation);
         mBaiduMap.setMyLocationConfigeration(configuration);
@@ -617,6 +690,8 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
             Collections.sort(mLoca);
             if (mLoca.size() > 0) {
                 if (Double.valueOf(Constant.mDdisplocatBean.getVar_range()) >= mLoca.get(0)) {
+                    login_ej_location.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(
+                            R.drawable.icon_location_secd), null, null, null);
                     login_ej_location.setText(location_path);
                     isLocationTrue = true;
                     LogShow("在范围");
@@ -766,7 +841,7 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
     private void sendHandler(Object o) {
         Message message = new Message();
         message.obj = o;
-        message.what = TOAST_MESSAGES;
+        message.what = Constant.HANDLERTYPE_2;
         handler.sendMessage(message);
     }
 

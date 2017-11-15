@@ -3,196 +3,176 @@
     android:id="@+id/activity_business_ejlocation"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ActivityBgColor2"
+    android:background="@color/ActivityBgColor"
     android:orientation="vertical">
 
     <include
         android:id="@+id/action_location_bar"
         layout="@layout/actionbar_layout" />
 
-    <ScrollView
+    <TextView
+        android:id="@+id/ej_location_path"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/action_location_bar"
+        android:background="@color/white"
+        android:drawableLeft="@drawable/icon_location_loading"
+        android:drawablePadding="@dimen/size_10"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/size_40"
+        android:paddingBottom="@dimen/size_5"
+        android:paddingLeft="@dimen/size_20"
+        android:paddingRight="@dimen/size_5"
+        android:paddingTop="@dimen/size_5"
+        android:text="@string/sgin_Hint_address1" />
+
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/ej_location_bdmap"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_150"
+        android:layout_below="@id/ej_location_path"
+        android:layout_marginLeft="@dimen/size_5"
+        android:layout_marginRight="@dimen/size_5" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ej_location_bdmap"
+        android:layout_marginTop="@dimen/size_10"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/size_10"
+        android:paddingLeft="@dimen/size_45"
+        android:paddingRight="@dimen/size_45">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_15">
+
+            <TextView
+                android:id="@+id/sgin_time_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/sgin_time_down"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/black" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/size_10"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/size_0"
+            <View
+                android:id="@+id/sgin_view_up"
+                android:layout_width="@dimen/size_10"
+                android:layout_height="@dimen/size_10"
+                android:layout_marginLeft="@dimen/size_25"
+                android:background="@drawable/circle_gray_point" />
+
+            <ProgressBar
+                android:id="@+id/sgin_view_prbar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/size_2"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:max="100"
+                android:progressDrawable="@drawable/progressbar_bg" />
 
-                <TextView
-                    android:id="@+id/ej_location_path"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/action_location_bar"
-                    android:background="@color/white"
-                    android:drawableLeft="@drawable/icon_location_loading"
-                    android:drawablePadding="@dimen/size_10"
-                    android:gravity="center_vertical"
-                    android:minHeight="@dimen/size_40"
-                    android:paddingBottom="@dimen/size_5"
-                    android:paddingLeft="@dimen/size_20"
-                    android:paddingRight="@dimen/size_5"
-                    android:paddingTop="@dimen/size_5"
-                    android:text="@string/sgin_Hint_address1" />
+            <View
+                android:id="@+id/sgin_view_down"
+                android:layout_width="@dimen/size_10"
+                android:layout_height="@dimen/size_10"
+                android:layout_marginRight="@dimen/size_25"
+                android:background="@drawable/circle_gray_point" />
 
-                <com.baidu.mapapi.map.MapView
-                    android:id="@+id/ej_location_bdmap"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/size_200"
-                    android:layout_below="@id/ej_location_path"
-                    android:layout_marginLeft="@dimen/size_5"
-                    android:layout_marginRight="@dimen/size_5" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/ej_location_bdmap"
-                    android:layout_marginTop="@dimen/size_10"
-                    android:background="@color/white"
-                    android:orientation="vertical"
-                    android:paddingBottom="@dimen/size_20"
-                    android:paddingLeft="@dimen/size_45"
-                    android:paddingRight="@dimen/size_45">
-
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/size_20">
-
-                        <TextView
-                            android:id="@+id/sgin_time_up"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/black" />
-
-                        <TextView
-                            android:id="@+id/sgin_time_down"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:textColor="@color/black" />
-
-                    </RelativeLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/size_10"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:id="@+id/sgin_view_up"
-                            android:layout_width="@dimen/size_10"
-                            android:layout_height="@dimen/size_10"
-                            android:layout_marginLeft="@dimen/size_25"
-                            android:background="@drawable/circle_gray_point" />
-
-                        <ProgressBar
-                            android:id="@+id/sgin_view_prbar"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/size_2"
-                            android:layout_weight="1"
-                            android:max="100"
-                            android:progressDrawable="@drawable/progressbar_bg" />
-
-                        <View
-                            android:id="@+id/sgin_view_down"
-                            android:layout_width="@dimen/size_10"
-                            android:layout_height="@dimen/size_10"
-                            android:layout_marginRight="@dimen/size_25"
-                            android:background="@drawable/circle_gray_point" />
-
-                    </LinearLayout>
-
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/size_10">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="上班时间" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:text="下班时间" />
-                    </RelativeLayout>
-
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/size_30">
-
-                        <ImageView
-                            android:id="@+id/sign_img_up"
-                            android:layout_width="@dimen/size_70"
-                            android:layout_height="@dimen/size_70"
-                            android:layout_alignParentLeft="true"
-                            android:background="@drawable/icon_sgin_btn_top"
-                            android:scaleType="fitXY" />
-
-                        <ImageView
-                            android:id="@+id/sign_img_down"
-                            android:layout_width="@dimen/size_70"
-                            android:layout_height="@dimen/size_70"
-                            android:layout_alignParentRight="true"
-                            android:background="@drawable/icon_sgin_btn_down"
-                            android:scaleType="fitXY" />
-                    </RelativeLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/size_10"
-                    android:paddingLeft="@dimen/size_20"
-                    android:paddingRight="@dimen/size_10"
-                    android:paddingTop="@dimen/size_10"
-                    android:text="@string/sgin_photouoload" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white">
-
-                    <ImageView
-                        android:id="@+id/ej_photo_add"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:paddingLeft="@dimen/size_20"
-                        android:paddingRight="@dimen/size_20"
-                        android:src="@drawable/icon_sgin_list_img" />
-
-                    <View style="@style/Item_View_ViewDividerStyle" />
-
-                    <com.hjnerp.widget.HorizontalListView
-                        android:id="@+id/ej_photo_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/size_120"
-                        android:layout_marginLeft="@dimen/size_10" />
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_10">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上班时间" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="下班时间" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_10">
+
+            <ImageView
+                android:id="@+id/sign_img_up"
+                android:layout_width="@dimen/size_70"
+                android:layout_height="@dimen/size_70"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/icon_sgin_btn_top"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:id="@+id/sign_img_down"
+                android:layout_width="@dimen/size_70"
+                android:layout_height="@dimen/size_70"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/icon_sgin_btn_down"
+                android:scaleType="fitXY" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_30"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/size_10"
+            android:textColor="@color/viewgroup_texrcolor"
+            android:text="@string/sgin_photouoload" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <ImageView
+                android:id="@+id/ej_photo_add"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/size_20"
+                android:paddingRight="@dimen/size_20"
+                android:src="@drawable/icon_sgin_list_img" />
+
+            <View style="@style/Item_View_ViewDividerStyle" />
+
+            <com.hjnerp.widget.HorizontalListView
+                android:id="@+id/ej_photo_list"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_120"
+                android:layout_marginLeft="@dimen/size_10" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

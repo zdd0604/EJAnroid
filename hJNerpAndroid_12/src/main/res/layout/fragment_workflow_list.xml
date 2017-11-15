@@ -22,7 +22,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginRight="@dimen/size_10"
             android:adjustViewBounds="true"
-            android:src="@drawable/v5_0_1_profile_headphoto"
+            android:src="@drawable/square_blue_point"
             android:visibility="visible"
             app:riv_border_color="#333333"
             app:riv_corner_radius="@dimen/size_5"

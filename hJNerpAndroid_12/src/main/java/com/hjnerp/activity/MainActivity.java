@@ -253,7 +253,7 @@ public class MainActivity extends ActionBarWidgetActivity implements
      */
     private void addFragment() {
         //界面
-        mFragmentList = new ArrayList<Fragment>();
+        mFragmentList = new ArrayList<>();
         mFragmentList.clear();
         //标题
         title_list = new ArrayList<>();

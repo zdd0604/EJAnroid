@@ -11,13 +11,13 @@ public class BusinessEJBuffer {
 
 //    模板中数据上传到基础表的设置，必须要有如下红色字体的设置（其中id_clerk处为基础表在和交谈了中的主键字段）
 //    var jss='{"tableid":"ctlm7162",
-// "tabletype":"B",
-// "opr":"SS",
-// "no":
-// "id_clerk",
-// "userid":"'+formData.id_user+'",
-// "comid":"'+formData.id_com+'",
-// "data":[{"table": "ctlm7162", "where": "", "data": [';
+//    "tabletype":"B",
+//    "opr":"SS",
+//    "no":
+//    "id_clerk",
+//    "userid":"'+formData.id_user+'",
+//    "comid":"'+formData.id_com+'",
+//    "data":[{"table": "ctlm7162", "where": "", "data": [';
 //    jss += '{"column":"flag_checkin","value":"4","datatype":"varchar"},' ;
 //    jss += '{"column":"date_checkin","value":"'+formData.date_location+'","datatype":"varchar"},' ;
 //    jss += '{"column":"date_opr","value":"'+formData.date_location+'","datatype":"varchar"},' ;
@@ -26,14 +26,17 @@ public class BusinessEJBuffer {
 //    jss += '{"column":"card_no","value":"'+var_signin+'","datatype":"varchar"}' ;
 //    jss += ']  }  ] }';
 
-
     public static String getSginBuffer(String userID, String companyID, String date_location,
                                        String flag_sginin, String id_clerk, String id_com, String id_recorder,
                                        String var_equno, String var_location, String name_photo) {
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("{\"tableid\":\"ctlm7162\",\"opr\":\"SS\",\"no\":\"\"," +
-                "\"userid\":\"" + userID + "\",\"menuid\":\"" + Constant.ID_MENU + "\"," +
-                "\"dealtype\":\"save\",\"comid\":\"" + companyID + "\",");
+        stringBuffer.append("{\"tableid\":\"ctlm7162\"," +
+                "\"opr\":\"SS\"," +
+                "\"no\":\"\"," +
+                "\"userid\":\"" + userID + "\"," +
+                "\"menuid\":\"" + Constant.ID_MENU + "\"," +
+                "\"dealtype\":\"save\"," +
+                "\"comid\":\"" + companyID + "\",");
         stringBuffer.append("\"data\":[{\"table\": \"ctlm7162\",\"oprdetail\":\"N\",\"where\":\" \",");
         stringBuffer.append("\"data\":[{\"column\":\"card_no\",\"value\":\"\",\"datatype\":\"varchar\"},");
         stringBuffer.append("{\"column\":\"date_checkin\",\"value\":\"" + date_location + "\",\"datatype\":\"datetime\"}, ");

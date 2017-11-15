@@ -1,5 +1,6 @@
 package com.hjnerp.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
@@ -242,6 +243,7 @@ public class StringUtil {
     }
 
     // UUID+设备号序列号 唯一识别码（不可变）
+    @SuppressLint("MissingPermission")
     public static String getMyUUID(Context context) {
 
         final TelephonyManager tm = (TelephonyManager) context
@@ -358,6 +360,24 @@ public class StringUtil {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 截取名字
+     *
+     * @param name
+     * @return
+     */
+    public static String doubleName(String name) {
+        //截取字符串
+//        if (name.length() == 2) {
+//            return name;
+//        } else if (name.length() > 2) {
+//            name = name.substring(name.length() - 2, name.length());
+//            return name;
+//        }
+//        return "";
+        return name;
     }
 
 }

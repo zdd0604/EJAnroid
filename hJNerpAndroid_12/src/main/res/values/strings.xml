@@ -95,9 +95,10 @@
 
     <!-- 签到页面设置  -->
     <string name="buess_Title_CenterTitle">考勤打卡</string>
-    <string name="sgin_Hint_address1">正在获取考前位置...</string>
+    <string name="sgin_Hint_address1">正在获取考勤位置...</string>
     <string name="sgin_Hint_address2">获取地理位置失败</string>
-    <string name="sgin_Hint_address3">您不在考情范围内...</string>
+    <string name="sgin_Hint_address3">您不在考勤范围内...</string>
+    <string name="sgin_Hint_address4">请打开手机定位权限...</string>
     <string name="sgin_photouoload">签到拍照</string>
     <string name="sgin_in">签到</string>
     <string name="sgin_out">签退</string>

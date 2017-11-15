@@ -6,6 +6,8 @@
     android:background="@color/activity_bg"
     android:orientation="vertical">
 
+    <View style="@style/Item_View_DividerStyle" />
+
     <RelativeLayout
         android:id="@+id/rl_phone"
         style="@style/Item_RelativeLayout_ContacterItemStyle">
@@ -24,8 +26,6 @@
             android:textColor="@color/black" />
 
     </RelativeLayout>
-
-    <View style="@style/Item_View_DividerStyle" />
 
     <RelativeLayout
         android:id="@+id/rl_email"

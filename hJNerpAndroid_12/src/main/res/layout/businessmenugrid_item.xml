@@ -50,6 +50,6 @@
         android:maxLines="2"
         android:text="类型1"
         android:textColor="@color/black"
-        android:textSize="14sp" />
+        android:textSize="@dimen/font_size_13" />
 
 </LinearLayout>

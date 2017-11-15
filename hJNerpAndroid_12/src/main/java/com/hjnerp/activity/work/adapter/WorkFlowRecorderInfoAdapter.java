@@ -22,7 +22,9 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.hjnerp.activity.work.ApprovalActivity;
+import com.hjnerp.adapter.WorkflowListAdapter;
 import com.hjnerp.business.BusinessJsonCallBack.BFlagCallBack;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.BusinessBaseDao;
 import com.hjnerp.dao.QiXinBaseDao;
@@ -39,12 +41,16 @@ import com.hjnerp.net.ChatPacketHelper;
 import com.hjnerp.util.ImageLoaderHelper;
 import com.hjnerp.util.StringUtil;
 import com.hjnerp.util.TableCell;
+import com.hjnerp.util.bitmap.BitmapUtils;
 import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.TableLayoutViews;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.exception.OkGoException;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -168,13 +174,50 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
             viewHolder.timeDetail.setText(time);
             viewHolder.titleDetail.setText(wfInfo.getTitle());
 
-            if (StringUtil.isNullOrEmpty(wfInfo.getUser().getAvatar())) {
-                viewHolder.picApproval.setImageBitmap(default_bitmap);
-            } else {
+//            if (StringUtil.isNullOrEmpty(wfInfo.getUser().getAvatar())) {
+//                viewHolder.picApproval.setImageBitmap(default_bitmap);
+//            } else {
+//                String url = ChatPacketHelper.buildImageRequestURL(wfInfo.getUser().getAvatar(),
+//                        ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH);
+//
+//                ImageLoaderHelper.displayImage(url, viewHolder.picDetal);
+//            }
+            // 设置审批单头像
+            if (!StringUtil.isNullOrEmpty(wfInfo.getUser().getAvatar())) {
                 String url = ChatPacketHelper.buildImageRequestURL(wfInfo.getUser().getAvatar(),
                         ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH);
+//            ImageLoaderHelper.displayImage(url, viewHolder.pic);
 
-                ImageLoaderHelper.displayImage(url, viewHolder.picDetal);
+                final ViewHolder finalViewHolder = viewHolder;
+                ImageLoader.getInstance().displayImage(url, viewHolder.picDetal, new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
+
+                    }
+
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+                        com.hjnerp.util.Log.e("show","加载失败");
+                        finalViewHolder.picDetal.setImageBitmap(
+                                BitmapUtils.convertViewToBitmap(
+                                        ActionBarWidgetActivity.getPotoView(
+                                                context,
+                                                StringUtil.doubleName(wfInfo.getUser().getUserName()))));
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    }
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
+
+                    }
+                });
+            }else {
+                viewHolder.picDetal.setImageBitmap(
+                        BitmapUtils.convertViewToBitmap(
+                                ActionBarWidgetActivity.getPotoView(
+                                        context, StringUtil.doubleName(wfInfo.getUser().getUserName()))));
             }
 
             // 加载附件名字和图标
@@ -297,7 +340,7 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
             }
 
         } else {
-            WorkflowApproveInfo info = list.get(position);
+            final WorkflowApproveInfo info = list.get(position);
             // Log.e(TAG,"info >>>> 设置审批流程" + info.getTime()+
             // info.getUser().getUserName());
             viewHolder.Approvalrlayout.setVisibility(View.VISIBLE);
@@ -331,14 +374,53 @@ public class WorkFlowRecorderInfoAdapter extends BaseAdapter {
             viewHolder.nameApproval.setText(info.getUser().getUserName());
             viewHolder.contentApproval.setText(info.getSuggest());
 
-            if (StringUtil.isNullOrEmpty(info.getUser().getAvatar())) {
-                viewHolder.picApproval.setImageBitmap(default_bitmap);
-            } else {
+//            if (StringUtil.isNullOrEmpty(info.getUser().getAvatar())) {
+//                viewHolder.picApproval.setImageBitmap(default_bitmap);
+//            } else {
+//                String url = ChatPacketHelper.buildImageRequestURL(info
+//                                .getUser().getAvatar(),
+//                        ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH);
+//
+//                ImageLoaderHelper.displayImage(url, viewHolder.picApproval);
+//            }
+
+            // 设置审批人头像
+            if (!StringUtil.isNullOrEmpty(info.getUser().getAvatar())) {
                 String url = ChatPacketHelper.buildImageRequestURL(info
                                 .getUser().getAvatar(),
                         ChatConstants.iq.DATA_VALUE_RES_TYPE_ATTACH);
+//            ImageLoaderHelper.displayImage(url, viewHolder.pic);
 
-                ImageLoaderHelper.displayImage(url, viewHolder.picApproval);
+                final ViewHolder finalViewHolder = viewHolder;
+                ImageLoader.getInstance().displayImage(url, viewHolder.picApproval, new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
+
+                    }
+
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+                        com.hjnerp.util.Log.e("show","加载失败");
+                        finalViewHolder.picApproval.setImageBitmap(
+                                BitmapUtils.convertViewToBitmap(
+                                        ActionBarWidgetActivity.getPotoView(
+                                                context,
+                                                StringUtil.doubleName(info.getUser().getUserName()))));
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    }
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
+
+                    }
+                });
+            }else {
+                viewHolder.picApproval.setImageBitmap(
+                        BitmapUtils.convertViewToBitmap(
+                                ActionBarWidgetActivity.getPotoView(
+                                        context, StringUtil.doubleName(info.getUser().getUserName()))));
             }
 
         }
