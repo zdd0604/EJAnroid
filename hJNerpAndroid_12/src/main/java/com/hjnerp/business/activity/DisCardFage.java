@@ -92,11 +92,13 @@ import java.util.zip.ZipInputStream;
 
 
 /**
+ * 地图拜访界面
  * @author 巫志英
  */
 
 @SuppressLint("ResourceAsColor")
-public class DisCardFage extends ActivitySupport implements OnClickListener, MyOrientationListener.OnOrientationListener {
+public class DisCardFage extends ActivitySupport implements OnClickListener,
+        MyOrientationListener.OnOrientationListener {
 
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;

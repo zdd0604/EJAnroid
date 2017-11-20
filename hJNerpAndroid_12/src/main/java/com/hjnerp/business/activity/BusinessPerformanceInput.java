@@ -245,6 +245,16 @@ public class BusinessPerformanceInput extends ActionBarWidgetActivity implements
         conclude_time_et = conclude_time.substring(0, 10);
         input_conclude_time.setText(conclude_time_et);
         dkpipost_no.setText(mainBean.getDkpipost_no());
+
+        //设置默认当前考评周期
+        if (!StringUtil.isStrTrue(mainBean.getName_kpiperiod()))
+            for (int i = 0; i < monthIntList.size(); i++) {
+                if (monthIntList.get(i).equals(BusinessTimeUtils.getCurrentTime(Constant.TIME_MM))) {
+                    name_kpiperiod_tx.setText(montStList.get(i));
+                    Id_kpiperiod = monthIntList.get(i);
+                }
+            }
+
         if (Constant.ID_MENU.equals("002055")) {
             reject_isture = true;
             input_approval_context = (EditText) findViewById(R.id.input_approval_context);
@@ -534,8 +544,6 @@ public class BusinessPerformanceInput extends ActionBarWidgetActivity implements
         }
         infoList.add(businessInfo);
     }
-
-
 
 
     private void showPopupWindow(Context context, View anchorView, List<String> content) {

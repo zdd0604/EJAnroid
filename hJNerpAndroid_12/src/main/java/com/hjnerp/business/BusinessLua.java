@@ -173,7 +173,7 @@ public class BusinessLua {
 		// // String idnode = idnodeList.get(i);
 		// searchIdNodeByParent(billNo);
 		// }
-		searchIdNodeByParent(billNoList);
+		  searchIdNodeByParent(billNoList);
 		// sendZipFile(Constant.TEMP_DIR+"temp.zip");
 	}
 

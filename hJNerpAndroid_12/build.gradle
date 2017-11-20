@@ -5,18 +5,16 @@ def supportVersion = "24.2.1"
 android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
-
     defaultConfig {
         applicationId "com.hjnerpandroid"
         minSdkVersion 16
-        targetSdkVersion 24
-        versionCode 64
-        versionName "3.2.64"
+        targetSdkVersion 25
+        versionCode 65
+        versionName '3.2.65'
         ndk {
             moduleName "luajava"
         }
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -34,6 +32,8 @@ android {
         maven {
             url "https://jitpack.io"
         }
+    }
+    productFlavors {
     }
 }
 

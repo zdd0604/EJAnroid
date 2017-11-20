@@ -326,7 +326,7 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
             @Override
             public void run() {
                 Looper.prepare();
-                showWaitDialog("请稍等...");
+//                showWaitDialog("请稍等...");
                 try {
                     sleep(200);
                 } catch (InterruptedException e) {
@@ -359,7 +359,7 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
             @Override
             public void run() {
                 Looper.prepare();
-                showWaitDialog("请稍等...");
+//                showWaitDialog("请稍等...");
                 try {
                     sleep(200);
                 } catch (InterruptedException e) {
@@ -383,7 +383,7 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
 
     private void addFriend() {
         sendBtn.setEnabled(false);
-        showWaitDialog("请稍等...");
+//        showWaitDialog("请稍等...");
         new Thread() {
             @Override
             public void run() {
@@ -516,7 +516,7 @@ public class FriendsActivity extends ActionBarWidgetActivity implements OnClickL
             public void run() {
 
                 Looper.prepare();
-                showWaitDialog("请稍等...");
+//                showWaitDialog("请稍等...");
                 try {
                     sleep(200);
                 } catch (InterruptedException e) {

@@ -79,6 +79,59 @@ public class BusinessActivity extends ActivitySupport implements
 	private DisCardFage disCardFage;
 	private boolean isScatterMode = false;
 
+	public static Handler handler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			if (context == null) {
+				return;
+			}
+			String text = (String) msg.obj;
+			switch (msg.what) {
+				case Constant.MSG_SHOW:
+					break;
+				case Constant.MSG_UPLOAD_SUCCESS:
+
+					if (waitDialogRectangle.isShowing()) {
+						waitDialogRectangle.dismiss();
+						ToastUtil.ShowShort(context, text);
+					}
+					break;
+				case Constant.MSG_UPLOAD_FAILED:
+
+					if (waitDialogRectangle.isShowing()) {
+						waitDialogRectangle.dismiss();
+						ToastUtil.ShowShort(context, text);
+					}
+					break;
+				case Constant.MSG_UPDATE_TEXT:
+					waitDialogRectangle = new WaitDialogRectangle(context);
+					waitDialogRectangle.show();
+					waitDialogRectangle.setText(text);
+					break;
+				default:
+					break;
+			}
+
+		};
+	};
+
+	public Handler disHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			switch (msg.what) {
+				case 0:
+					setNextView(disViewID, disBillNo, disNodeId, disValues);
+					break;
+
+				default:
+					break;
+			}
+		}
+
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -283,9 +336,7 @@ public class BusinessActivity extends ActivitySupport implements
 
 			List<WidgetClass> items = currentViewClass.list;
 			for (int i = 0; i < items.size(); i++) {
-				if (items.get(i).widgetType
-						.equalsIgnoreCase(WidgetName.HJ_LIST)) {
-
+				if (items.get(i).widgetType.equalsIgnoreCase(WidgetName.HJ_LIST)) {
 					onload = items.get(i).attribute.onclick;
 				}
 			}
@@ -359,58 +410,6 @@ public class BusinessActivity extends ActivitySupport implements
 		super.onConfigurationChanged(newConfig);
 	}
 
-	public Handler disHandler = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
-			super.handleMessage(msg);
-			switch (msg.what) {
-			case 0:
-				setNextView(disViewID, disBillNo, disNodeId, disValues);
-				break;
-
-			default:
-				break;
-			}
-		}
-
-	};
-
-	public static Handler handler = new Handler() {
-		public void handleMessage(android.os.Message msg) {
-			if (context == null) {
-				return;
-			}
-			String text = (String) msg.obj;
-			switch (msg.what) {
-			case Constant.MSG_SHOW:
-				break;
-			case Constant.MSG_UPLOAD_SUCCESS:
-
-				if (waitDialogRectangle.isShowing()) {
-					waitDialogRectangle.dismiss();
-					ToastUtil.ShowShort(context, text);
-				}
-				break;
-			case Constant.MSG_UPLOAD_FAILED:
-
-				if (waitDialogRectangle.isShowing()) {
-					waitDialogRectangle.dismiss();
-					ToastUtil.ShowShort(context, text);
-				}
-				break;
-			case Constant.MSG_UPDATE_TEXT:
-				waitDialogRectangle = new WaitDialogRectangle(context);
-				waitDialogRectangle.show();
-				waitDialogRectangle.setText(text);
-				break;
-			default:
-				break;
-			}
-
-		};
-	};
 
 	private BroadcastReceiver mRefreshBroadcastReceiver = new BroadcastReceiver() {
 

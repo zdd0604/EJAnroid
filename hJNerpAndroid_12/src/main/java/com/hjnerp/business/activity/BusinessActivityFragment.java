@@ -129,15 +129,12 @@ public class BusinessActivityFragment extends Fragment {
 	// 显示控件，不加载数据
 	private void displayViewWithoutData() {
 
-		linearLayout = (LinearLayout) contextView
-				.findViewById(R.id.linear_main);
+		linearLayout = (LinearLayout) contextView.findViewById(R.id.linear_main);
 		rl_loading = (RelativeLayout) contextView.findViewById(R.id.rl_loading);
 		rl_loading.setVisibility(View.VISIBLE);
 		scrollView = (ScrollView) contextView.findViewById(R.id.scroll);
 		stub = (LinearLayout) contextView.findViewById(R.id.tool_bar);
-		viewMenu = (LinearLayout) contextView
-				.findViewById(R.id.businessmenu_btn);
-
+		viewMenu = (LinearLayout) contextView.findViewById(R.id.businessmenu_btn);
 		title = (TextView) contextView.findViewById(R.id.tv_actionbar_title);
 		rl_actionbar_back = (RelativeLayout) contextView
 				.findViewById(R.id.rl_actionbar_back);

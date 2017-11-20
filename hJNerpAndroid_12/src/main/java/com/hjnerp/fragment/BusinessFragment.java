@@ -47,7 +47,6 @@ import com.hjnerp.net.HttpClientManager;
 import com.hjnerp.net.HttpClientManager.HttpResponseHandler;
 import com.hjnerp.util.Command;
 import com.hjnerp.util.Log;
-import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.MyToast;
 import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
@@ -129,6 +128,8 @@ public class BusinessFragment<Divider> extends Fragment {
          * 设置跳转界面
          */
         private void setMenuIntent(String flag) {
+            Log.v("show", "XML模板名称：" + clicked_id_model);
+
             if (fragment.waitDialogRectangle != null && fragment.waitDialogRectangle.isShowing()) {
                 fragment.waitDialogRectangle.dismiss();
             }
@@ -139,11 +140,9 @@ public class BusinessFragment<Divider> extends Fragment {
                 fragment.listCurrent = listCurrent;
                 fragment.refreshList(listCurrent);
                 Log.v("show", "菜单的数据:" + listCurrent.toString());
-            }
-            else if (CHECT_XML_EXIT.equalsIgnoreCase(flag)) {
+            } else if (CHECT_XML_EXIT.equalsIgnoreCase(flag)) {
 
-            }
-            else if (CHECT_XML_OK.equalsIgnoreCase(flag)
+            } else if (CHECT_XML_OK.equalsIgnoreCase(flag)
                     || CHECT_XML_OLD.equalsIgnoreCase(flag)
                     || DOWNLOAD_XML_OK.equalsIgnoreCase(flag)) {
 
@@ -152,23 +151,22 @@ public class BusinessFragment<Divider> extends Fragment {
                 if (clicked_id_model == null || "".equals(clicked_id_model)) {
                     return;
                 }
-                if (clicked_id_model.substring(clicked_id_model.length() - 4)
-                        .equals("html")) {
+                if (clicked_id_model.substring(clicked_id_model.length() - 4).equals("html")) {
+                    //原生以及HTML
                     fragmentIntent(fragment);
                 } else {
+                    //模板
                     intent = new Intent(fragment.getActivity(), BusinessActivity.class);
                     intent.putExtra("id_parentnode", "");
                     intent.putExtra("var_billno", "");
                     intent.putExtra("id_node", "");
                     intent.putExtra("id_model", clicked_id_model);
                     intent.putExtra("xml_version", clicked_xml_version);
-                    Log.v("show", "XML模板名称：" + clicked_id_model);
                     fragment.startActivity(intent);
                 }
-            }
-            else if (DOWNLOAD_XML_ERROR.equalsIgnoreCase(flag)) {
+            } else if (DOWNLOAD_XML_ERROR.equalsIgnoreCase(flag)) {
                 if (clicked_id_model == null || "".equals(clicked_id_model)) {
-                    ToastUtil.ShowLong(context, "下载模板错误，请重新尝试。");
+                    new MyToast(context, "下载模板错误，请重新尝试。");
                     return;
                 }
                 fragmentFailIntent(fragment);
@@ -215,6 +213,7 @@ public class BusinessFragment<Divider> extends Fragment {
 
         getBusinessMenus();
     }
+
     /**
      * 跳转界面
      *
@@ -489,6 +488,7 @@ public class BusinessFragment<Divider> extends Fragment {
             getBusinessMenus();
         }
     }
+
     //刷新菜单
     private void refreshList(ArrayList<MenuContent> list) {
         if (list.size() > 0) {
@@ -500,6 +500,7 @@ public class BusinessFragment<Divider> extends Fragment {
         sortlist(list);
         checkPaoPao();
     }
+
     private void sendToHandler(String msg) {
         Message Msg = new Message();
         Bundle b = new Bundle();
@@ -612,7 +613,7 @@ public class BusinessFragment<Divider> extends Fragment {
         ZipInputStream zis = new ZipInputStream(fis);
         ZipEntry entry = zis.getNextEntry();
         if (entry == null) {
-            ToastUtil.ShowShort(getActivity(), "数据文件已损坏");
+            new MyToast(getActivity(), "数据文件已损坏");
         }
         int len = -1;
         byte[] bytes = new byte[512];

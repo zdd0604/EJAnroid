@@ -224,14 +224,10 @@ public class HJListLayout extends LinearLayout implements HJViewInterface {
 				ctlm1347.setInt_line(ctlm1347List.size() + 1);
 				ctlm1347.setId_node(StringUtil.getMyUUID());
 				ctlm1347.setId_table(items.attribute.datasource);
-				ctlm1347.setId_recorder(SharePreferenceUtil
-						.getInstance(
-								EapApplication.getApplication()
-										.getApplicationContext()).getMyId());
-				ctlm1347.setId_com(SharePreferenceUtil
-						.getInstance(
-								EapApplication.getApplication()
-										.getApplicationContext()).getComid());
+				ctlm1347.setId_recorder(SharePreferenceUtil.getInstance(
+								EapApplication.getApplication().getApplicationContext()).getMyId());
+				ctlm1347.setId_com(SharePreferenceUtil.getInstance(
+								EapApplication.getApplication().getApplicationContext()).getComid());
 
 				ctlm1347.setName_node(items.name);
 
@@ -324,12 +320,9 @@ public class HJListLayout extends LinearLayout implements HJViewInterface {
 						mMap.put(HJSender.COL, "");
 						mMap.put(HJSender.COLID, "");
 						mMap.put(HJSender.ROW, String.valueOf(listrow));
-						mMap.put(HJSender.VALUES, ctlm1347List.get(listrow)
-								.getvar_Json());
-						mMap.put(HJSender.BILLNO, ctlm1347List.get(listrow)
-								.getVar_billno());
-						mMap.put(HJSender.NODEID, ctlm1347List.get(listrow)
-								.getId_node());
+						mMap.put(HJSender.VALUES, ctlm1347List.get(listrow).getvar_Json());
+						mMap.put(HJSender.BILLNO, ctlm1347List.get(listrow).getVar_billno());
+						mMap.put(HJSender.NODEID, ctlm1347List.get(listrow).getId_node());
 						LuaLoadScript.LoadScript();
 						LuaLoadScript.runScript(items.attribute.onclick, mMap);
 					} catch (Exception e) {

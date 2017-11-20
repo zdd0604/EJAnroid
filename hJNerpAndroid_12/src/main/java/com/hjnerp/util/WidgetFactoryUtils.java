@@ -99,7 +99,7 @@ public class WidgetFactoryUtils {
 			return view;
 		}
 		if(items.widgetType.equalsIgnoreCase(WidgetName.HJ_LIST)){
-			Log.v("show", "WidgetFactory 100    执行:"+WidgetName.HJ_LIST);
+			Log.v("show", "WidgetFactoryUtils 100    执行:"+WidgetName.HJ_LIST);
 			HJListLayout view = new HJListLayout(context,items,currentviewClass,startViewInfo,bparam);
 			return view;
 		}

@@ -63,7 +63,8 @@ public class BusinessPerformanceArrayList extends ActionBarWidgetActivity implem
                     String content = (String) msg.obj;
                     showFailToast(content);
                     waitDialog.dismiss();
-                    pull_refresh_billlist.onRefreshComplete();
+                    datas.clear();
+                    refreshList();
                     break;
                 case Constant.HANDLERTYPE_2:
                     datas.remove(index);

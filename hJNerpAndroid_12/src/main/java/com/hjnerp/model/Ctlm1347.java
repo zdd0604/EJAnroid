@@ -13,7 +13,16 @@ public class Ctlm1347 implements Serializable ,Cloneable{
 	 
 	private static final long serialVersionUID = 1L;
 	
-	 //<HJTextView id = "002002" name = "终端名称"   editable ="false"  required ="false" visible ="true" width ="0.7" valuetype="string" format="@@@@@@" singleline = "false" fontsize = "medium"  alignment="left" >成都小吃店</HJTextView>
+	 //<HJTextView id = "002002" name = "终端名称"
+	// editable ="false"
+	// required ="false"
+	// visible ="true"
+	// width ="0.7"
+	// valuetype="string"
+	// format="@@@@@@"
+	// singleline = "false"
+	// fontsize = "medium"
+	// alignment="left" >成都小吃店</HJTextView>
 	
 	public static final String IDRECORDER = "id_recorder"; //录入人  Login userId  key
 	public static final String IDCOM = "id_com";//单位代码 Login comId   key

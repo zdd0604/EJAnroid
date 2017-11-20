@@ -29,7 +29,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.hjnerp.adapter.BusinessDdispLocathAdapter;
-import com.hjnerp.adapter.BusinessSginImageViewAdapter;
+import com.hjnerp.adapter.BusinessDXTSginViewAdapter;
 import com.hjnerp.common.ActivitySupport;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
@@ -125,7 +125,7 @@ public class BusinessDdisplocathActivity extends ActivitySupport implements
     public static final int UPLOAD_INFO = 7;// 上传失败提示
     // private LinearLayout lay_sginlocath;// 加载图片的控件
     private HorizontalListView sgin_horizon_listview;
-    private BusinessSginImageViewAdapter businessSginImageViewAdapter;
+    private BusinessDXTSginViewAdapter businessDXTSginViewAdapter;
     private List<Bitmap> sginlocathList_Bitmap = new ArrayList<Bitmap>();// 存储照片的集合
     private List<String> sginPhotoList = new ArrayList<String>();// 保存图片路径
     private List<String> sginPhotoNameList = new ArrayList<String>();// 图片名称
@@ -244,9 +244,9 @@ public class BusinessDdisplocathActivity extends ActivitySupport implements
         Bitmap mBitmap = BitmapFactory.decodeStream(is);
         sginlocathList_Bitmap.add(mBitmap);
 
-        businessSginImageViewAdapter = new BusinessSginImageViewAdapter(sginlocathList_Bitmap, this);
-        businessSginImageViewAdapter.notifyDataSetChanged();
-        sgin_horizon_listview.setAdapter(businessSginImageViewAdapter);
+        businessDXTSginViewAdapter = new BusinessDXTSginViewAdapter(sginlocathList_Bitmap, this);
+        businessDXTSginViewAdapter.notifyDataSetChanged();
+        sgin_horizon_listview.setAdapter(businessDXTSginViewAdapter);
         sgin_horizon_listview.setOnItemClickListener(clickListener);
     }
 
@@ -398,10 +398,9 @@ public class BusinessDdisplocathActivity extends ActivitySupport implements
      * @param sginList
      */
     private void addImageView(List<Bitmap> sginList) {
-        businessSginImageViewAdapter = new BusinessSginImageViewAdapter(
-                sginList, this);
-        businessSginImageViewAdapter.notifyDataSetChanged();
-        sgin_horizon_listview.setAdapter(businessSginImageViewAdapter);
+        businessDXTSginViewAdapter = new BusinessDXTSginViewAdapter(sginList, this);
+        businessDXTSginViewAdapter.notifyDataSetChanged();
+        sgin_horizon_listview.setAdapter(businessDXTSginViewAdapter);
         sgin_horizon_listview.setOnItemClickListener(clickListener);
     }
 
@@ -436,11 +435,10 @@ public class BusinessDdisplocathActivity extends ActivitySupport implements
      */
     private void ShowSginPhotoFeleteDialog(final int position) {
         new AlertDialog.Builder(this).setTitle("提示").setMessage("是否删除当前照片?")
-
                 .setNegativeButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         sginlocathList_Bitmap.remove(position);
-                        businessSginImageViewAdapter.notifyDataSetChanged();
+                        businessDXTSginViewAdapter.notifyDataSetChanged();
                         String sginPath = sginPhotoList.get(position);
                         File file = new File(sginPath);
                         if (file.exists()) {
@@ -570,36 +568,24 @@ public class BusinessDdisplocathActivity extends ActivitySupport implements
      * @param var_signin
      * @param name_photo
      */
-    private void sginNewFile(String userID, String companyID,
-                             String var_signin, String name_photo) {
+    private void sginNewFile(String userID, String companyID,String var_signin, String name_photo) {
         try {
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append("[{key:{\"tableid\":\"ddisplocat\",\"opr\":\"SS\",\"no\":\"\",\"userid\":\"" + userID + "\",\"comid\":\"" + companyID + "\",");
             stringBuffer.append("\"data\":[{\"table\": \"ddisplocat_03\",\"where\":\" \",");
             stringBuffer.append("\"data\": [{\"column\":\"flag_sts\",\"value\":\"L\",\"datatype\":\"varchar\"},");
-            stringBuffer
-                    .append("{\"column\":\"id_flow\",\"value\":\"FBdis\",\"datatype\":\"varchar\"},");
-            stringBuffer
-                    .append("{\"column\":\"line_no\",\"value\":\"1\",\"datatype\":\"int\"},");
-            stringBuffer.append("{\"column\":\"date_location\",\"value\":\""
-                    + sgin_data + "\",\"datatype\":\"varchar\"}, ");
-            stringBuffer.append("{\"column\":\"id_clerk\",\"value\":\""
-                    + userID + "\",\"datatype\":\"varchar\"}, ");
-            stringBuffer.append("{\"column\":\"var_lati\",\"value\":\""
-                    + String.valueOf(sginLatitude)
-                    + "\",\"datatype\":\"varchar\"}, ");
-            stringBuffer.append("{\"column\":\"var_longi\",\"value\":\""
-                    + String.valueOf(sginLongitude)
-                    + "\",\"datatype\":\"varchar\"}, ");
-            stringBuffer.append(" {\"column\":\"var_location\",\"value\":\""
-                    + sgin_address + "\",\"datatype\":\"varchar\"}, ");
-            stringBuffer.append(" {\"column\":\"name_photo\",\"value\":\""
-                    + name_photo + "\",\"datatype\":\"varchar\"}, ");
+            stringBuffer.append("{\"column\":\"id_flow\",\"value\":\"FBdis\",\"datatype\":\"varchar\"},");
+            stringBuffer.append("{\"column\":\"line_no\",\"value\":\"1\",\"datatype\":\"int\"},");
+            stringBuffer.append("{\"column\":\"date_location\",\"value\":\""+ sgin_data + "\",\"datatype\":\"varchar\"}, ");
+            stringBuffer.append("{\"column\":\"id_clerk\",\"value\":\""+ userID + "\",\"datatype\":\"varchar\"}, ");
+            stringBuffer.append("{\"column\":\"var_lati\",\"value\":\"" + String.valueOf(sginLatitude) + "\",\"datatype\":\"varchar\"}, ");
+            stringBuffer.append("{\"column\":\"var_longi\",\"value\":\"" + String.valueOf(sginLongitude) + "\",\"datatype\":\"varchar\"}, ");
+            stringBuffer.append(" {\"column\":\"var_location\",\"value\":\"" + sgin_address + "\",\"datatype\":\"varchar\"}, ");
+            stringBuffer.append(" {\"column\":\"name_photo\",\"value\":\"" + name_photo + "\",\"datatype\":\"varchar\"}, ");
             stringBuffer.append("{\"column\":\"var_signin\",\"value\":\"" + var_signin + "\",\"datatype\":\"varchar\"}]}]},value:\"\"}]");
             String str = stringBuffer.toString();
             JSONArray jsonArray = new JSONArray(str);
             onhjupload(jsonArray);
-
             Log.v("show", stringBuffer.toString());
         } catch (JSONException e) {
             e.printStackTrace();
