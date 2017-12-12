@@ -48,6 +48,11 @@ import java.util.zip.ZipInputStream;
  */
 
 public class ActionBarWidgetActivity extends ActivitySupport {
+    //Bundle TYPE
+    //html标题
+    public final String HTTITLE = "TITLE";
+    //html地址
+    public final String HTURL = "HTURL";
     public static Context mContext;
     protected Gson mGson;
     //弹框
@@ -62,8 +67,7 @@ public class ActionBarWidgetActivity extends ActivitySupport {
 
     //是否授权
     public boolean isPsions = false;
-    //是否打印Log输出，可以改为false关闭部分输出
-    private static boolean isLogShow = true;
+
     //网络请求后台返回的数据
     private static String backJson;
     //popupwindow选择框
@@ -182,7 +186,7 @@ public class ActionBarWidgetActivity extends ActivitySupport {
      * @param content
      */
     public static void LogShow(String content) {
-        if (isLogShow)
+        if (Constant.isLogShow)
             Log.e("EJ", content);
     }
 

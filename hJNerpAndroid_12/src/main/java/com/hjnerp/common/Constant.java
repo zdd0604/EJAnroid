@@ -15,9 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Constant {
-
-    public static final String ABOUT_HJ_URL = "http://183.81.182.6:8090/nerp/remark.html";
-
     /**
      * 所有的action的监听的必须要以"ACTION_"开头
      *
@@ -409,5 +406,9 @@ public class Constant {
     public static final int HANDLERTYPE_5 = 5;
     public static final int HANDLERTYPE_6 = 6;
 
+
+
+    //是否打印Log输出，可以改为false关闭部分输出
+    public static final boolean isLogShow = true;
 
 }

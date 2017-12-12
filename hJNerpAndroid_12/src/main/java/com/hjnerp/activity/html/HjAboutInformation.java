@@ -1,64 +1,96 @@
 package com.hjnerp.activity.html;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.hjnerp.common.ActivitySupport;
-import com.hjnerp.widget.WaitDialogRectangle;
+import com.hjnerp.common.ActionBarWidgetActivity;
 import com.hjnerpandroid.R;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * zdd
  * 加载网址的类
  */
-public class HjAboutInformation extends ActivitySupport {
-    private WebView webView;
-    private int title;
+public class HjAboutInformation extends ActionBarWidgetActivity implements View.OnClickListener {
+    private String title;
     private String webUrl;
-    private ImageView web_error;
-    protected WaitDialogRectangle waitDialogRectangle;
+    @BindView(R.id.action_left_tv)
+    TextView actionLeftTv;
+    @BindView(R.id.action_center_tv)
+    TextView actionCenterTv;
+    @BindView(R.id.action_right_tv)
+    TextView actionRightTv;
+    @BindView(R.id.action_right_tv1)
+    TextView actionRightTv1;
+    @BindView(R.id.wv_abouthj)
+    WebView webView;
+    @BindView(R.id.web_error)
+    ImageView web_error;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActionBar = getSupportActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-
         setContentView(R.layout.activity_hj_about_informatio);
+        ButterKnife.bind(this);
 
-        waitDialogRectangle = new WaitDialogRectangle(this);
+        initView();
+    }
+
+
+    private void initView() {
+        Bundle bundle = this.getIntent().getExtras();
+        title = bundle.getString(HTTITLE);
+        webUrl = bundle.getString(HTURL) + title;
+        LogShow("公告详情："+webUrl);
+
+        actionRightTv.setVisibility(View.GONE);
+        actionLeftTv.setOnClickListener(this);
+        actionCenterTv.setText(title);
+
         waitDialogRectangle.show();
         waitDialogRectangle.setText("正在加载...");
-        Bundle bundle = this.getIntent().getExtras();
-        title = bundle.getInt("title");
-        webUrl = bundle.getString("weburl");
-        mActionBar.setTitle(title);
 
-        web_error = (ImageView) findViewById(R.id.web_error);
+        //声明WebSettings子类
+        WebSettings webSettings = webView.getSettings();
 
-        webView = (WebView) findViewById(R.id.wv_abouthj);
-        webView.getSettings().setJavaScriptEnabled(true); // 允许运行js
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.setWebChromeClient(new MyWebViewClient());
-        webView.setInitialScale(150);
-        WebSettings setting = webView.getSettings();
-        //不显示webview缩放按钮
-        setting.setDisplayZoomControls(false);
-//        setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-//        setting.setUseWideViewPort(true);
-//        setting.setLoadWithOverviewMode(true);
+        //设置自适应屏幕，两者合用
+        webSettings.setUseWideViewPort(true); //将图片调整到适合webview的大小
+        webSettings.setLoadWithOverviewMode(true); // 缩放至屏幕的大小
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
-        webView.setVerticalScrollBarEnabled(false);
-        webView.setHorizontalScrollBarEnabled(false);
+        //缩放操作 支持缩放，默认为true。是下面那个的前提。
+        webSettings.setSupportZoom(true);
+        //设置内置的缩放控件。若为false，则该WebView不可缩放
+        webSettings.setBuiltInZoomControls(false);
+        //隐藏原生的缩放控件
+        webSettings.setDisplayZoomControls(false);
 
-        webView.reload();
-        webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        //其他细节操作
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK); //关闭webview中缓存
+        // 设置可以访问文件
+        webSettings.setAllowFileAccess(true);
+        //支持通过JS打开新窗口
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        //支持自动加载图片
+        webSettings.setLoadsImagesAutomatically(true);
+        //设置编码格式
+        webSettings.setDefaultTextEncodingName("utf-8");
+
+        //webView拓展的api是否打开：
+        webSettings.setDomStorageEnabled(true);
+        //在高版本的时候我们是需要使用允许访问文件的urls：
+        webSettings.setAllowFileAccessFromFileURLs(true);
 
         webView.setWebViewClient(new WebViewClient() { // 点击超链之后在本页面打开
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -85,10 +117,29 @@ public class HjAboutInformation extends ActivitySupport {
         webView.loadUrl(webUrl);
     }
 
-    private class MyWebViewClient extends WebChromeClient {
-        @Override
-        public void onProgressChanged(WebView view, int newProgress) {
-            super.onProgressChanged(view, newProgress);
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.action_left_tv:
+                if (!webView.canGoBack()) {
+                    finish();
+                }
+                webView.goBack();
+                break;
         }
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //如果点击的是后退键  首先判断webView是否能够后退
+        //如果点击的是后退键  首先判断webView是否能够后退   返回值是boolean类型的
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (webView.canGoBack()) {
+                webView.goBack();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

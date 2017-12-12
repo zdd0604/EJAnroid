@@ -18,10 +18,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.hjnerp.activity.work.adapter.WorkFlowRecorderInfoAdapter;
 import com.hjnerp.common.ActionBarWidgetActivity;
-import com.hjnerp.common.ActivitySupport;
 import com.hjnerp.common.Constant;
 import com.hjnerp.common.EapApplication;
 import com.hjnerp.dao.QiXinBaseDao;
@@ -58,7 +58,7 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ApprovalActivity extends   ActionBarWidgetActivity implements OnClickListener {
+public class ApprovalActivity extends ActionBarWidgetActivity implements OnClickListener {
     private String TAG = "ApprovalActivity";
 
     private ImageView photo;
@@ -105,6 +105,38 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
     @BindView(R.id.action_right_tv1)
     TextView actionRightTv1;
 
+    final Handler myHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+
+            Bundle b = msg.getData();
+            int mmsg = b.getInt("flag");
+            Log.i(TAG, " handler mmsg is " + mmsg);
+            switch (mmsg) {
+                case GET_DETAIL_OK:
+                case GET_APPROVAL_OK:
+
+                    if (getapproval_flag && getdetail_flag) {
+                        if (waitDialog.isShowing())
+                            waitDialog.dismiss();
+                        refreshApproval();
+                    }
+                    break;
+                case APPROVAL_DONE:
+                    waitDialogText.dismiss();
+                    if (action.equals(Constant.WF_OP_REVOKE)) {
+                        setResult(33);//驳回
+                    } else {
+                        setResult(22);
+                    }
+                    finish();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +145,8 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
         initView();
 
     }
-    private void initView(){
+
+    private void initView() {
         actionRightTv.setVisibility(View.GONE);
         actionLeftTv.setOnClickListener(this);
         actionCenterTv.setText(getString(R.string.oval_Title_TvActivity));
@@ -249,45 +282,9 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
         Bundle b = new Bundle();
         b.putInt("flag", msg);
         Msg.setData(b);
-
         myHandler.sendMessage(Msg);
     }
 
-    final Handler myHandler = new Handler() {
-        public void handleMessage(android.os.Message msg) {
-
-            Bundle b = msg.getData();
-            int mmsg = b.getInt("flag");
-            Log.i(TAG, " handler mmsg is " + mmsg);
-            switch (mmsg) {
-                case GET_DETAIL_OK:
-                case GET_APPROVAL_OK:
-
-                    if (getapproval_flag && getdetail_flag) {
-                        if (waitDialog.isShowing())
-                            waitDialog.dismiss();
-                        refreshApproval();
-                    }
-                    break;
-                case APPROVAL_DONE:
-                    waitDialogText.dismiss();
-//				timerThread = null;
-                    if (action.equals(Constant.WF_OP_REVOKE)) {
-                        setResult(33);//驳回
-                    } else {
-                        setResult(22);
-                    }
-                    finish();
-
-                    break;
-                default:
-                    break;
-            }
-
-        }
-
-        ;
-    };
 
     // 获取附件，召唤神兽打开
     public void getAttach(final String comID, final String billType, final String attachId, final String attachName) {
@@ -296,10 +293,11 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
             @Override
             public void run() {
                 final File file = new File(Environment.getExternalStorageDirectory(), attachName);
-                AndroidHttpClient httpClient = AndroidHttpClient
-                        .newInstance("attachmentLoader");
+                AndroidHttpClient httpClient = AndroidHttpClient.newInstance("attachmentLoader");
                 try {
-                    HttpPost httpPost = WorkFragment.postWorkflow(Constant.WF_TYPE_ATTACH, comID, null, billType, null, null, null, null, null, attachId);
+                    HttpPost httpPost = WorkFragment.postWorkflow(Constant.WF_TYPE_ATTACH, comID,
+                            null, billType, null, null,
+                            null, null, null, attachId);
                     HttpResponse httpResponse = httpClient.execute(httpPost);
                     int statusCode = httpResponse.getStatusLine().getStatusCode();
                     if (HttpStatus.SC_OK == statusCode) {
@@ -334,60 +332,6 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
         getAttachThread.start();
     }
 
-    // 获取工单详情
-    private void getWorkFlowDetail(final String comID, final String billNo, final String billType) {
-        if (!waitDialog.isShowing()) {
-            waitDialog.show();
-        }
-        HttpPost post = WorkFragment.postWorkflow(Constant.WF_TYPE_DETAIL, comID,
-                billNo, billType, null, null, null, null, null, null);
-        if (post == null)
-            return;
-        HttpClientManager.addTask(new HttpResponseHandler() {
-            @Override
-            public void onResponse(HttpResponse resp) {
-                try {
-                    String msg = HttpClientManager.toStringContent(resp);
-                    Log.i(TAG, "http请求,获取工单详情.getWorkFlowDetail string is >>>>>>> " + msg);
-                    if (TextUtils.isEmpty(msg) || msg.contains("error")) {
-                        Log.e(TAG, "getWorkFlowDetail error!");
-                        errorHandle("获取审批流程失败，请重试！");
-                    } else if (msg.contains("session")) {//sesson无效
-                        errorForceHandle();
-                    } else {
-                        Pattern p = Pattern.compile("\\d+\\.\\d+");
-                        Matcher m = p.matcher(msg);
-                        StringBuffer sb = new StringBuffer();
-                        while (m.find()) {
-                            Double d = Double.parseDouble(m.group());
-                            String a = String.format("%.2f", d);
-                            m.appendReplacement(sb, a);
-                        }
-                        m.appendTail(sb);
-                        msg = sb.toString();
-                        Gson gson = new Gson();
-                        WorkflowDetailResp workflowResp = gson.fromJson(msg,
-                                WorkflowDetailResp.class);
-                        if ("result".equalsIgnoreCase(workflowResp.type) && workflowResp.data != null) {
-                            getdetail_flag = true;
-                            tables = workflowResp.data.tables;
-                            sendToMyHandler(GET_DETAIL_OK);
-
-                        } else {
-                            errorHandle("获取审批流程失败，请重试！");
-                        }
-                    }
-                } catch (IOException e) {
-                    onException(e);
-                }
-            }
-
-            @Override
-            public void onException(Exception e) {
-                e.printStackTrace();
-            }
-        }, post);
-    }
 
     private void errorHandle(final String msg) {
         ((Handler) EapApplication.getApplication().getExtra(
@@ -399,7 +343,7 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
                             waitDialog.dismiss();
                         }
 //						isForcedExit();
-                      showFailToast(msg);
+                        showFailToast(msg);
                         finish();
                     }
                 });
@@ -426,21 +370,18 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
             waitDialog.show();
         }
         HttpPost post = WorkFragment.postWorkflow(Constant.WF_TYPE_PROCEDURE, comID,
-                billNo, billType, null, null, null, null, null, null);
+                billNo, billType, null, null,
+                null, null, null, null);
         if (post == null)
             return;
         HttpClientManager.addTask(new HttpResponseHandler() {
             @Override
             public void onResponse(HttpResponse resp) {
                 try {
-
                     String msg = HttpClientManager.toStringContent(resp);
-                    Log.i(TAG, "http请求,获取审批流程.getWorkflowProcedure string is >>>>>>> " + msg);
-//					if(TimeKey.isPasttime()){
-//						msg = null;
-//					}
+                    LogShow("http请求,获取审批流程.getWorkflowProcedure: " + msg);
                     if (TextUtils.isEmpty(msg) || msg.contains("error")) {
-                        Log.e(TAG, "getWorkflowProcedure error!");
+                        LogShow("getWorkflowProcedure error!");
                         errorHandle("获取审批流程失败，请重试！");
                     } else if (msg.contains("session")) {//sesson无效
                         errorForceHandle();
@@ -464,6 +405,62 @@ public class ApprovalActivity extends   ActionBarWidgetActivity implements OnCli
                     }
                 } catch (IOException e) {
                     onException(e);
+                    errorHandle("获取审批流程失败，请重试！");
+                }
+            }
+
+            @Override
+            public void onException(Exception e) {
+                e.printStackTrace();
+            }
+        }, post);
+    }
+    // 获取工单详情
+    private void getWorkFlowDetail(final String comID, final String billNo, final String billType) {
+        if (!waitDialog.isShowing()) {
+            waitDialog.show();
+        }
+        HttpPost post = WorkFragment.postWorkflow(Constant.WF_TYPE_DETAIL, comID,
+                billNo, billType, null, null,
+                null, null, null, null);
+        if (post == null)
+            return;
+        HttpClientManager.addTask(new HttpResponseHandler() {
+            @Override
+            public void onResponse(HttpResponse resp) {
+                try {
+                    String msg = HttpClientManager.toStringContent(resp);
+                    LogShow("http请求,获取工单详情.getWorkFlowDetail： " + msg);
+                    if (TextUtils.isEmpty(msg) || msg.contains("error")) {
+                        LogShow("getWorkFlowDetail error!");
+                        errorHandle("获取工单详情失败，请重试！");
+                    } else if (msg.contains("session")) {//sesson无效
+                        errorForceHandle();
+                    } else {
+                        Pattern p = Pattern.compile("\\d+\\.\\d+");
+                        Matcher m = p.matcher(msg);
+                        StringBuffer sb = new StringBuffer();
+                        while (m.find()) {
+                            Double d = Double.parseDouble(m.group());
+                            String a = String.format("%.2f", d);
+                            m.appendReplacement(sb, a);
+                        }
+                        m.appendTail(sb);
+                        msg = sb.toString();
+                        WorkflowDetailResp workflowResp = mGson.fromJson(msg, WorkflowDetailResp.class);
+                        if ("result".equalsIgnoreCase(workflowResp.type) && workflowResp.data != null) {
+                            getdetail_flag = true;
+                            tables = workflowResp.data.tables;
+                            sendToMyHandler(GET_DETAIL_OK);
+                        } else {
+                            errorHandle("获取工单详情失败，请重试！");
+                        }
+                    }
+                } catch (IOException e) {
+                    onException(e);
+                }catch (JsonSyntaxException j){
+                    onException(j);
+                    errorHandle("获取工单详情失败，请重试！");
                 }
             }
 

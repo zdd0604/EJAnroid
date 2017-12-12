@@ -46,6 +46,7 @@ import com.hjnerp.fragment.ContactFragment;
 import com.hjnerp.fragment.ImFragment;
 import com.hjnerp.fragment.ImFragment.OnImListener;
 import com.hjnerp.fragment.MyInforMation;
+import com.hjnerp.fragment.NoticeFragment;
 import com.hjnerp.fragment.WorkFragment;
 import com.hjnerp.manager.HJWebSocketManager;
 import com.hjnerp.model.UserInfo;
@@ -85,6 +86,7 @@ public class MainActivity extends ActionBarWidgetActivity implements
     // private AddPopupWindow menuAdd; // 弹出框
     // private QueryPopupWindow menuQuery;
     private ImFragment imFragment;
+    private NoticeFragment noticeFragment;
     private ContactFragment contactFragment;
     private BusinessFragment businessFragment;
     private MyInforMation myInforMation;
@@ -260,8 +262,13 @@ public class MainActivity extends ActionBarWidgetActivity implements
         title_list.clear();
 
         // 企信
-        imFragment = new ImFragment();
-        mFragmentList.add(imFragment);
+//        imFragment = new ImFragment();
+//        mFragmentList.add(imFragment);
+//        title_list.add(R.string.main_tab_im);
+
+        // 公告
+        noticeFragment = new NoticeFragment();
+        mFragmentList.add(noticeFragment);
         title_list.add(R.string.main_tab_im);
 
         // 工作流
@@ -977,6 +984,4 @@ public class MainActivity extends ActionBarWidgetActivity implements
 //                Gravity.LEFT);
 //
 //    }
-
-
 }

@@ -566,8 +566,8 @@ public class Tables {
 			sb.append("CREATE TABLE IF NOT EXISTS ").append(NAME).append(" ");
 			sb.append("( ");
 
-			sb.append(COL_ID_CLERK).append(" NVARCHAR PRIMARY KEY , ");
-			sb.append(COL_SGIN_TIME).append(" NVARCHAR , ");
+			sb.append(COL_ID_CLERK).append(" NVARCHAR , ");
+			sb.append(COL_SGIN_TIME).append(" NVARCHAR PRIMARY KEY , ");
 			sb.append(COL_SGIN_TIME_UP).append(" NVARCHAR , ");
 			sb.append(COL_SGIN_TIME_down).append(" NVARCHAR ");
 

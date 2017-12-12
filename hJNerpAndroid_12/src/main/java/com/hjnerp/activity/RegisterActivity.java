@@ -136,7 +136,7 @@ public class RegisterActivity extends ActionBarWidgetActivity implements View.On
 
                 getRegisterInfo(eRegPhone, eRegCode, "mobileInit");
             } else {
-                ToastUtil.ShowLong(RegisterActivity.this, getResources()
+                showFailToast(getResources()
                         .getString(R.string.net_connect_error));
             }
 

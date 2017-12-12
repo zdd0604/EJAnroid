@@ -66,19 +66,15 @@ public class LoginTask extends AsyncTask<String, Integer, Integer> {
         switch (result) {
             case -1: // 登录成功
                 waitDialogRectangle.dismiss();
-                new MyToast(context, "服务器没有反馈，请查看手机网络设置。");
+                new MyToast(context, "服务器没有反馈，请查看手机网络设置。  ");
                 break;
             case Constant.LOGIN_SECCESS: // 登录成功
-
-                new Ctlm1347Update(null).action();
-                //
+                 new Ctlm1347Update(null).action();
                 new Ctlm1345Update(new String[]{"ctlm1345"},
                         new String[]{"1=1"}, null).action();
                 waitDialogRectangle.dismiss();
                 context.startActivity(new Intent(context, MainActivity.class));
                 ((Activity) activitySupport).finish();
-
-                // }
                 break;
             case Constant.LOGIN_ERROR_ACCOUNT_PASS:// 账户或者密码错误
                 waitDialogRectangle.dismiss();
@@ -94,7 +90,6 @@ public class LoginTask extends AsyncTask<String, Integer, Integer> {
                 break;
         }
         super.onPostExecute(result);
-
     }
 
     @SuppressWarnings("unchecked")

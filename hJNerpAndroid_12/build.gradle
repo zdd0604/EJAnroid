@@ -9,8 +9,8 @@ android {
         applicationId "com.hjnerpandroid"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 65
-        versionName '3.2.65'
+        versionCode 66
+        versionName '3.2.66'
         ndk {
             moduleName "luajava"
         }
@@ -59,6 +59,7 @@ dependencies {
     compile files('libs/XPermissions.jar')
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.jakewharton:butterknife:8.8.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.0'
     compile 'com.github.open-android:RoundedImageView:v1.0.0'
     compile 'com.baoyz.actionsheet:library:1.1.7'
