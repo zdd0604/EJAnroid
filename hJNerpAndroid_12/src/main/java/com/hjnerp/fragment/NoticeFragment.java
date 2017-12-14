@@ -137,6 +137,7 @@ public class NoticeFragment extends CommonFragment implements HtmlUtils.HtmlCall
         HttpNoticeInfo httpNoticeInfo = mGson.fromJson(data, HttpNoticeInfo.class);
         imageUrl = httpNoticeInfo.getExtAddr().getVar_extaddr();
         HttpUrlAddress.PUBLICHEADER = httpNoticeInfo.getExtAddrFore().getVar_extaddr();
+//        HttpUrlAddress.PUBLICHEADER = "http://172.16.12.190:8082";
 
         noticeWeb.loadUrl(HttpUrlAddress.PUBLICHEADER + HttpUrlAddress.NOTICEURL);
         LogShow(HttpUrlAddress.PUBLICHEADER + HttpUrlAddress.NOTICEURL);
