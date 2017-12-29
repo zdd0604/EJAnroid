@@ -1,13 +1,21 @@
 package com.hjnerp.activity.html;
 
+import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hjnerp.common.ActionBarWidgetActivity;
@@ -21,8 +29,6 @@ import butterknife.ButterKnife;
  * 加载网址的类
  */
 public class HjAboutInformation extends ActionBarWidgetActivity implements View.OnClickListener {
-    private String title;
-    private String webUrl;
     @BindView(R.id.action_left_tv)
     TextView actionLeftTv;
     @BindView(R.id.action_center_tv)
@@ -33,8 +39,14 @@ public class HjAboutInformation extends ActionBarWidgetActivity implements View.
     TextView actionRightTv1;
     @BindView(R.id.wv_abouthj)
     WebView webView;
-    @BindView(R.id.web_error)
-    ImageView web_error;
+    @BindView(R.id.relayout_html_error)
+    RelativeLayout relayout_html_error;
+    @BindView(R.id.progressBar_html)
+    ProgressBar progressBar_html;
+
+    private String title;
+    private String webUrl;
+    private boolean isLoad = false;
 
 
     @Override
@@ -56,9 +68,8 @@ public class HjAboutInformation extends ActionBarWidgetActivity implements View.
         actionRightTv.setVisibility(View.GONE);
         actionLeftTv.setOnClickListener(this);
         actionCenterTv.setText(title);
+        relayout_html_error.setOnClickListener(this);
 
-        waitDialogRectangle.show();
-        waitDialogRectangle.setText("正在加载...");
 
         //声明WebSettings子类
         WebSettings webSettings = webView.getSettings();
@@ -92,29 +103,100 @@ public class HjAboutInformation extends ActionBarWidgetActivity implements View.
         //在高版本的时候我们是需要使用允许访问文件的urls：
         webSettings.setAllowFileAccessFromFileURLs(true);
 
+
+        if (!hasInternetConnected())
+        {
+            // 在这里显示自定义错误页
+            webView.setVisibility(View.GONE);
+            relayout_html_error.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            setHtml();
+        }
+
+    }
+
+    private void setHtml()
+    {
+        webView.loadUrl(webUrl);
+
+
         webView.setWebViewClient(new WebViewClient() { // 点击超链之后在本页面打开
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
+
+
+            //开始加载
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                // 在这里显示自定义错误页
+                webView.setVisibility(View.VISIBLE);
+                relayout_html_error.setVisibility(View.GONE);
+                LogShow("onPageStarted:"+url);
             }
 
+
+            //加载结束
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                waitDialogRectangle.dismiss();
+                LogShow("onPageFinished:"+url);
             }
 
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                //加载成功了
+                LogShow("shouldOverrideUrlLoading:"+url);
+                return true;
+            }
+
+
+            // 旧版本，会在新版本中也可能被调用，所以加上一个判断，防止重复显示
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                waitDialogRectangle.dismiss();
+                LogShow("onReceivedError夹杂网页出错1");
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    return;
+                }
+                // 在这里显示自定义错误页
                 webView.setVisibility(View.GONE);
-                web_error.setVisibility(View.VISIBLE);
-                web_error.setImageResource(R.drawable.meiyouwangluo);
+                relayout_html_error.setVisibility(View.VISIBLE);
+                LogShow("onReceivedError:"+failingUrl);
+
             }
 
+            // 新版本，只会在Android6及以上调用
+            @TargetApi(Build.VERSION_CODES.M)
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                LogShow("onReceivedError夹杂网页出错2");
+                LogShow("错误代码："+error.getErrorCode());
+                // 在这里显示自定义错误页
+                if (request.isForMainFrame()){
+                    webView.setVisibility(View.GONE);
+                    relayout_html_error.setVisibility(View.VISIBLE);
+                }
+            }
         });
-        webView.loadUrl(webUrl);
+
+        webView.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress)
+            {
+                LogShow("onProgressChanged");
+                if(newProgress==100)
+                {
+                    progressBar_html.setVisibility(View.GONE);//加载完网页进度条消失
+                }
+                else
+                {
+                    progressBar_html.setVisibility(View.VISIBLE);//开始加载网页时显示进度条
+                    progressBar_html.setProgress(newProgress);//设置进度值
+                }
+            }
+        });
     }
 
     @Override
@@ -125,6 +207,10 @@ public class HjAboutInformation extends ActionBarWidgetActivity implements View.
                     finish();
                 }
                 webView.goBack();
+                break;
+            case R.id.relayout_html_error:
+                isLoad = false;
+                 initView();
                 break;
         }
     }

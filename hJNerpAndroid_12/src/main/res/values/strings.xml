@@ -41,6 +41,7 @@
     <string name="exit">退出</string>
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
+    <string name="html_network_error">网络出错，轻触屏幕重新加载</string>
 
     <!-- 缺省的服务器配置 -->
     <integer name="xmpp_port">5222</integer>

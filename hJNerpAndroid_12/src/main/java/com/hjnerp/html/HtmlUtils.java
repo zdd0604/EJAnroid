@@ -21,7 +21,7 @@ public class HtmlUtils extends ActionBarWidgetActivity {
     // 被JS调用的方法必须加入@JavascriptInterface注解
     // 接受JS回调回来的数据
     @JavascriptInterface
-    public void hello(String msg) {
+    public void fetchType(String msg) {
         if (!StringUtil.isStrTrue(msg)) {
             new MyToast(mContext, "JS回调数据为空");
             return;

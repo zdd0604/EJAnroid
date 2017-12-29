@@ -179,10 +179,10 @@ public class Ctlm1345Update implements Command {
 	}
 
 	void procCompressJson(String json) {// 处理压缩包中的文本为json
-		 
+
+		Log.e("EJ","ctlm1345:"+json);
 		Gson gson = new Gson();
-		final NBusinessTableCreateModel model = gson.fromJson(json,
-				NBusinessTableCreateModel.class);
+		final NBusinessTableCreateModel model = gson.fromJson(json,NBusinessTableCreateModel.class);
 		model.create();
 
 		SQLiteWorker.getSharedInstance().postDML(new AbstractSQLable() {
@@ -195,7 +195,6 @@ public class Ctlm1345Update implements Command {
 				if (idTables != null) {
 					if (!(event instanceof Throwable)) {
 						if (onResultListener != null) {
-
 							onResultListener.onResult(true);
 						}
 					} else {

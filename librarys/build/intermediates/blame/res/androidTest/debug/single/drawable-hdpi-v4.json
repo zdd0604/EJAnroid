@@ -1,18 +1,18 @@
 [
     {
-        "merged": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\default_ptr_rotate.png",
-        "source": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\default_ptr_rotate.png"
+        "merged": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/icon.png",
+        "source": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/bundles/debug/res/drawable-hdpi-v4/icon.png"
     },
     {
-        "merged": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\default_ptr_flip.png",
-        "source": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\default_ptr_flip.png"
+        "merged": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/default_ptr_flip.png",
+        "source": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/bundles/debug/res/drawable-hdpi-v4/default_ptr_flip.png"
     },
     {
-        "merged": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\indicator_arrow.png",
-        "source": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\indicator_arrow.png"
+        "merged": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/default_ptr_rotate.png",
+        "source": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/bundles/debug/res/drawable-hdpi-v4/default_ptr_rotate.png"
     },
     {
-        "merged": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\icon.png",
-        "source": "D:\\Android\\AndroidSVNApp\\HJNerpAndroid_1.2\\librarys\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\icon.png"
+        "merged": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/indicator_arrow.png",
+        "source": "/Users/zhangdongdong/AndroidStudioProjects/EJAnroid/librarys/build/intermediates/bundles/debug/res/drawable-hdpi-v4/indicator_arrow.png"
     }
 ]

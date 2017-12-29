@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.hjnerpandroid.R;
 
 /**
- * Created by YaoChen on 2017/4/18.
+ * Created by zdd
  */
 
 public class MyToast {

@@ -572,4 +572,8 @@
 
     <!-- 考勤打卡 -->
     <color name="mapLocationError">#ffa727</color>
+    <!--  进度条颜色 -->
+    <color name="prrgressbar_blue_1">#167EFB</color>
+    <color name="prrgressbar_bground_1">#E6E6E6</color>
+
 </resources>

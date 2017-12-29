@@ -5,6 +5,8 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 
 import com.hjnerp.business.Ctlm1345Update;
@@ -17,6 +19,7 @@ import com.hjnerp.net.IQ;
 import com.hjnerp.util.SharePreferenceUtil;
 import com.hjnerp.util.ToastUtil;
 import com.hjnerp.widget.MyToast;
+import com.hjnerpandroid.R;
 
 public class AutoLoginTask extends AsyncTask<String, Integer, Integer> {
 	private IActivitySupport activitySupport;
@@ -85,7 +88,7 @@ public class AutoLoginTask extends AsyncTask<String, Integer, Integer> {
 			e.printStackTrace();
 		}
 		if (!activitySupport.hasInternetConnected()) {
-			
+
 			return Constant.LOGIN_ANONYMOUS;
 		}
 
@@ -113,5 +116,4 @@ public class AutoLoginTask extends AsyncTask<String, Integer, Integer> {
 
 		return Constant.LOGIN_SECCESS;
 	}
-
 }

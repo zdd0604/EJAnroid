@@ -58,6 +58,10 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * 审批详情界面
+ */
+
 public class ApprovalActivity extends ActionBarWidgetActivity implements OnClickListener {
     private String TAG = "ApprovalActivity";
 

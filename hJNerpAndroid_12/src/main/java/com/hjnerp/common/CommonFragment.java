@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.hjnerp.dao.QiXinBaseDao;
 import com.hjnerp.model.UserInfo;
+import com.hjnerp.widget.WaitDialogRectangle;
 import com.hjnerpandroid.R;
 
 /**
@@ -22,7 +23,6 @@ import com.hjnerpandroid.R;
  */
 
 public class CommonFragment extends Fragment {
-    public Context mContext;
     protected UserInfo myinfo;
     protected String sessionID;
     protected Gson mGson;
@@ -31,6 +31,7 @@ public class CommonFragment extends Fragment {
     public final String HTTITLE = "TITLE";
     //html地址
     public final String HTURL = "HTURL";
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +42,6 @@ public class CommonFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        mContext = getActivity();
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

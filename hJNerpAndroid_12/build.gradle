@@ -9,8 +9,8 @@ android {
         applicationId "com.hjnerpandroid"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 66
-        versionName '3.2.66'
+        versionCode 67
+        versionName '3.2.67'
         ndk {
             moduleName "luajava"
         }

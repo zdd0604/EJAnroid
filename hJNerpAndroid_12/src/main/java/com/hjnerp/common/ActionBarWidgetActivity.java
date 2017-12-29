@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextPaint;
 import android.util.Log;
@@ -84,11 +85,14 @@ public class ActionBarWidgetActivity extends ActivitySupport {
             super.handleMessage(msg);
             switch (msg.what) {
                 case Constant.HANDLERTYPE_0:
+                    //接口回掉
                     if (nsyncDataConnector != null) {
                         nsyncDataConnector.processJsonValue(backJson);
                     }
                     break;
                 case Constant.HANDLERTYPE_1:
+                    //网络错误提示框
+                    showFailToast(getString(R.string.toast_Message_NetWork));
                     break;
                 case Constant.HANDLERTYPE_2:
                     break;
@@ -299,7 +303,7 @@ public class ActionBarWidgetActivity extends ActivitySupport {
                 return true;
             }
         }
-        showFailToast(getString(R.string.toast_Message_NetWork));
+        abHandler.sendEmptyMessage(Constant.HANDLERTYPE_1);
         return false;
     }
 

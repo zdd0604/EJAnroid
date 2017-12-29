@@ -297,8 +297,10 @@ public class BusinessBaseDao extends BaseDao {
             if (StringUtils.isNotBlank(model.deleteSql)) {
                 database.execSQL(model.deleteSql);
             }
-            if (StringUtils.isNotBlank(model.insertSqls)) {
-                database.execSQL(model.insertSqls);
+            if (model.insertSqlsValues.size()>0) {
+                for (String sql:model.insertSqlsValues) {
+                    database.execSQL(sql);
+                }
             }
         } finally {
             endDMLOffTransaction(database);

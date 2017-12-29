@@ -135,7 +135,8 @@ public class BusinessFragment<Divider> extends Fragment {
             }
 
             // 下载菜单成功
-            if (flag.equals("getmenusok")) {
+            if (flag.equals("getmenusok"))
+            {
                 listCurrent = BusinessBaseDao.queryBusinessMenus();
                 fragment.listCurrent = listCurrent;
                 fragment.refreshList(listCurrent);
@@ -146,8 +147,6 @@ public class BusinessFragment<Divider> extends Fragment {
                     || CHECT_XML_OLD.equalsIgnoreCase(flag)
                     || DOWNLOAD_XML_OK.equalsIgnoreCase(flag)) {
 
-                // 不需要更新
-//                fragment.refreshList(listCurrent);
                 if (clicked_id_model == null || "".equals(clicked_id_model)) {
                     return;
                 }
@@ -169,7 +168,7 @@ public class BusinessFragment<Divider> extends Fragment {
                     new MyToast(context, "下载模板错误，请重新尝试。");
                     return;
                 }
-                fragmentFailIntent(fragment);
+                fragmentIntent(fragment);
             }
         }
     }
@@ -220,100 +219,116 @@ public class BusinessFragment<Divider> extends Fragment {
      * @param fragment
      */
     private void fragmentIntent(Fragment fragment) {
-        if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
-//               intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+        if (BusinessQueryDao.getUserInfo(context))
+        {
+            if (clicked_id_model.equals(Constant.ddisplocatphohtml))
+            {
                 intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
             }
-        } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
-                clicked_id_model.equals(Constant.dgtdothtml) ||
-                clicked_id_model.equals(Constant.dgtdvathtml) ||
-                clicked_id_model.equals(Constant.dgtdabnhtml)) {
-            intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
-        } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
+            else
+            if (clicked_id_model.equals(Constant.dgtdouthtml) ||
+                    clicked_id_model.equals(Constant.dgtdothtml) ||
+                    clicked_id_model.equals(Constant.dgtdvathtml) ||
+                    clicked_id_model.equals(Constant.dgtdabnhtml))
+            {
+                intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
+            }
+            else
+            if (clicked_id_model.equals(Constant.dkpipostinputhtml))
+                {
                 intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
             }
-        } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
+            else
+            if (clicked_id_model.equals(Constant.ddisplocatEJhtml))
+            {
                 intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
             }
-        } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
-                clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
-                clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
-                clicked_id_model.equals(Constant.dkpipostratehtml) ||
-                clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
+            else
+            if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
+                    clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
+                    clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
+                    clicked_id_model.equals(Constant.dkpipostratehtml) ||
+                    clicked_id_model.equals(Constant.dkpipostidentificatehtml))
+            {
                 intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
             }
-        } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
+            else
+            if (clicked_id_model.equals(Constant.dgtdrechtml))
+            {
                 intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
             }
-        } else {
-            intent = new Intent(fragment.getActivity(), BussinessHtmlActivity.class);
-            intent.putExtra("id_model", clicked_id_model);
+            else
+            {
+                intent = new Intent(fragment.getActivity(), BussinessHtmlActivity.class);
+                intent.putExtra("id_model", clicked_id_model);
+            }
         }
+        else
+        {
+            intent = new Intent(fragment.getActivity(), SetActivity.class);
+        }
+
         fragment.startActivity(intent);
         Log.v("show", "HTML模板名称：" + clicked_id_model);
     }
 
-    /**
-     * 判断模板是否存在
-     *
-     * @param fragment
-     */
-    private static void fragmentFailIntent(Fragment fragment) {
-        if (clicked_id_model.equals(Constant.ddisplocatphohtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
-                intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
-            }
-        } else if (clicked_id_model.equals(Constant.ddisplocatEJhtml)) {
-            intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
-        } else if (clicked_id_model.equals(Constant.dgtdouthtml) ||
-                clicked_id_model.equals(Constant.dgtdothtml) ||
-                clicked_id_model.equals(Constant.dgtdvathtml) ||
-                clicked_id_model.equals(Constant.dgtdabnhtml)) {
-            intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
-        } else if (clicked_id_model.equals(Constant.dkpipostinputhtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
-                intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
-            }
-        } else if (clicked_id_model.equals(Constant.dgtdrechtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
-                intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
-            }
-        } else if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
-                clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
-                clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
-                clicked_id_model.equals(Constant.dkpipostratehtml) ||
-                clicked_id_model.equals(Constant.dkpipostidentificatehtml)) {
-            if (BusinessQueryDao.getUserInfo(context)) {
-                intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
-            } else {
-                intent = new Intent(fragment.getActivity(), SetActivity.class);
-            }
-            fragment.startActivity(intent);
-        } else {
-            new MyToast(context, "下载模板错误，请重新尝试。");
-        }
-    }
+//    /**
+//          * 判断模板是否存在
+//          *
+//          * @param fragment
+//          */
+//    private static void fragmentFailIntent(Fragment fragment) {
+//        if (BusinessQueryDao.getUserInfo(context))
+//        {
+//            if (clicked_id_model.equals(Constant.ddisplocatphohtml))
+//            {
+//                intent = new Intent(fragment.getActivity(), BusinessDdisplocathActivity.class);
+//            }
+//            else
+//            if (clicked_id_model.equals(Constant.ddisplocatEJhtml))
+//            {
+//                intent = new Intent(fragment.getActivity(), BusinessEJLocation.class);
+//            }
+//            else
+//            if (clicked_id_model.equals(Constant.dgtdouthtml) ||
+//                    clicked_id_model.equals(Constant.dgtdothtml) ||
+//                    clicked_id_model.equals(Constant.dgtdvathtml) ||
+//                    clicked_id_model.equals(Constant.dgtdabnhtml))
+//            {
+//                intent = new Intent(fragment.getActivity(), TravelActivityNew.class);
+//            }
+//            else
+//            if (clicked_id_model.equals(Constant.dkpipostinputhtml))
+//            {
+//                intent = new Intent(fragment.getActivity(), BusinessPerformanceArrayList.class);
+//            }
+//            else
+//            if (clicked_id_model.equals(Constant.dgtdrechtml))
+//            {
+//                intent = new Intent(fragment.getActivity(), BusinessDgtdrechtml.class);
+//            }
+//            else
+//            if (clicked_id_model.equals(Constant.dkpipostreviewhtml) ||
+//                    clicked_id_model.equals(Constant.dkpipostconfimhtml) ||
+//                    clicked_id_model.equals(Constant.dkpipostreadmehtml) ||
+//                    clicked_id_model.equals(Constant.dkpipostratehtml) ||
+//                    clicked_id_model.equals(Constant.dkpipostidentificatehtml))
+//            {
+//                    intent = new Intent(fragment.getActivity(), BusinessBillsActivity.class);
+//            }
+//            else
+//            {
+//                new MyToast(context,"模版下载错误！请重试");
+//            }
+//
+//        }
+//        else
+//        {
+//            intent = new Intent(fragment.getActivity(), SetActivity.class);
+//        }
+//
+//        fragment.startActivity(intent);
+//    }
 
     private void dogridview(final ArrayList<MenuContent> listCurrent, GridView gridView) {
         adapter = new BusinessGridViewAdapter(getActivity(), listCurrent);
@@ -348,7 +363,6 @@ public class BusinessFragment<Divider> extends Fragment {
                         }
                     }
                 } else {
-//                     showNoticeDialog();
                     updateModelThread();
                 }
             }
@@ -537,49 +551,6 @@ public class BusinessFragment<Divider> extends Fragment {
         return flag;
     }
 
-    // 检查xml文件是否全部存在
-//    boolean checkXMLModelexit() {
-//        boolean flag = true;
-//        if (listCurrent == null || listCurrent.size() == 0) {
-//            Log.e(TAG, " listcurrent null");
-//            return false;
-//        }
-//        // 检查xml文件
-//        File file = EapApplication.getApplication().getFilesDir();
-//        if (file != null) {
-//
-//            File[] files = file.listFiles();
-//            String[] filenames = new String[files.length];
-//            for (int i = 0; i < files.length; i++) {
-//                Log.i(TAG, "file name is " + files[i].getName());
-//                filenames[i] = files[i].getName();
-//            }
-//
-//            String[] menuids = new String[listCurrent.size()];
-//            for (int i = 0; i < listCurrent.size(); i++) {
-//                menuids[i] = listCurrent.get(i).getVarParm() + ".xml";
-//            }
-//
-//            List<String> resuleList = StringUtil.exist2(filenames, menuids);
-//            if (resuleList.size() > 0) {// xml文件不完全
-//                for (int i = 0; i < resuleList.size(); i++) {
-//                    Log.e(TAG, "缺少model " + resuleList.get(i));
-//                }
-//                flag = false;
-//            }
-//        } else {
-//            Log.e(TAG, "xmlmodel 为null");
-//            flag = false;
-//        }
-//        return flag;
-//    }
-
-    //    @Override
-//    public void ons() {
-//        super.onDestroy();
-//        checkPaoPao();
-//        refreshList(listCurrent);
-//    }
 
     public void showNoticeDialog() {
 
@@ -607,38 +578,6 @@ public class BusinessFragment<Divider> extends Fragment {
 
     }
 
-    private String processBusinessCompress(String fileName) throws Exception {// 解压缩下载的同步数据
-        File file = new File(getActivity().getExternalCacheDir(), fileName);
-        FileInputStream fis = new FileInputStream(file);
-        ZipInputStream zis = new ZipInputStream(fis);
-        ZipEntry entry = zis.getNextEntry();
-        if (entry == null) {
-            new MyToast(getActivity(), "数据文件已损坏");
-        }
-        int len = -1;
-        byte[] bytes = new byte[512];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while ((len = zis.read(bytes, 0, bytes.length)) > 0) {
-            baos.write(bytes, 0, len);
-        }
-        String json = new String(baos.toByteArray(), HTTP.UTF_8);
-        zis.close();
-        return json;
-    }
-
-    private void procCompressJson(String json) {// 处理压缩包中的文本为json
-        Gson gson = new Gson();
-        List<BusinessTableCreateModel> btcms = gson.fromJson(json,
-                new TypeToken<List<BusinessTableCreateModel>>() {
-                }.getType());
-        for (BusinessTableCreateModel btcm : btcms) {
-            // btcm.build();
-            btcm.create();
-        }
-        // BusinessBaseDao.replaceBusinessTableCreateModels(btcms);
-        BusinessBaseDao.opBusinessTableCreateModels(btcms);
-    }
-
     private void checkPaoPao() {
         String localVersion;
         for (int i = 0; i < listCurrent.size(); i++) {
@@ -653,13 +592,6 @@ public class BusinessFragment<Divider> extends Fragment {
         }
     }
 
-    private void procCompressJson2(String json) {// 处理压缩包中的文本为json
-        Gson gson = new Gson();
-        NBusinessTableCreateModel model = gson.fromJson(json,
-                NBusinessTableCreateModel.class);
-        model.create();
-        BusinessBaseDao.opNBusinessTableCreateModels(model);
-    }
 
     public static boolean hasInternetConnected(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context
