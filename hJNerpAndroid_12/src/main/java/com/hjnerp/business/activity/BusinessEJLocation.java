@@ -257,7 +257,7 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
 
         //定位成功后的回调监听方向监听
         myOrientationListener = new MyOrientationListener(this);
-        myOrientationListener.setOnOrientationListener( new MyOrientationListener.OnOrientationListener() {
+        myOrientationListener.setOnOrientationListener(new MyOrientationListener.OnOrientationListener() {
             @Override
             public void onOrientationChanged(float x) {
                 mCurrentX = x;
@@ -402,10 +402,10 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
             if (sginType.equals(sgin_type_Y)) {
                 BusinessBaseDao.insertCtlm1108(new String[]{
                         Constant.ej1345.getId_clerk(),
-                        todayTime,getTvVaule(sgin_time_up),""});
+                        todayTime, getTvVaule(sgin_time_up), ""});
             } else {
                 BusinessBaseDao.insertCtlm1108(new String[]{
-                        Constant.ej1345.getId_clerk(),todayTime, "",
+                        Constant.ej1345.getId_clerk(), todayTime, "",
                         getTvVaule(sgin_time_down)});
             }
         }
@@ -658,6 +658,8 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
 
             mBaiduMap.setMyLocationData(myLocationData);
 
+            LogShow(location_path + "-" + sginLatitude + "-" + sginLongitude);
+
             if (StringUtil.isStrTrue(location_path)) {
                 handler.sendEmptyMessage(Constant.HANDLERTYPE_0);
             }
@@ -672,7 +674,8 @@ public class BusinessEJLocation extends ActionBarWidgetActivity implements View.
 
         // 设置自定义图标
         MyLocationConfiguration configuration = new MyLocationConfiguration(locationMode, true, mIconLocation);
-        mBaiduMap.setMyLocationConfigeration(configuration);
+        mBaiduMap.setMyLocationConfiguration(configuration);
+
 
         latLng = new LatLng(sginLatitude, sginLongitude);
         MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(latLng);

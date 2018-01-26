@@ -312,18 +312,20 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
         stringBuffer.append("{\"column\":\"id_auditlvl\",\"value\":\"" + id_auditlvl + "\",\"datatype\":\"varchar\"},");
         stringBuffer.append("{\"column\":\"var_title\",\"value\":\"" + name_user + " " + type_leave + "\",\"datatype\":\"varchar\"},");
         stringBuffer.append("{\"column\":\"var_remark\",\"value\":\"" + reason + "\",\"datatype\":\"varchar\"}]}]}");
+
+        String str = "";
         if (!Constant.JUDGE_TYPE) {
-            String str = stringBuffer.toString();
+            str = stringBuffer.toString();
             Log.d("str1", str);
             getBusinessList(str, "save");
             String save = "\"menuid\":\"002040\",\"dealtype\":\"save\",\"data\":[";
             String send = "\"menuid\":\"002040\",\"dealtype\":\"send\",\"data\":[";
             String finalstring = str.replace(save, send);
-            Log.d("str2", finalstring);
             getBusinessList(finalstring, "send");
         } else {
             stringBuffer.append(",value:\"\"}]");
-            String str = stringBuffer.toString();
+            str = stringBuffer.toString();
+            LogShow("休假申请： " + str);
             try {
                 JSONArray jsonArray = new JSONArray(str);
                 onhjuploada(jsonArray);
@@ -331,6 +333,7 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
                 e.printStackTrace();
             }
         }
+
     }
 
     private void onhjuploada(JSONArray args) {
@@ -384,7 +387,8 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
         entity.addPart("download", new FileBody(new File(name)));
         HttpPost httpPost = new HttpPost(EapApplication.URL_SERVER_HOST_HTTP
                 + Constant.BUSINESS_SERVICE_ADDRESS);
-        LogUtils.i("上传服务地址：" + EapApplication.URL_SERVER_HOST_HTTP
+
+        LogShow("上传服务地址：" + EapApplication.URL_SERVER_HOST_HTTP
                 + Constant.BUSINESS_SERVICE_ADDRESS);
 
         httpPost.setEntity(entity);
@@ -398,7 +402,7 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
                     try {
                         JSONObject jsonObject = new JSONObject(msga);
                         String result = jsonObject.getString("flag");
-                        Log.v("show", "上传返回的数据:" + jsonObject.toString());
+                        LogShow("上传返回的数据:" + jsonObject.toString());
                         if ("ok".equalsIgnoreCase(result)) {
                             // 上传成功
 //                            ToastUtil.ShowShort(context, "上传成功：" + result);
@@ -484,6 +488,9 @@ public class LeaveBusiness extends ActionBarWidgetActivity implements View.OnCli
      * @param datas
      */
     private void getBusinessList(String datas, final String dealtype) {
+
+        LogShow(dealtype + "休假申请 "+datas);
+
         waitDialogRectangle.show();
         waitDialogRectangle.setText("正在提交");
 //        OkGo.post("http://172.16.12.243:8085/hjmerp/servlet/DataUpdateServlet")

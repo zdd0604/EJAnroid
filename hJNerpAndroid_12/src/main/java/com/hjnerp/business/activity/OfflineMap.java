@@ -16,6 +16,7 @@ import com.baidu.mapapi.map.offline.MKOLUpdateElement;
 import com.baidu.mapapi.map.offline.MKOfflineMap;
 import com.baidu.mapapi.map.offline.MKOfflineMapListener;
 import com.hjnerp.common.ActivitySupport;
+import com.hjnerp.widget.ListViewForScrollView;
 import com.hjnerpandroid.R;
 import com.hjnerpandroid.R.layout;
 

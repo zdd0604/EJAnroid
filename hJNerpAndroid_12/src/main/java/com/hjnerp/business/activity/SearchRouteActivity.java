@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.hjnerp.business.BusinessAdapter.SearchRouteAdapter;
 import com.hjnerp.common.ActivitySupport;
 import com.hjnerp.common.Constant;
 import com.hjnerp.dao.BusinessBaseDao;

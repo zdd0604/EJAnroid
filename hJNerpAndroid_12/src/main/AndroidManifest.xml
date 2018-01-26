@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hjnerpandroid">
 
+    <!-- 允许程序发送SMS短信 -->
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- 允许程序读取或写入系统设置 -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- 允许当前应用改变配置，如定位 -->
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <!-- 访问Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -60,15 +63,6 @@
         android:screenOrientation="portrait"
         android:theme="@style/Theme.Hjactionbar">
 
-        <!-- 百度定位的service -->
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote">
-            <intent-filter>
-                <action android:name="com.baidu.location.service_v2.2" />
-            </intent-filter>
-        </service>
 
         <!--
        正式版百度地图key值  android:value="3aXtEuHtGZLcgcLwGHLExYsu"
@@ -78,7 +72,22 @@
         -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="HgmGYvmr4fsOmKKVzCNO2DuRYPEBrOSk" />
+            android:value="Qm9njVmYjfXo9S2Z0VQf7NDeQg5L2dWL" />
+
+
+        <!-- 百度定位的service -->
+        <!--<service-->
+        <!--android:name="com.baidu.location.f"-->
+        <!--android:enabled="true"-->
+        <!--android:process=":remote">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.baidu.location.service_v2.2" />-->
+        <!--</intent-filter>-->
+        <!--</service>-->
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote"/>
 
         <activity
             android:name="com.hjnerp.activity.LoginActivity"
@@ -439,7 +448,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.HjNoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
-        <activity android:name="com.hjnerp.html.HtmlUtils"/>
+        <activity android:name="com.hjnerp.html.HtmlUtils" />
 
         <!-- 加载网址界面 -->
         <activity

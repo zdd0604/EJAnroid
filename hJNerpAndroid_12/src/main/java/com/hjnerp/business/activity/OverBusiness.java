@@ -207,16 +207,17 @@ public class OverBusiness extends ActionBarWidgetActivity implements View.OnClic
         stringBuffer.append("{\"column\":\"remark\",\"value\":\"" + reason + "\",\"datatype\":\"varchar\"}]}]}");
         if (!Constant.JUDGE_TYPE) {
             String str = stringBuffer.toString();
-            Log.d("str1", str);
+            LogShow(str);
             getBusinessList(str, "save");
             String save = "\"menuid\":\"002090\",\"dealtype\":\"save\",\"data\":[";
             String send = "\"menuid\":\"002090\",\"dealtype\":\"send\",\"data\":[";
             String finalstring = str.replace(save, send);
-            Log.d("str2", finalstring);
+            LogShow(finalstring);
             getBusinessList(finalstring, "send");
         } else {
             stringBuffer.append(",value:\"\"}]");
             String str = stringBuffer.toString();
+            LogShow("加班申请： " + str);
             try {
                 HjUpload hjUpload = new HjUpload(this);
                 JSONArray jsonArray = new JSONArray(str);

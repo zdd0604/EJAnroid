@@ -5,6 +5,7 @@ def supportVersion = "24.2.1"
 android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
+
     defaultConfig {
         applicationId "com.hjnerpandroid"
         minSdkVersion 16
@@ -15,26 +16,40 @@ android {
             moduleName "luajava"
         }
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
     useLibrary 'org.apache.http.legacy'
+
     lintOptions {
 
         checkReleaseBuilds false
         abortOnError false
         disable "ResourceType"
     }
+
     repositories {
         maven {
             url "https://jitpack.io"
         }
     }
+
     productFlavors {
     }
+
+
+    sourceSets {
+        main{
+            jniLibs.srcDir 'libs'
+            jni.srcDirs = []
+        }
+    }
+
 }
 
 dependencies {
@@ -46,22 +61,31 @@ dependencies {
     compile files('libs/testinagent.jar')
     compile files('libs/voaacencoder.jar')
     compile files('libs/zbar.jar')
-    compile project(':librarys')
     compile files('libs/universal-image-loader-1.9.3.jar')
     compile files('libs/BaiduLBS_Android.jar')
-    compile 'com.lovedise:permissiongen:0.0.6'
-    compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile files('libs/XPermissions.jar')
+    compile project(':librarys')
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:support-v4:' + supportVersion
     compile 'com.android.support:appcompat-v7:' + supportVersion
     compile 'com.android.support:recyclerview-v7:' + supportVersion
+    //百度地图定位
+    testCompile 'junit:junit:4.12'
+    //适用于Android7.0以上的授权
+    compile 'com.lovedise:permissiongen:0.0.6'
+    //自定义搜索框架
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    //Google推荐的图片加载库
     compile 'com.github.bumptech.glide:glide:3.6.1'
+    //网络框架基于okhttp， https://github.com/jeasonlzy/okhttp-OkGo
     compile 'com.lzy.net:okgo:2.1.4'
-    compile 'com.android.support:support-v4:' + supportVersion
-    compile files('libs/XPermissions.jar')
-    compile 'com.google.code.gson:gson:2.8.0'
+    //快速注解
     compile 'com.jakewharton:butterknife:8.8.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.0'
+    //用于实现圆形/圆角/椭圆的图片
     compile 'com.github.open-android:RoundedImageView:v1.0.0'
+    //仿照iOS的底部弹窗
     compile 'com.baoyz.actionsheet:library:1.1.7'
     compile 'com.facebook.stetho:stetho:1.5.0'
 }

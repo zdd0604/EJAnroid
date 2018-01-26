@@ -550,20 +550,38 @@ public class WorkFragment extends FragmentSupport {
         myHandler.sendMessage(Msg);
     }
 
-    // pageSize 为null时，请求全部，dealFlag是已处理未处理Y/N dealType-审批结果 remark-附加审批意见
+    /**
+     * pageSize 为null时，请求全部，dealFlag是已处理未处理Y/N dealType-审批结果 remark-附加审批意见
+     *
+     * @param type
+     *          发送操作
+     * @param comID
+     *
+     * @param billNo
+     *          单据号，单据标识
+     * @param billType
+     *          单据类型（请假单等）
+     * @param dealFlag
+     * @param markDate
+     * @param pageSize
+     * @param dealType
+     *          审核类型 send ，rejest ，revoke
+     * @param remark
+     *          审核意见
+     * @param fileID
+     * @return
+     */
     public static final HttpPost postWorkflow(String type, String comID,
                                               String billNo, String billType, String dealFlag, String markDate,
                                               String pageSize, String dealType, String remark, String fileID) {
         try {
             HttpPost httpPost = new HttpPost(
-                    EapApplication.URL_SERVER_HOST_HTTP
-                            + "/servlet/nworkflowMobileServlet");
+                    EapApplication.URL_SERVER_HOST_HTTP + "/servlet/nworkflowMobileServlet");
             // httpPost.addHeader("Accept-Encoding",
             // "gzip; q=1.0, identity; q=0.5, *; q=0");
             ArrayList<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
             params.add(new BasicNameValuePair("com_id", comID));
-            params.add(new BasicNameValuePair("session_id", sputil
-                    .getMySessionId()));
+            params.add(new BasicNameValuePair("session_id", sputil.getMySessionId()));
             params.add(new BasicNameValuePair("user_id", sputil.getMyId()));
 
             params.add(new BasicNameValuePair("type", type));
@@ -583,8 +601,9 @@ public class WorkFragment extends FragmentSupport {
                 params.add(new BasicNameValuePair("remark", remark));
             if (StringUtils.isNotBlank(fileID))
                 params.add(new BasicNameValuePair("file_id", fileID));
-            LogUtils.i("params== " + params.toString());
-            Log.i("info", "工作流：" + params.toString());
+
+            Log.e("info","登录地址 " + EapApplication.URL_SERVER_HOST_HTTP + "/servlet/nworkflowMobileServlet");
+            Log.e("info", "工作流：" + params.toString());
             HttpEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
             httpPost.setEntity(entity);
 //            HttpClient client = new DefaultHttpClient();

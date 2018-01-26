@@ -36,6 +36,10 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * 项目搜索
+ */
+
 public class BusinessSearch extends ActionBarWidgetActivity implements View.OnClickListener,
         ActionBarWidgetActivity.NsyncDataConnector,
         BusinessSearchAdapter.OnItemClickLitener{

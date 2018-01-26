@@ -213,13 +213,14 @@ public class Constant {
      */
     public static final String WF_OP_REJEST_ONE = "rejest";
     /**
-     * 驳回新建人
-     */
-    public static final String WF_OP_REJEST_OWNER = "rejestFirst";
-    /**
      * 收回
      */
     public static final String WF_OP_REVOKE = "revoke";
+    /**
+     * 驳回新建人
+     */
+    public static final String WF_OP_REJEST_OWNER = "rejestFirst";
+
 
     public static final String BUSINESS_SERVICE_ADDRESS = "/servlet/businessMobileServlet";
     public static final String NBUSINESS_SERVICE_ADDRESS = "/servlet/nbusinessMobileServlet";

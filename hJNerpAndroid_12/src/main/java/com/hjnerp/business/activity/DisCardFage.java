@@ -60,6 +60,7 @@ import com.hjnerp.model.Ctlm1345;
 import com.hjnerp.model.Ctlm1347;
 import com.hjnerp.model.Ctlm1347Json;
 import com.hjnerp.model.DisCardFageDataClass;
+import com.hjnerp.model.MapInfo;
 import com.hjnerp.net.HttpClientBuilder;
 import com.hjnerp.net.HttpClientBuilder.HttpClientParam;
 import com.hjnerp.net.HttpClientManager;
@@ -485,8 +486,7 @@ public class DisCardFage extends ActivitySupport implements OnClickListener,
         backToMyLocation.setOnClickListener(this);
         // changeMode = (LinearLayout) findViewById(R.id.changeMode);
 
-        mBaiduMap
-                .setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+        mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
 
                     @Override
                     public void onMapStatusChangeStart(MapStatus arg0) {
@@ -494,7 +494,12 @@ public class DisCardFage extends ActivitySupport implements OnClickListener,
 
                     }
 
-                    @Override
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
+
+            }
+
+            @Override
                     public void onMapStatusChangeFinish(MapStatus arg0) {
                         // TODO Auto-generated method stub
 
